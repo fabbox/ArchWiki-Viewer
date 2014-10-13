@@ -1,0 +1,31 @@
+{
+  "version": "0.0.1",
+
+  "name": "ArchWiki Viewer",
+
+  "description": "A simple viewer for the Archlinux Wiki for FirefoxOS",
+
+  "launch_path": "/index.html",
+
+  "icons": {
+    "svg": "/icons/launcher.svg",
+    "128": "/icons/launcher-128.png",
+    "512": "/icons/launcher-512.png"
+  },
+
+  "type": "privileged",
+
+  "permissions": {
+    "systemXHR":{
+        "description": "Cross-domain requests needed to get html file from https://wiki.archlinux.org to the app."
+    }
+  },
+
+  "developer": {
+    "name": "fabbox"
+  },
+
+  "installs_allowed_from": ["*"],
+
+  "default_locale": "en"
+}
