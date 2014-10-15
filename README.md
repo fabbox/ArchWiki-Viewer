@@ -8,10 +8,10 @@ A simple viewer for the [wiki of Arch Linux](https://wiki.archlinux.org) adapted
 to mobile device runnning [Firefox OS](https://developer.mozilla.org/en-US/Firefox_OS).
 (clone of [ArchWiki Viewer](https://github.com/jtmcn/archwiki-viewer) for Android).
 
-Permissions :
-------------
-  
-  * systemXHR": Cross-domain requests needed to get html file from https://wiki.archlinux.org to the app.
+Permissions
+-----------
+
+  * systemXHR : Cross-domain requests needed to get html file from https://wiki.archlinux.org to the app.
 
 Disclaimer
 ----------
@@ -53,5 +53,4 @@ implied, including, but not limited to, the implied warranties of correctness an
 relevance to a particular subject. The entire risk as to the quality and accuracy 
 of the content is with you. Should the content prove substandard, you assume the
 cost of all necessary servicing, repair, or correction. 
-
 
