@@ -5,16 +5,6 @@ window.addEventListener("load", function () {
     console.log("Hello Wiki!");
 });
 
-
-
-
-
-//db.onerror = function(event) {
-//  // Generic error handler for all errors targeted at this database's
-//  // requests!
-//  alert("Database error: " + event.target.errorCode);
-//};
-
 // DOMContentLoaded is fired once the document has been loaded and parsed,
 // but without waiting for other external resources to load (css/images/etc)
 // That makes the app more responsive and perceived as faster.
@@ -25,12 +15,9 @@ window.addEventListener('DOMContentLoaded', function () {
     (function () { // avoid global var and function
 
         var warchUrl = "https://wiki.archlinux.org";
-        var myhistory = [],
-                db = null;
+        var myhistory = [];
+        var db = null;
         myhistory.push(document.URL);
-
-
-
 
         /* manage events listenner function */
 
@@ -102,7 +89,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (myhistory.length > 2) {
                     myhistory.pop();
                     loadWikiUrl(myhistory[myhistory.length - 1]);
-                    document.getElementById("topMenuBar").style.display = "inline";   
+                    document.getElementById("topMenuBar").style.display = "inline";
                 } else {
                     document.location.href = '/index.html';
                     return false;
@@ -122,33 +109,31 @@ window.addEventListener('DOMContentLoaded', function () {
         function opendb() {
             /* openning database */
             var request = indexedDB.open("MyTestDatabase", 2);
-            request.onerror = function (event) {
+            
+            request.onerror = function () {
                 console.log("Why didn't you allow my web app to use IndexedDB?!");
             };
 
-            request.onsuccess = function (event) {
+            request.onsuccess = function (e) {
                 console.log("indexeddb is opened!");
-                db = event.target.result;
+                db = e.target.result;
+                db.onerror = function (event) {
+                    console.log("Database error: " + event.target.errorCode);
+                };
             };
 
+            request.onupgradeneeded = function (e) {
+                var db = e.target.result;
 
-            /* ----------------------------------------
-             * Dev database
-             * ------------------------------------------*/
-
-            request.onupgradeneeded = function (event) {
-                var db = event.target.result;
-
-                // Create an objectStore to hold information about our pages
+                // Create an objectStore to hold information about our visited pages
                 var objectStore = db.createObjectStore("pages", {keyPath: "url"});
 
                 // Use transaction oncomplete to make sure the objectStore creation is 
                 // finished before adding data into it.
-                objectStore.transaction.oncomplete = function (event) {
-                    console.log("transaction complete");
+                objectStore.transaction.oncomplete = function () {
+                    console.log("creating object transaction complete");
                 };
             };
-
         }
 
         function removeLinksListener() {
@@ -243,13 +228,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 var id = url.slice(url.indexOf("#") + 1);
                 console.log("scrollToId : " + id);
                 scrollToId(id);
-            } else { // scroll the top of this "new" page (buggy)
+            } else { // scroll to top
                 scrollToId();
             }
 
             /* refresh listener */
             addLinksListener();
-            document.getElementById("progressBar").style.display = "none";
+            document.getElementById("progressBar").style.display = "";
         }
 
         function cacheContent2db(url, content) {
@@ -257,22 +242,22 @@ window.addEventListener('DOMContentLoaded', function () {
             var trans = db.transaction(["pages"], "readwrite");
 
             trans.oncomplete = function () {
-                console.log("transaction done!");
+                console.log("caching page transaction done!");
             };
 
             trans.onerror = function () {
-                console.log("transaction error");
+                console.log("caching page transaction error");
             };
 
-            var pagesObjectStore = trans.objectStore("pages");
-            var req = pagesObjectStore.add({url: url, body: content});
+            var pagesObjectStore = trans.objectStore("pages"),
+                    req = pagesObjectStore.add({url: url, body: content});
 
             req.onsuccess = function () {
                 console.log("page cached");
             };
 
             req.onerror = function () {
-                console.log("caching page transaction error");
+                console.log("caching page request error");
             };
         }
 
@@ -282,11 +267,14 @@ window.addEventListener('DOMContentLoaded', function () {
 
             var localCache = db.transaction("pages").objectStore("pages").get(url);
 
-            localCache.onsuccess = function (event) {
-                var cachedPage = event.target.result;
+            localCache.onsuccess = function (e) {
+                var cachedPage = e.target.result;
+
                 if (cachedPage) {
                     console.log("I know that url " + cachedPage.url);
+
                     fillPageContent(cachedPage.url, cachedPage.body);
+
                 } else {
                     console.log("I do not know that url yet !");
 
@@ -299,13 +287,17 @@ window.addEventListener('DOMContentLoaded', function () {
                         if (xhr.readyState === 4 && (xhr.status === 200)) {
                             /* keep only the interesting part */
                             var content = xhr.responseXML.body.innerHTML;
+
                             fillPageContent(url, content);
                             cacheContent2db(url, content);
+
                         } else if (xhr.readyState === 4 && xhr.status !== 200) {
-                            console.log('Error ! !\n\nCode :' + xhr.status + '\nText : '
-                                    + xhr.statusText);
+                            console.log('Error ! !\n\nCode :' + xhr.status
+                                    + '\nText : ' + xhr.statusText);
+
                             onXhrError(xhr.error);
-                            pb.style.display = "none";
+
+                            document.getElementById("progressBar").style.display = "";
                         }
                     };
 
@@ -319,6 +311,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         function onXhrError(errorMessage) {
+            
             if (!errorMessage) {
                 errorMessage = 'Loading error';
             }
@@ -359,8 +352,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
             /* set page title */
             var strTitle = document.createTextNode(title);
-
             var titleElt = document.getElementById("awPageTitle");
+
             titleElt.removeChild(titleElt.firstChild);
             titleElt.appendChild(strTitle);
         }
@@ -385,6 +378,7 @@ window.addEventListener('DOMContentLoaded', function () {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && (xhr.status === 200)) {
                     /* keep only the interesting part */
+
                     var respDoc = xhr.responseXML;
                     var resp = xhr.responseXML.getElementById("globalWrapper");
 
