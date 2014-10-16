@@ -112,9 +112,9 @@ window.addEventListener('DOMContentLoaded', function () {
             document.getElementById("globalWrapper")
                     .addEventListener('click', function (e) {
                         // hide menu bar when click outside menubar
-                        if (document.getElementById("topMenuBar").style.display !== "none") {
+                        if (document.getElementById("topMenuBar").style.display) {
                             console.log("hide menu bar");
-                            document.getElementById("topMenuBar").style.display = "none";
+                            document.getElementById("topMenuBar").style.display = "";
                         }
                     }, false);
         }
