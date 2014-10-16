@@ -5,6 +5,16 @@ window.addEventListener("load", function () {
     console.log("Hello Wiki!");
 });
 
+
+
+
+
+//db.onerror = function(event) {
+//  // Generic error handler for all errors targeted at this database's
+//  // requests!
+//  alert("Database error: " + event.target.errorCode);
+//};
+
 // DOMContentLoaded is fired once the document has been loaded and parsed,
 // but without waiting for other external resources to load (css/images/etc)
 // That makes the app more responsive and perceived as faster.
@@ -15,8 +25,12 @@ window.addEventListener('DOMContentLoaded', function () {
     (function () { // avoid global var and function
 
         var warchUrl = "https://wiki.archlinux.org";
-        var myhistory = [];
+        var myhistory = [],
+                db = null;
         myhistory.push(document.URL);
+
+
+
 
         /* manage events listenner function */
 
@@ -88,6 +102,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 if (myhistory.length > 2) {
                     myhistory.pop();
                     loadWikiUrl(myhistory[myhistory.length - 1]);
+                    document.getElementById("topMenuBar").style.display = "inline";   
                 } else {
                     document.location.href = '/index.html';
                     return false;
@@ -102,6 +117,38 @@ window.addEventListener('DOMContentLoaded', function () {
                             document.getElementById("topMenuBar").style.display = "none";
                         }
                     }, false);
+        }
+
+        function opendb() {
+            /* openning database */
+            var request = indexedDB.open("MyTestDatabase", 2);
+            request.onerror = function (event) {
+                console.log("Why didn't you allow my web app to use IndexedDB?!");
+            };
+
+            request.onsuccess = function (event) {
+                console.log("indexeddb is opened!");
+                db = event.target.result;
+            };
+
+
+            /* ----------------------------------------
+             * Dev database
+             * ------------------------------------------*/
+
+            request.onupgradeneeded = function (event) {
+                var db = event.target.result;
+
+                // Create an objectStore to hold information about our pages
+                var objectStore = db.createObjectStore("pages", {keyPath: "url"});
+
+                // Use transaction oncomplete to make sure the objectStore creation is 
+                // finished before adding data into it.
+                objectStore.transaction.oncomplete = function (event) {
+                    console.log("transaction complete");
+                };
+            };
+
         }
 
         function removeLinksListener() {
@@ -150,6 +197,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 return false;
             }
 
+            /* format url to minimized loaded content */
+            var str2replace = warchUrl + "/index.php/",
+                    str2inject = warchUrl + "/index.php?action=render&title=";
+            url = url.replace(str2replace, str2inject);
+
             /* load target link*/
             loadWikiUrl(url);
             myhistory.push(url);
@@ -177,54 +229,93 @@ window.addEventListener('DOMContentLoaded', function () {
 
         /* helper functions */
 
+        function fillPageContent(url, content) {
+            removeLinksListener(); // Is it need to clean this in javascript ? 
+
+            var ugly_url_part = warchUrl + "/index.php?action=render&title=";
+            setArchbarTitle(decodeURI(url.replace(ugly_url_part, "")));
+
+            /* inject target "at the good place" */
+            document.getElementById("bodyContent").innerHTML = content;
+
+            /* scroll to the good place */
+            if (url.indexOf("#") >= 0) { // any anchor to go ? 
+                var id = url.slice(url.indexOf("#") + 1);
+                console.log("scrollToId : " + id);
+                scrollToId(id);
+            } else { // scroll the top of this "new" page (buggy)
+                scrollToId();
+            }
+
+            /* refresh listener */
+            addLinksListener();
+            document.getElementById("progressBar").style.display = "none";
+        }
+
+        function cacheContent2db(url, content) {
+            /*write it to the database */
+            var trans = db.transaction(["pages"], "readwrite");
+
+            trans.oncomplete = function () {
+                console.log("transaction done!");
+            };
+
+            trans.onerror = function () {
+                console.log("transaction error");
+            };
+
+            var pagesObjectStore = trans.objectStore("pages");
+            var req = pagesObjectStore.add({url: url, body: content});
+
+            req.onsuccess = function () {
+                console.log("page cached");
+            };
+
+            req.onerror = function () {
+                console.log("caching page transaction error");
+            };
+        }
+
         function loadWikiUrl(url) {
             console.log('you clicked on : ' + url + ', continue!');
+            document.getElementById("progressBar").style.display = "block";
 
-            var pb = document.getElementById("progressBar");
-            pb.style.display = "block";
+            var localCache = db.transaction("pages").objectStore("pages").get(url);
 
-            /* minimized loaded content */
-            var str2replace = warchUrl + "/index.php/";
-            var str2inject = warchUrl + "/index.php?action=render&title=";
-            url = url.replace(str2replace, str2inject);
+            localCache.onsuccess = function (event) {
+                var cachedPage = event.target.result;
+                if (cachedPage) {
+                    console.log("I know that url " + cachedPage.url);
+                    fillPageContent(cachedPage.url, cachedPage.body);
+                } else {
+                    console.log("I do not know that url yet !");
 
-            var xhr = new XMLHttpRequest({mozAnon: true, mozSystem: true}); // I am a cross request !
-            xhr.open('GET', url, true); // asynchrone
-            xhr.responseType = "document"; // "GET" required
+                    /*get the page from the website*/
+                    var xhr = new XMLHttpRequest({mozAnon: true, mozSystem: true}); // I am a cross request !
+                    xhr.open('GET', url, true); // asynchrone
+                    xhr.responseType = "document"; // "GET" required
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && (xhr.status === 200)) {
-                    removeLinksListener(); // Is it need to clean this in javascript ? 
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && (xhr.status === 200)) {
+                            /* keep only the interesting part */
+                            var content = xhr.responseXML.body.innerHTML;
+                            fillPageContent(url, content);
+                            cacheContent2db(url, content);
+                        } else if (xhr.readyState === 4 && xhr.status !== 200) {
+                            console.log('Error ! !\n\nCode :' + xhr.status + '\nText : '
+                                    + xhr.statusText);
+                            onXhrError(xhr.error);
+                            pb.style.display = "none";
+                        }
+                    };
 
-                    /* keep only the interesting part */
-                    var resp = xhr.responseXML.body;
-                    setArchbarTitle(decodeURI(url.replace(str2inject, "")));
-
-                    /* inject target "at the good place" */
-                    document.getElementById("bodyContent").innerHTML = resp.innerHTML;
-
-                    /* scroll to the good place */
-                    if (url.indexOf("#") >= 0) { // any anchor to go ? 
-                        var id = url.slice(url.indexOf("#") + 1);
-                        console.log("scrollToId : " + id);
-                        scrollToId(id);
-                    } else { // scroll the top of this "new" page (buggy)
-                        scrollToId();
-                    }
-
-                    /* refresh listener */
-                    addLinksListener();
-                    pb.style.display = "none";
-
-                } else if (xhr.readyState === 4 && xhr.status !== 200) {
-                    console.log('Error ! !\n\nCode :' + xhr.status + '\nText : '
-                            + xhr.statusText);
-                    onXhrError(xhr.error);
-                    pb.style.display = "none";
+                    xhr.send(null);
                 }
             };
 
-            xhr.send(null);
+            localCache.onerror = function () {
+                console.log("problem with getting url in db");
+            };
         }
 
         function onXhrError(errorMessage) {
@@ -234,11 +325,11 @@ window.addEventListener('DOMContentLoaded', function () {
             var h2 = document.createElement('h2');
             var p1 = document.createElement('p');
             var p2 = document.createElement('p');
-            
+
             h2.textContent = errorMessage;
             p1.textContent = " :-( I failed to get your article.";
             p2.textContent = "you may heck your internet connection or go back to the previous page.";
-            
+
             document.getElementById("bodyContent").innerHTML = "";
             document.getElementById("bodyContent").appendChild(h2);
             document.getElementById("bodyContent").appendChild(p1);
@@ -348,6 +439,9 @@ window.addEventListener('DOMContentLoaded', function () {
         addTopMenuListenner();
 
         addLinksListener();
+
+        opendb();
+
     })();
 
 });
