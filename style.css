@@ -526,7 +526,7 @@ li.gallerybox {
 
 ul.gallery,
 li.gallerybox {
-    zoom: 1;
+    /*zoom: 1; unknow : Declaration dropped*/
     display: inline
 }
 
@@ -647,23 +647,23 @@ ol:lang(glk) li,
 ol:lang(kk-arab) li,
 ol:lang(mzn) li {
     list-style-type: -moz-persian;
-    list-style-type: persian
+    /*list-style-type: persian ; Declaration dropped*/
 }
 
 ol:lang(ckb) li {
     list-style-type: -moz-arabic-indic;
-    list-style-type: arabic-indic
+    /*list-style-type: arabic-indic ; Declaration dropped*/
 }
 
 ol:lang(as) li,
 ol:lang(bn) li {
     list-style-type: -moz-bengali;
-    list-style-type: bengali
+    /*list-style-type: bengali ; Declaration dropped*/
 }
 
 ol:lang(or) li {
     list-style-type: -moz-oriya;
-    list-style-type: oriya
+    /*list-style-type: oriya ; Declaration dropped*/
 }
 
 #toc ul,
