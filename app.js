@@ -109,7 +109,7 @@ window.addEventListener('DOMContentLoaded', function () {
         function opendb() {
             /* openning database */
             var request = indexedDB.open("MyTestDatabase", 2);
-            
+
             request.onerror = function () {
                 console.log("Why didn't you allow my web app to use IndexedDB?!");
             };
@@ -311,7 +311,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         function onXhrError(errorMessage) {
-            
+
             if (!errorMessage) {
                 errorMessage = 'Loading error';
             }
