@@ -68,7 +68,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             form.addEventListener('blur', function (e) {
                 console.log("hide search bar");
-                document.getElementById("topSearchForm").style.display = "none";
+                document.getElementById("topSearchForm").style.display = "";
                 e.preventDefault();
             }, true);
         }
@@ -97,9 +97,9 @@ window.addEventListener('DOMContentLoaded', function () {
             document.getElementById("globalWrapper")
                     .addEventListener('click', function (e) {
                         // hide menu bar when click outside menubar
-                        if (document.getElementById("topMenuBar").style.display !== "none") {
+                        if (document.getElementById("topMenuBar").style.display) {
                             console.log("hide menu bar");
-                            document.getElementById("topMenuBar").style.display = "none";
+                            document.getElementById("topMenuBar").style.display = "";
                         }
                     }, false);
         }
@@ -214,13 +214,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
                     /* refresh listener */
                     addLinksListener();
-                    pb.style.display = "none";
+                    pb.style.display = "";
 
                 } else if (xhr.readyState === 4 && xhr.status !== 200) {
                     console.log('Error ! !\n\nCode :' + xhr.status + '\nText : '
                             + xhr.statusText);
                     onXhrError(xhr.error);
-                    pb.style.display = "none";
+                    pb.style.display = "";
                 }
             };
 
@@ -312,11 +312,11 @@ window.addEventListener('DOMContentLoaded', function () {
                     /* refresh listener*/
                     addLinksListener();
                     scrollToId();
-                    pb.style.display = "none";
+                    pb.style.display = "";
                 } else if (xhr.readyState === 4 && xhr.status !== 200) {
                     console.log('Error ! !\n\nCode :' + xhr.status + '\nTexte : ' + xhr.statusText);
                     onXhrError(xhr.error);
-                    pb.style.display = "none";
+                    pb.style.display = "";
                 }
             };
 
