@@ -25,7 +25,6 @@
   },
 
   "installs_allowed_from": ["https://marketplace.firefox.com"],
-  "fullscreen": "true",
 
   "default_locale": "en"
 }
