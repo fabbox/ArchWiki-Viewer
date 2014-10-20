@@ -28,7 +28,8 @@ window.addEventListener('DOMContentLoaded', function () {
      * @returns {undefined}
      */
     function MyUrl(str) {
-
+      //console.log("new MyUrl Instance");
+      
       if (!str) {
         console.error("no href found");
         this.raw = null;
@@ -37,7 +38,9 @@ window.addEventListener('DOMContentLoaded', function () {
         return;
       } else {
         this.raw = str;
+        console.log("raw url :" + this.raw);
       }
+      
 
       if (str.startsWith("/index.php/")) {
         str = this.root + str;
@@ -74,7 +77,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else if (str.indexOf(str2inject) === 0) {
           this.href = str;
         } else { // search case
-          this.href = encode(str);
+          this.href = encodeURI(str);
         }
 
         if (anchor_idx > 0) {
@@ -116,7 +119,7 @@ window.addEventListener('DOMContentLoaded', function () {
      * @returns {app_L12.Title}
      */
     function Title(title, myUrl) {
-
+      //console.log("new Title instance");
       if (typeof myUrl !== 'undefined') {
         var ugly_url_part = myUrl.root + "/index.php?action=render&title=",
             ugly_url_part3 = myUrl.root + "/index.php/",
@@ -186,6 +189,7 @@ window.addEventListener('DOMContentLoaded', function () {
      * @returns {app_L12.Content}
      */
     function Content(content) {
+      //console.log("new Content instance");
       this.body = content;
     }
 
@@ -202,10 +206,8 @@ window.addEventListener('DOMContentLoaded', function () {
      * @param {type} url
      * @returns {app_L12.WikiPage}
      */
-    function WikiPage(url, title) {
-      if (typeof title === 'undefined') {
-        title = null;
-      }
+    function WikiPage(url) {
+      //console.log("new WikiPage instance");
 
       this.url = url;
       this.anchor = url.anchor;
@@ -247,20 +249,17 @@ window.addEventListener('DOMContentLoaded', function () {
     };
 
     WikiPage.prototype.loadUrl = function (save2db) {
+      /*get the page from the website*/
       document.getElementById("progressBar").style.display = "block";
       
       var self = this;
       
       console.log("http request url : " + self.url.href);
 
+      if (typeof save2db === 'undefined') { // always the case up to now
+        save2db = true;
+      }
       
-
-      /*get the page from the website*/
-//      if (typeof save2db === 'undefined') { // always the case up to now
-//        save2db = true;
-//      }
-
-
       var self = this,
           xhr = new XMLHttpRequest({mozSystem: true});
 
@@ -496,7 +495,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (myhistory.length > 2) {
 
               myhistory.pop();
-              console.log("history length : " + myhistory.length);
+              // console.log("history length : " + myhistory.length);
               var page = new WikiPage(myhistory[myhistory.length - 1]);
 
               page.loadCache();
@@ -604,6 +603,8 @@ window.addEventListener('DOMContentLoaded', function () {
       var input = document.getElementById("topSearchInput").value || "sorry",
           url = new MyUrl("https://wiki.archlinux.org/index.php?search=" + input),
           page = new WikiPage(url);
+
+      //console.log("input :" + input);
 
       page.loadUrl(false);
       myhistory.push(url);
