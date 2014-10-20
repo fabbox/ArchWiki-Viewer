@@ -1829,7 +1829,7 @@ table#disputed.notice.noprint.toc {
 * Local app menu style 
 * ---------------------------------- */
 
-div#archnavbar{
+div#archmainbar{
     background: #333;
     width: 100%;
     overflow: hidden;
@@ -1847,7 +1847,7 @@ div#archnavbar{
     z-index:100000
 }
 
-div#archnavbar h1 {
+div#archmainbar h1 {
     color: white;
     border:0px;
     padding: 0;
@@ -1860,7 +1860,7 @@ div#archnavbar h1 {
     overflow: hidden
 }
 
-div#archnavbar img {
+div#archmainbar img {
     border:0px ;
     padding: 0;
     margin: 0
@@ -1901,7 +1901,7 @@ div.menubar_droite {
     margin-left: 2px
 }
 
-div#topMenuBar{
+div#navbar{
     background-color: transparent;
     width: 100%;
     overflow: hidden;
@@ -1921,7 +1921,7 @@ div#topMenuBar{
     z-index:100001
 }
 
-div#topMenuBar img {
+div#navbar img {
     background-color: #333;
     border:0px ;
     padding: 0;

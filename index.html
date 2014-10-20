@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
     <head>
-        
         <meta charset="utf-8">
         <title>ArchWiki Viewer</title>
+        <meta name="description" content="ArchWiki Viewer Main Page">
         <meta name="viewport" content="width=device-width">
-        <link rel='stylesheet' href='style.css' type="text/css">
-        <script src="app.js" type="text/javascript" defer></script>
+        <link rel="stylesheet" href="style.css">
+        <script type="text/javascript" src="app.js" defer="defer"></script>
     </head>
 
     <body>
 
-        <!-- #archnavbar -->
+        <!-- 
+        # Main Bar 
+        -->
         <header>
-            <div id="archnavbar">
+            <div id="archmainbar">
                 <div class="menubar_left">
                     <img id="action_home" height="36" src="icons/launcher.svg" alt="logo">
                 </div>
@@ -31,18 +34,23 @@
         </header>
 
 
-        <!-- #topMenuBar -->
-        <div id="topMenuBar">
+        <!-- 
+        # Navigation Bar
+        -->
+        <div id="navbar">
             <div class="menubar">
-                <img id="action_back" height="36" src="icons/topMenuBar/arrow-back.svg" alt="back button">
+                <img id="action_back" height="36" src="icons/topMenuBar/arrow-back.svg" alt="back">
             </div>
             <div class="menubar_droite">
-                <img id="action_none" height="36" src="icons/topMenuBar/blank.svg" alt="empty button">
-                <img id="action_close" height="36" src="icons/topMenuBar/close.svg" alt="close button">
+                <!--<img id="action_none" height="36" src="icons/topMenuBar/blank.svg" alt="empty button">-->
+                <img id="action_reload" height="36" src="icons/topMenuBar/reload.svg" alt="reload">
+                <img id="action_close" height="36" src="icons/topMenuBar/close.svg" alt="close">
             </div>
         </div>  
 
-        <!-- #topSearchForm -->
+        <!-- 
+        # Search form (bar)
+        -->
         <form role="search" id="topSearchForm">
             <p>
                 <input type="text" placeholder="Search..." id="topSearchInput">
@@ -61,8 +69,8 @@
                         <p><b>Welcome to the <a href="https://wiki.archlinux.org/index.php/ArchWiki:About" title="ArchWiki:About">ArchWiki</a>: your source for Arch Linux documentation on the web.</b>
                         </p><p>Visit the <a href="https://wiki.archlinux.org/index.php/Table_of_contents" title="Table of contents">Table of contents</a> for a listing of article categories.
                         </p>
-                        
-                        
+
+
                         <h2><span id="The_distribution">The distribution</span></h2>
 
                         <dl>
@@ -87,7 +95,7 @@
                         </dl>
 
                         <dl>
-                            <dt> <a href="https://wiki.archlinux.org/index.php/Beginners%27_guide" title="Beginners' guide">Beginners' guide</a></dt>
+                            <dt> <a href="https://wiki.archlinux.org/index.php/Beginners'_guide" title="Beginners' guide">Beginners' guide</a></dt>
                             <dd> Detailed guide through the whole process of installing and configuring Arch Linux.
                             </dd>
                         </dl>
@@ -140,7 +148,7 @@
                             </dd>
                         </dl>
 
-                        
+
                         <h2><span id="Help">Help</span></h2>
 
                         <p>ArchWiki pages follow specific conventions, so if you have trouble reading ArchWiki or understanding some instructions, see <a href="https://wiki.archlinux.org/index.php/Help:Reading" title="Help:Reading">Help:Reading</a> for a clarification.
