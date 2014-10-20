@@ -234,8 +234,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
         } else {
 
-          console.log("I do not know that url yet !");
-          self.loadUrl();
+          console.log("I do not know that url yet : " + self.url.href);
+          self.loadUrl(true);
 
         }
       };
@@ -248,18 +248,21 @@ window.addEventListener('DOMContentLoaded', function () {
 
     WikiPage.prototype.loadUrl = function (save2db) {
       document.getElementById("progressBar").style.display = "block";
+      
+      var self = this;
+      
       console.log("http request url : " + self.url.href);
 
-      var self = this;
+      
 
       /*get the page from the website*/
-      if (typeof save2db === 'undefined') { // always the case up to now
-        save2db = true;
-      }
+//      if (typeof save2db === 'undefined') { // always the case up to now
+//        save2db = true;
+//      }
 
 
       var self = this,
-          xhr = new XMLHttpRequest({mozAnon: true, mozSystem: true});
+          xhr = new XMLHttpRequest({mozSystem: true});
 
       //* Initialize Cross XMLHttprequest 
       //* and open a http request with "document" responseType.
@@ -510,7 +513,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btReload.addEventListener('click', function () {
             console.log("reload");
-            currentPage.loadUrl();
+            currentPage.loadUrl(true);
           }, false);
 
           document.getElementById("globalWrapper")

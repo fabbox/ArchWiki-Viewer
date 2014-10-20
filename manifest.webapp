@@ -24,7 +24,7 @@
     "name": "fabbox"
   },
 
-  "installs_allowed_from": ["https://marketplace.firefox.com"],
+  "installs_allowed_from": ["https://marketplace.firefox.com","*"],
 
   "default_locale": "en"
 }
