@@ -299,7 +299,8 @@ window.addEventListener('DOMContentLoaded', function () {
         console.log("load success");
         self.title = new Title(xhr.responseXML.title, self.url);
 
-        var resp = xhr.responseXML.getElementById("bodyContent")
+//        var resp = xhr.responseXML.getElementById("mw-content-text")
+        var resp = xhr.responseXML.getElementById("mw-content-text")
             || xhr.responseXML.body;
 
         self.setContent(resp.innerHTML);
@@ -525,6 +526,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
               }, false);
         },
+/* 
+ * HTML5 transition example        
+ */
 //        global: function () {
 //          console.log("add body event");
 //          document.body
@@ -536,28 +540,6 @@ window.addEventListener('DOMContentLoaded', function () {
 //                  var list = document.getElementsByTagName('move-center');
 //                  console.log('move center element number : ' + list.length);
 //              });
-          //var viewItems = document.getElementById('items-view');
-          //viewItems.classList.add('fade-left');
-          //
-          //btnBackToFeed.addEventListener('click', function () {
-          //  viewItems.classList.remove('move-center');
-          //
-          //  var drawer = document.getElementById('drawer');
-          //  drawer.classList.remove('fade-left');
-          //});
-          //
-          //btnBackToItems.addEventListener('click', function () {
-          //  viewDetail.classList.remove('move-center');
-          //
-          //  if (displayTimeline.classList.contains('active')) {
-          //    var drawer = document.getElementById('drawer');
-          //    drawer.classList.remove('fade-left');
-          //  } else {
-          //    var viewItems = document.getElementById('items-view');
-          //    viewItems.classList.remove('fade-left');
-          //  }
-          //});
-//        }
       },
       /*
        * removes Listener

@@ -1,0 +1,200 @@
+/*
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 21 oct. 2014, 19:07:46
+    Author     : fbox
+*/
+
+/* ----------------------------------
+* Local app menu style 
+* ---------------------------------- */
+
+#archmainbar{
+    background: #333;
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    border-bottom-style: solid;
+    border-bottom-width: 6px;
+    border-bottom-color: #0088CC;
+
+    height:40px;
+    position:fixed;
+    top:0px;
+
+    z-index:100000
+}
+
+#archmainbar h1 {
+    color: white;
+    border:0px;
+    padding: 0;
+    margin: auto;
+    margin-left: 2px;
+    margin-top: 5px;
+    text-align: left;
+    height: 30px;
+    line-height:30px;
+    overflow: hidden
+}
+
+#archmainbar img {
+    border:0px ;
+    padding: 0;
+    margin: 0
+}
+
+.menubar {
+    display: inline-block;
+    vertical-align: middle;
+    border:0px ;
+    padding: 0;
+
+    margin: 0;
+    margin-top: 2px;
+    margin-left: 2px;
+
+    width: calc(100% - 120px)
+}
+
+.menubar_left {
+    display: inline-block;
+    vertical-align: middle;
+    border:0px ;
+    padding: 0;
+
+    margin: 0;
+    margin-top: 2px;
+    margin-left: 2px
+}
+
+.menubar_droite {
+    display: inline-block;
+    vertical-align: middle;
+    border:0px ;
+    padding: 0;
+    float:right;
+    margin: 0;
+    margin-top: 2px;
+    margin-left: 2px
+}
+
+#navbar{
+    background-color: transparent;
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    border-bottom-style: solid;
+    border-bottom-width: 6px;
+    border-bottom-color: #0088CC;
+
+    height:40px;
+    position:fixed;
+    top:0px;
+
+    display: none;
+
+    z-index:100001
+}
+
+#navbar img {
+    background-color: #333;
+    border:0px ;
+    padding: 0;
+    margin: 0
+}
+
+/* ----------------------------------
+* Search form areas
+* ---------------------------------- */
+
+input::-moz-placeholder {
+    color: #a9a9a9;
+    /*opacity: 1;*/
+    font-style: italic;
+    font-weight: 400
+}
+
+form[role="search"] {
+    /*position: relative;*/
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 40px;
+    background: transparent
+}
+
+form[role="search"] p {
+    padding: 0 0px 0 40px;
+    overflow: hidden;
+    position: relative;
+    margin: 0;
+    width: 100%
+}
+
+form[role="search"] p input[type="text"] {
+    background: #333;   
+    height: 40px;
+    width: calc(100% - 60px);
+    border: none;
+    padding: 0 10px 0 10px;
+    box-shadow: none;
+    
+    font-family: sans-serif;
+    resize: none;
+    font-size: 1.15rem;
+    color: #fff    
+}
+
+form#topSearchForm {
+    display: none;
+    z-index:100001
+}
+
+input#topSearchInput {
+    display: block
+}
+
+/* ----------------------------------
+ * Progress + activities
+ * ---------------------------------- */
+
+/* Progress bar (activities) */
+progress.loadPage {
+    width: 100%;
+    background: #333;
+    border: none;
+    border-radius: .3rem;
+    height: .3rem;
+    /*display: block;*/  
+    display: none;  
+
+    background-image: url(icons/archNavBar/activity.png);
+    background-repeat: repeat;
+    background-size: 1rem auto;
+    animation: .5s move infinite ease; 
+    /*steps(15)*/
+}
+
+@keyframes move {
+    from { background-position: 0 0; }
+    to   { background-position: 1rem 0; }
+}

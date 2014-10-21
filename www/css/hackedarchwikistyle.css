@@ -1,0 +1,69 @@
+/*
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 21 oct. 2014, 23:34:14
+    Author     : fbox
+*/
+
+/*
+**
+** Main hack of the archwiki template to be sure that if we load a normal page,
+** nothings appears execpt the article (mainly from jtmcn ArchWiki Viewer
+** for Android stylesheet)
+**
+*/
+
+/*
+ * hide things
+ */
+#archnavbar,
+#column-one,
+#catlinks,
+#firstHeading,
+#footer,
+#jump-to-nav,
+#siteSub,
+.printfooter,
+.firstHeading, 
+.mw-search-pager-bottom,
+.mw-search-createlink,
+div.mw-search-formheader,
+div.mw-search-result-data,
+div.printfooter {
+    display: none !important
+}
+
+input,
+form {
+    display: none
+}
+
+/*
+ * format page
+ */
+
+li.toclevel-1 {
+    padding: 5px
+}
+
+li.toclevel-2 {
+    padding: 5px
+}
+
+li.toclevel-3 {
+    display: none
+}

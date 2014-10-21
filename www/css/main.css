@@ -1,0 +1,50 @@
+/*
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 21 oct. 2014, 12:35:48
+    Author     : fbox
+*/
+
+/*
+ * Completly destroy this two id/tag/class
+ * so I can play with this id.
+ */
+
+div#globalWrapper {} 
+
+.globalWrapper {
+    position: absolute;
+    top: 0px;
+    height: calc(100% - 40px);
+    padding: 48px 0 0 0;  
+    /*why 48px and not 46px ?*/ 
+
+    font-size: 115%; 
+    width: 100%;
+    margin: 0;
+
+    overflow: scroll;
+}
+
+div#bodyContent{}
+
+.bodyContent{
+    margin: 1em;
+    position: relative;
+    line-height: 1.5em;
+    color: #222
+}
