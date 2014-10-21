@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
- * Completly destroy this two id/tag/class
- * so I can play with this id.
+ * Completly destroy this two id/tag/class from the arch wiki
+ * so we can play with these ids.
  */
 
 div#globalWrapper {} 
@@ -37,7 +37,7 @@ div#globalWrapper {}
     width: 100%;
     margin: 0;
 
-    overflow: scroll;
+    overflow: scroll
 }
 
 div#bodyContent{}
