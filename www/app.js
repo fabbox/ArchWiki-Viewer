@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', function () {
      */
     function MyUrl(str) {
       //console.log("new MyUrl Instance");
-      
+
       if (!str) {
         console.error("no href found");
         this.raw = null;
@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', function () {
         this.raw = str;
         console.log("raw url :" + this.raw);
       }
-      
+
 
       if (str.startsWith("/index.php/")) {
         str = this.root + str;
@@ -251,15 +251,15 @@ window.addEventListener('DOMContentLoaded', function () {
     WikiPage.prototype.loadUrl = function (save2db) {
       /*get the page from the website*/
       document.getElementById("progressBar").style.display = "block";
-      
+
       var self = this;
-      
+
       console.log("http request url : " + self.url.href);
 
       if (typeof save2db === 'undefined') { // always the case up to now
         save2db = true;
       }
-      
+
       var self = this,
           xhr = new XMLHttpRequest({mozSystem: true});
 
@@ -304,7 +304,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         self.setContent(resp.innerHTML);
         self.print();
-        
+
         if (save2db) {
           self.toDb();
         }
@@ -405,6 +405,7 @@ window.addEventListener('DOMContentLoaded', function () {
         uiListeners.add.searchBar();
         uiListeners.add.navBar();
         uiListeners.add.links();
+//        uiListeners.add.global();
       },
       /*
        * add listener
@@ -523,7 +524,40 @@ window.addEventListener('DOMContentLoaded', function () {
                   document.getElementById("navbar").style.display = "";
                 }
               }, false);
-        }
+        },
+//        global: function () {
+//          console.log("add body event");
+//          document.body
+//              .addEventListener('click', function () {
+//                  // translate globaWrapper
+//                  console.log("hide menu bar");
+//                  document.getElementById("globalWrapper").classList.add('move-center');
+//                  document.getElementById("globalWrapper").className = "";
+//                  var list = document.getElementsByTagName('move-center');
+//                  console.log('move center element number : ' + list.length);
+//              });
+          //var viewItems = document.getElementById('items-view');
+          //viewItems.classList.add('fade-left');
+          //
+          //btnBackToFeed.addEventListener('click', function () {
+          //  viewItems.classList.remove('move-center');
+          //
+          //  var drawer = document.getElementById('drawer');
+          //  drawer.classList.remove('fade-left');
+          //});
+          //
+          //btnBackToItems.addEventListener('click', function () {
+          //  viewDetail.classList.remove('move-center');
+          //
+          //  if (displayTimeline.classList.contains('active')) {
+          //    var drawer = document.getElementById('drawer');
+          //    drawer.classList.remove('fade-left');
+          //  } else {
+          //    var viewItems = document.getElementById('items-view');
+          //    viewItems.classList.remove('fade-left');
+          //  }
+          //});
+//        }
       },
       /*
        * removes Listener
@@ -661,18 +695,40 @@ window.addEventListener('DOMContentLoaded', function () {
      * Helper function ()
      * ------------------------------------------*/
 
-     // Nothing there ....
-     
+    // Nothing there ....
+
 
     /* ----------------------------------------
      * First add event listener (Initialisation)
      * ------------------------------------------*/
     console.log("initialisation ");
-    
+
     myhistory.push(new MyUrl(document.URL));
     uiListeners.init();
     opendb();
-    
+
     console.log("initialisation script end");
   })();
 });
+
+//var viewItems = document.getElementById('items-view');
+//viewItems.classList.add('fade-left');
+//
+//btnBackToFeed.addEventListener('click', function () {
+//  viewItems.classList.remove('move-center');
+//
+//  var drawer = document.getElementById('drawer');
+//  drawer.classList.remove('fade-left');
+//});
+//
+//btnBackToItems.addEventListener('click', function () {
+//  viewDetail.classList.remove('move-center');
+//
+//  if (displayTimeline.classList.contains('active')) {
+//    var drawer = document.getElementById('drawer');
+//    drawer.classList.remove('fade-left');
+//  } else {
+//    var viewItems = document.getElementById('items-view');
+//    viewItems.classList.remove('fade-left');
+//  }
+//});

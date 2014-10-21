@@ -1,0 +1,31 @@
+section,div {
+    transition: all 0.4s;
+}
+
+section#drawer div[role="main"] {
+    transition: all 0.3s;
+}
+
+.move-down {
+    transform: translateY(100%);
+}
+.move-up {
+    transform: translateY(0);
+}
+
+.move-right {
+    transform: translateX(100%);
+}
+.move-center {
+    transform: translateX(0);
+}
+
+.fade-left {
+    opacity: 0.3;
+    transform: translateX(-60%);
+    transition: all 0.8s ease;
+}
+
+.fade-out {
+    opacity: 0;
+}

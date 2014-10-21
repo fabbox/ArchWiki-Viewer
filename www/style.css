@@ -1476,7 +1476,7 @@ td.htmlform-tip {
     margin-bottom: 0
 }
 
-*> html div#column-content {
+* > html div#column-content {
     float: none
 }
 
@@ -1628,7 +1628,6 @@ body { /*background: #f6f9fc*/
 }
 
 body,
- 
 #content,
 table {
     color: #222
@@ -1829,7 +1828,7 @@ table#disputed.notice.noprint.toc {
 * Local app menu style 
 * ---------------------------------- */
 
-div#archmainbar{
+#archmainbar{
     background: #333;
     width: 100%;
     overflow: hidden;
@@ -1847,7 +1846,7 @@ div#archmainbar{
     z-index:100000
 }
 
-div#archmainbar h1 {
+#archmainbar h1 {
     color: white;
     border:0px;
     padding: 0;
@@ -1860,13 +1859,13 @@ div#archmainbar h1 {
     overflow: hidden
 }
 
-div#archmainbar img {
+#archmainbar img {
     border:0px ;
     padding: 0;
     margin: 0
 }
 
-div.menubar {
+.menubar {
     display: inline-block;
     vertical-align: middle;
     border:0px ;
@@ -1879,7 +1878,7 @@ div.menubar {
     width: calc(100% - 120px)
 }
 
-div.menubar_left {
+.menubar_left {
     display: inline-block;
     vertical-align: middle;
     border:0px ;
@@ -1890,7 +1889,7 @@ div.menubar_left {
     margin-left: 2px
 }
 
-div.menubar_droite {
+.menubar_droite {
     display: inline-block;
     vertical-align: middle;
     border:0px ;
@@ -1901,7 +1900,7 @@ div.menubar_droite {
     margin-left: 2px
 }
 
-div#navbar{
+#navbar{
     background-color: transparent;
     width: 100%;
     overflow: hidden;
@@ -1921,7 +1920,7 @@ div#navbar{
     z-index:100001
 }
 
-div#navbar img {
+#navbar img {
     background-color: #333;
     border:0px ;
     padding: 0;
