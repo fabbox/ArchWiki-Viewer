@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
- * hide things
+ * hidden id & class
  */
 #archnavbar,
 #column-one,
@@ -47,13 +47,18 @@ div.printfooter {
     display: none !important
 }
 
+/*
+ * To avoid magic form to appears
+ * but request to specifically "display" form or input filed
+ */
+textarea,
 input,
 form {
     display: none
 }
 
 /*
- * format page
+ * format page : do not say too much in table of content
  */
 
 li.toclevel-1 {
