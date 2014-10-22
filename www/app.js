@@ -1,23 +1,23 @@
 /*
-Copyright (C) 2014 fbox
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ Copyright (C) 2014 fbox
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* 
-    Created on : 21 oct. 2014, 23:55:52
-    Author     : fbox
-*/
+ Created on : 21 oct. 2014, 23:55:52
+ Author     : fbox
+ */
 
 // Be strict, do not try to understand my mistake and make error !
 'use strict';
@@ -62,7 +62,6 @@ window.addEventListener('DOMContentLoaded', function () {
         console.log("raw url :" + this.raw);
       }
 
-
       if (str.startsWith("/index.php/")) {
         str = this.root + str;
       }
@@ -71,10 +70,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
       if (str === this.root + "/index.php/Main_page"
           || str === document.URL) {
+        console.log("this app url detected");
         this.href = document.URL;
-        this.raw = null;
-        return;
-        // it remove all history : that's a problem
+        this.anchor = null;
+        this.samePage = false;
+
       } else if (anchor_idx === 0) {
         // anchor on the same page
         this.href = null;
@@ -151,7 +151,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         // who told I did'nt read "how to loop on an array in JS"?!
-        if (title.indexOf(ugly_url_part) >= 0) {
+        if (title === document.URL) {
+          title = "ArchWiki Viewer";
+        } else if (title.indexOf(ugly_url_part) >= 0) {
           title = decodeURI(title.replace(ugly_url_part, ""));
 
         } else if (title.indexOf(ugly_url_part2) >= 0) {
@@ -324,6 +326,11 @@ window.addEventListener('DOMContentLoaded', function () {
         var resp = xhr.responseXML.getElementById("mw-content-text")
             || xhr.responseXML.body;
 
+        if (!resp) {
+          log.error("empty response");
+          return;
+        }
+
         self.setContent(resp.innerHTML);
         self.print();
 
@@ -389,6 +396,10 @@ window.addEventListener('DOMContentLoaded', function () {
           };
         }
 
+      };
+
+      localCache.onerror = function (e) {
+        console.log("local cache error");
       };
 
     };
@@ -461,9 +472,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btHome.addEventListener('click', function (e) {
             /* go home */
-            console.log("go home");
-            document.location.href = '/index.html';
-            currentPage = null;
+//            console.log("go home");
+//            document.location.href = '/index.html';
+//            currentPage = null;
+            var page = new WikiPage(new MyUrl(document.URL));
+            page.loadCache();
+            myhistory.push(page.url);
+            currentPage = page;
           }, false);
         },
         /*
@@ -547,9 +562,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
               }, false);
         },
-/* 
- * HTML5 transition example        
- */
+        /* 
+         * HTML5 transition example        
+         */
 //        global: function () {
 //          console.log("add body event");
 //          document.body
@@ -671,6 +686,13 @@ window.addEventListener('DOMContentLoaded', function () {
         db.onerror = function (e) {
           console.log("Database error: " + e.target.errorCode);
         };
+
+        /* start by (update) cache ofthe home page*/
+        currentPage = new WikiPage(new MyUrl(document.URL));
+        currentPage.setContent(document.getElementById("bodyContent").innerHTML);
+        currentPage.toDb();
+        myhistory.push(currentPage.url);
+        
       };
 
       request.onupgradeneeded = function (e) {
@@ -706,9 +728,8 @@ window.addEventListener('DOMContentLoaded', function () {
      * ------------------------------------------*/
     console.log("initialisation ");
 
-    myhistory.push(new MyUrl(document.URL));
     uiListeners.init();
-    opendb();
+    opendb(); 
 
     console.log("initialisation script end");
   })();
