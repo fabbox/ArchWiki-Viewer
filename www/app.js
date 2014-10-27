@@ -21,9 +21,11 @@
 
 // Be strict, do not try to understand my mistake and make error !
 'use strict';
+
 window.addEventListener("load", function () {
   console.log("Hello Wiki!");
 });
+
 // DOMContentLoaded is fired once the document has been loaded and parsed,
 // but without waiting for other external resources to load (css/images/etc)
 // That makes the app more responsive and perceived as faster.
@@ -40,6 +42,33 @@ window.addEventListener('DOMContentLoaded', function () {
         myAppUrl = initAppUrl(), // reference url ("app://....")
         myhistory = []; // array of "MyUrl" used to manage history
 
+    function MyHistory() {
+      console.log("new MyHistory instance");
+      this._array = [];
+      this.length = this._array;
+      uiListeners.disable.navigation();
+    }
+
+    MyHistory.prototype.push = function (url) {
+      this._array.push(url);
+      this.length = this._array.length;
+      uiListeners.enable.navigation();
+    };
+
+    MyHistory.prototype.pop = function () {
+      var popval = this._array.pop();
+      this.length = this._array.length;
+      if (this.length <= 1) {
+        uiListeners.disable.navigation();
+      }
+      return popval;
+    };
+
+    MyHistory.prototype.popAndGetLast = function () {
+      this.pop();
+      // console.log("history length : " + myhistory.length);
+      return this._array[this.length - 1];
+    };
 
     /* ----------------------------------------
      * MyUrl
@@ -403,6 +432,44 @@ window.addEventListener('DOMContentLoaded', function () {
         uiListeners.add.searchBar();
         uiListeners.add.navBar();
         uiListeners.add.links();
+
+//        uiListeners.disable.navigation();
+      },
+      /*
+       * enable stuff
+       */
+      enable: {
+        /*
+         * enable navigation button
+         * @returns {undefined}
+         */
+        navigation: function () {
+          var btReload = document.getElementById("action_reload").parentNode,
+              btBack = document.getElementById("action_back").parentNode;
+          if (btReload.hasAttributes("disabled")) {
+            btReload.removeAttribute("disabled");
+          }
+          if (btBack.hasAttributes("disabled")) {
+            btBack.removeAttribute("disabled");
+          }
+        }
+      },
+      /*
+       * disable stuff
+       */
+      disable: {
+        /*
+         * disable navigation button
+         * @returns {undefined}
+         */
+        navigation: function () {
+          var btReload = document.getElementById("action_reload").parentNode,
+              btBack = document.getElementById("action_back").parentNode;
+
+          btReload.setAttribute("disabled", "true");
+          btBack.setAttribute("disabled", "true");
+        }
+
       },
       /*
        * add listener
@@ -419,7 +486,7 @@ window.addEventListener('DOMContentLoaded', function () {
               btMenu = document.querySelector("#action_menu").parentNode,
               btHome = document.querySelector("#action_home").parentNode;
 
-          btSearch.addEventListener('click', function (e) {
+          btSearch.addEventListener('click', function () {
             /* show search form*/
             console.log("show search bar");
             var form = document.getElementById("topSearchForm");
@@ -431,14 +498,14 @@ window.addEventListener('DOMContentLoaded', function () {
             }
           }, false);
 
-          btMenu.addEventListener('click', function (e) {
+          btMenu.addEventListener('click', function () {
             /* show menu bar */
             console.log("show navigation bar");
             document.getElementById("s_navbar").hidden = false;
 
           }, false);
 
-          btHome.addEventListener('click', function (e) {
+          btHome.addEventListener('click', function () {
             /* go home */
             var page = new WikiArticle(new MyUrl(myAppUrl));
             page.loadCache();
@@ -528,9 +595,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (myhistory.length > 1) {
 
-              myhistory.pop();
               // console.log("history length : " + myhistory.length);
-              var page = new WikiArticle(myhistory[myhistory.length - 1]);
+              var page = new WikiArticle(myhistory.popAndGetLast());
 
               page.loadCache();
               currentPage = page;
@@ -647,7 +713,7 @@ window.addEventListener('DOMContentLoaded', function () {
       request.onsuccess = function () {
         console.log("indexeddb is opened!");
         db = this.result;
-        
+
         db.onerror = function (e) {
           console.log("Database error: " + e.target.errorCode);
         };
@@ -717,7 +783,7 @@ window.addEventListener('DOMContentLoaded', function () {
 //            console.log('move center element number : ' + list.length);
 //          });
 //    }
-    
+
 
     /* ----------------------------------------
      * First add event listener (Initialisation)
@@ -726,7 +792,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     uiListeners.init();
     opendb();
-    
+    myhistory = new MyHistory();
+
     console.log("initialisation script end (some steps may not have been completed yet)");
   })();
 });
