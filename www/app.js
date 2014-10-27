@@ -526,7 +526,7 @@ window.addEventListener('DOMContentLoaded', function () {
           btBack.addEventListener('click', function () {
             console.log("back");
 
-            if (myhistory.length > 2) {
+            if (myhistory.length > 1) {
 
               myhistory.pop();
               // console.log("history length : " + myhistory.length);
@@ -536,11 +536,6 @@ window.addEventListener('DOMContentLoaded', function () {
               currentPage = page;
 
               document.getElementById("s_navbar").hidden = false;
-
-            } else {
-
-              document.location.href = '/index.html';
-
             }
           }, false);
 
