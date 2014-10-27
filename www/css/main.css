@@ -20,31 +20,134 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
+** header bar
+*/
+section[role="region"] > header:first-child  .icon {
+    display: block;
+    width: 3.6rem;
+    height: 3.6rem;
+    background: none no-repeat scroll center center / 3.6rem auto transparent;
+    font-size: 0px;
+}
+
+/* Main bar*/
+section[role="region"] > header:first-child  .icon-home {
+    background-image: url("../icons/launcher.svg");
+}
+
+section[role="region"] > header:first-child  .icon-menu {
+    background-image: url("../icons/archNavBar/menu.svg");
+}
+
+section[role="region"] > header:first-child  .icon-search {
+    background-image: url("../icons/archNavBar/search.svg");
+}
+
+/* Navigation bar */
+section[role="region"] > header:first-child  .icon-back {
+    background-color: #333;
+    background-image: url("../icons/topMenuBar/arrow-back.svg");   
+}
+
+section[role="region"] > header:first-child  .icon-reload {
+    background-color: #333;
+    background-image: url("../icons/topMenuBar/reload.svg");
+
+}
+
+section[role="region"] > header:first-child  .icon-close {
+    background-color: #333;
+    background-image: url("../icons/topMenuBar/close.svg");
+}
+
+
+/* other properties from ffos building block*/
+section[role="region"] > header:first-child > a:last-of-type {
+    display: block;
+}
+
+section[role="region"] > header:first-child a,
+section[role="region"] > header:first-child button {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    float: left;
+    min-width: 3rem;
+    width: auto;
+    height: 4rem;
+    /*border: medium none;*/
+    border: 0px;
+    background: none repeat scroll 0% 0% transparent;
+    /*padding: 0px 1rem;*/
+    padding: 0px;
+    margin: 0px;
+
+    font-weight: 400;
+    font-size: 1.5rem;
+    line-height: 4rem;
+
+    border-radius: 0px;
+    text-decoration: none;
+    text-align: center;
+    text-shadow: none;
+    font-style: italic;
+}
+
+section[role="region"] > header:first-child menu {
+    height: 100%;
+    float: right;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+/*
  * Completly destroy this two id/tag/class from the arch wiki
  * so we can play with these ids.
  */
 
-div#globalWrapper {} 
+
+/*div#globalWrapper {}*/ 
 
 .globalWrapper {
-    position: absolute;
-    top: 0px;
-    height: calc(100% - 40px);
-    padding: 48px 0 0 0;  
-    /*why 48px and not 46px ?*/ 
+    position: fixed;
+    top: calc(4rem + 6px);
+    height: calc(100% - 4rem);
+    
+    padding: 0;  
 
     font-size: 115%; 
     width: 100%;
     margin: 0;
 
-    overflow: scroll
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-div#bodyContent{}
+/*div#bodyContent{}*/
 
 .bodyContent{
     margin: 1em;
     position: relative;
     line-height: 1.5em;
-    color: #222
+    color: #222;
 }
+
+/*
+ *  section 
+ */
+
+section {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: all 0.25s ease 0s;
+}
+
+/*section#main {
+    position:absolute;
+    top:0;
+}*/
