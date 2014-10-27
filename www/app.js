@@ -35,9 +35,11 @@ window.addEventListener('DOMContentLoaded', function () {
     /* ----------------------------------------
      * Global variables
      * ------------------------------------------*/
-    var currentPage = null,
-        db = null,
-        myhistory = [];
+    var currentPage = null, // "article" which is diplayed
+        db = null, // indexeddb which store cache, pref... 
+        myAppUrl = document.URL, // reference url ("app://....")
+        myhistory = [];           // array of "MyUrl" used to manage history
+
 
     /* ----------------------------------------
      * MyUrl
@@ -51,49 +53,27 @@ window.addEventListener('DOMContentLoaded', function () {
     function MyUrl(str) {
       //console.log("new MyUrl Instance");
 
-      if (!str) {
-        console.error("no href found");
-        this.raw = null;
-        this.href = null;
-        this.anchor = null;
-        return;
-      } else {
-        this.raw = str;
-        console.log("raw url :" + this.raw);
-      }
+      this.raw = str;
+      //console.log("raw url :" + this.raw);
 
       if (str.startsWith("/index.php/")) {
         str = this.root + str;
       }
 
-      var anchor_idx = str.indexOf("#");
-
       if (str === this.root + "/index.php/Main_page"
-          || str === document.URL) {
-        console.log("this app url detected");
-        this.href = document.URL;
+          || str.startsWith(myAppUrl)) {
+        /* home link */
+        //console.log("this app url detected");
+        this.href = myAppUrl;
         this.anchor = null;
-        this.samePage = false;
-
-      } else if (anchor_idx === 0) {
-        // anchor on the same page
-        this.href = null;
-        this.samePage = true;
-        this.anchor = str.slice(1);
-
-      } else if (str.indexOf(this.root) !== 0) {
-
-        console.log('not on ArchLinux wiki, sorry !');
-        this.extern = true;
 
       } else {
 
         /* format str to minimized loaded content */
         var str2replace = this.root + "/index.php/",
             str2inject = this.root + "/index.php?action=render&title=";
-        this.samePage = false;
 
-        if (str.indexOf(str2replace) === 0) { //
+        if (str.indexOf(str2replace) === 0) {
           this.href = encodeURI(str.replace(str2replace, str2inject));
         } else if (str.indexOf(str2inject) === 0) {
           this.href = str;
@@ -101,6 +81,9 @@ window.addEventListener('DOMContentLoaded', function () {
           this.href = encodeURI(str);
         }
 
+        // use this because use of str.hash can be buggy as it
+        // decode the anchor string
+        var anchor_idx = str.indexOf("#");
         if (anchor_idx > 0) {
           this.anchor = str.slice(anchor_idx + 1);
         } else {
@@ -113,22 +96,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
     MyUrl.prototype.root = "https://wiki.archlinux.org";
 
-    MyUrl.prototype.extern = false;
-
-    MyUrl.prototype.openInOSBrowser = function () {
-      console.log('open url in browser: ' + this.raw);
-      // Open url in browser
-      var activity = new MozActivity({
-        name: "view",
-        data: {
-          type: "url",
-          url: this.raw
-        }
-      });
-      activity.onerror = function () {
-        console.log("I can't open this link in OS Browser : " + this.error);
-      };
-    };
 
     /* ----------------------------------------
      * Title
@@ -151,7 +118,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         // who told I did'nt read "how to loop on an array in JS"?!
-        if (title === document.URL) {
+        if (title.startsWith(myAppUrl)) {
           title = "ArchWiki Viewer";
         } else if (title.indexOf(ugly_url_part) >= 0) {
           title = decodeURI(title.replace(ugly_url_part, ""));
@@ -220,6 +187,7 @@ window.addEventListener('DOMContentLoaded', function () {
       document.getElementById("bodyContent").innerHTML = this.body;
     };
 
+
     /* ----------------------------------------
      * WikiPage 
      * ------------------------------------------*/
@@ -279,7 +247,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
       console.log("http request url : " + self.url.href);
 
-      if (typeof save2db === 'undefined') { // always the case up to now
+      if (typeof save2db === 'undefined') {
         save2db = true;
       }
 
@@ -310,7 +278,7 @@ window.addEventListener('DOMContentLoaded', function () {
         body.appendChild(p1);
         body.appendChild(p2);
 
-        document.getElementById("navbar").style.display = "inline";
+        document.getElementById("s_navbar").hidden = false;
       };
 
       xhr.onloadend = function () {
@@ -322,9 +290,7 @@ window.addEventListener('DOMContentLoaded', function () {
         console.log("load success");
         self.title = new Title(xhr.responseXML.title, self.url);
 
-//        var resp = xhr.responseXML.getElementById("mw-content-text")
-        var resp = xhr.responseXML.getElementById("mw-content-text")
-            || xhr.responseXML.body;
+        var resp = xhr.responseXML.getElementById("mw-content-text") || xhr.responseXML.body;
 
         if (!resp) {
           log.error("empty response");
@@ -347,7 +313,7 @@ window.addEventListener('DOMContentLoaded', function () {
     };
 
     WikiPage.prototype.print = function () {
-      uiListeners.remove.links(); // Is it need to clean this in javascript ? 
+//      uiListeners.remove.links(); // Is it need to clean this in javascript ? 
       this.title.print();
       this.content.print();
       this.scrollTo(this.anchor);
@@ -368,7 +334,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
       localCache.onsuccess = function (e) {
         var cachedPage = e.target.result;
-        if (cachedPage) { // page exists
+        if (cachedPage) { // page exists : 
+          /* update cached data */
           cachedPage.body = data.body;
           cachedPage.title = data.title;
           cachedPage.date = data.date;
@@ -415,7 +382,8 @@ window.addEventListener('DOMContentLoaded', function () {
         console.log("scroll to id " + id);
         document.getElementById(id).scrollIntoView(true);
         /* then scroll back by the "topbar height" ; bug ? */
-        gw.scrollTop = gw.scrollTop - 46;
+        /* XXX: check the new ccs style to avoid border overlaping*/
+        //gw.scrollTop = gw.scrollTop - 6; // menu border = 6px
       }
     };
 
@@ -451,31 +419,32 @@ window.addEventListener('DOMContentLoaded', function () {
         mainBar: function () {
           console.log("add main event");
 
-          var btSearch = document.querySelector("#action_search"),
-              btMenu = document.querySelector("#action_menu"),
-              btHome = document.querySelector("#action_home");
+          var btSearch = document.querySelector("#action_search").parentNode,
+              btMenu = document.querySelector("#action_menu").parentNode,
+              btHome = document.querySelector("#action_home").parentNode;
 
           btSearch.addEventListener('click', function (e) {
             /* show search form*/
             console.log("show search bar");
-            var input = document.getElementById("topSearchInput");
-            input.value = "";
-            document.getElementById("topSearchForm").style.display = "inline";
-            document.getElementById("topSearchInput").focus();
+            var form = document.getElementById("topSearchForm");
+            if (form) {
+              var input = document.getElementById("topSearchInput");
+              input.value = "";
+              form.style.display = "inline";
+              input.focus();
+            }
           }, false);
 
           btMenu.addEventListener('click', function (e) {
             /* show menu bar */
-            console.log("show menu bar");
-            document.getElementById("navbar").style.display = "inline";
+            console.log("show navigation bar");
+            document.getElementById("s_navbar").hidden = false;
+
           }, false);
 
           btHome.addEventListener('click', function (e) {
             /* go home */
-//            console.log("go home");
-//            document.location.href = '/index.html';
-//            currentPage = null;
-            var page = new WikiPage(new MyUrl(document.URL));
+            var page = new WikiPage(new MyUrl(myAppUrl));
             page.loadCache();
             myhistory.push(page.url);
             currentPage = page;
@@ -488,10 +457,35 @@ window.addEventListener('DOMContentLoaded', function () {
         links: function () {
           console.log("add links listener");
 
-          var myLinks = document.querySelectorAll('a');
-
+          var myLinks = document.querySelectorAll('.globalWrapper a');
+          //console.log("links to add :" + myLinks.length);
+          
           for (var i = 0; i < myLinks.length; i++) {
-            myLinks[i].addEventListener('click', clickOnLinks, false);
+
+            var a = myLinks[i];
+
+            if (!a.href) {
+              //console.log("a with no ref found!");
+              a.addEventListener('click',
+                  function (e) {
+                    e.preventDefault();
+                    console.error("no href found");
+                  }
+              , false);
+
+            } else if (a.href.startsWith(myAppUrl + '#')) {
+              // let's local anchor manage by the html engine
+              continue;
+
+            } else if (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") {
+              //console.log("wiki link event add : " + a.href);
+              a.addEventListener('click', loadWiki, false);
+
+            } else {
+              //console.log("external link event add : " + a.href);
+              a.addEventListener('click',openInOSBrowser, false);
+
+            }
           }
         },
         /*
@@ -503,13 +497,18 @@ window.addEventListener('DOMContentLoaded', function () {
 
           var form = document.getElementById("topSearchForm");
 
-          form.addEventListener('submit', searchWiki, true);
+          if (form) {
+            form.addEventListener('submit', searchWiki, true);
 
-          form.addEventListener('blur', function (e) {
-            console.log("hide search bar");
-            e.preventDefault();
-            document.getElementById("topSearchForm").style.display = "";
-          }, true);
+            form.addEventListener('blur', function (e) {
+              console.log("hide search bar");
+              e.preventDefault();
+              document.getElementById("topSearchForm").style.display = "";
+            }, true);
+          } else {
+            console.log("couldn't get search form");
+          }
+
         },
         /*
          * Navigation bar Listeners
@@ -518,14 +517,15 @@ window.addEventListener('DOMContentLoaded', function () {
         navBar: function () {
           console.log("add navbar event");
 
-          var btClose = document.getElementById("action_close"),
-              btReload = document.getElementById("action_reload"),
-              btBack = document.getElementById("action_back");
+          var btClose = document.getElementById("action_close").parentNode,
+              btReload = document.getElementById("action_reload").parentNode,
+              btBack = document.getElementById("action_back").parentNode;
 
           btClose.addEventListener('click', function () {
             console.log("close");
             window.close();
           }, false);
+
 
           btBack.addEventListener('click', function () {
             console.log("back");
@@ -539,7 +539,7 @@ window.addEventListener('DOMContentLoaded', function () {
               page.loadCache();
               currentPage = page;
 
-              document.getElementById("navbar").style.display = "inline";
+              document.getElementById("s_navbar").hidden = false;
 
             } else {
 
@@ -556,15 +556,16 @@ window.addEventListener('DOMContentLoaded', function () {
           document.getElementById("globalWrapper")
               .addEventListener('click', function () {
                 // hide menu bar when click outside menubar
-                if (document.getElementById("navbar").style.display) {
-                  console.log("hide menu bar");
-                  document.getElementById("navbar").style.display = "";
+                if (!document.getElementById("s_navbar").hidden) {
+                  console.log("hide navigation bar");
+                  document.getElementById("s_navbar").hidden = true;
                 }
               }, false);
-        },
-        /* 
-         * HTML5 transition example        
-         */
+        }
+      }
+      /* 
+       * HTML5 transition example        
+       */
 //        global: function () {
 //          console.log("add body event");
 //          document.body
@@ -576,72 +577,33 @@ window.addEventListener('DOMContentLoaded', function () {
 //                  var list = document.getElementsByTagName('move-center');
 //                  console.log('move center element number : ' + list.length);
 //              });
-      },
-      /*
-       * removes Listener
-       */
-      remove: {
-        /*
-         * remove Links listener
-         * @returns {undefined}
-         */
-        links: function () {
-          console.log("remove links listener");
-          var myLinks = document.querySelectorAll('a');
-          for (var i = 0; i < myLinks.length; i++) {
-            myLinks[i].removeEventListener('click', clickOnLinks, false);
-          }
-        }
-      }
+
     };
 
 
     /* ----------------------------------------
      * callback
      * ------------------------------------------*/
+  
 
     /*
      * Callback functions for Links Events Listener
      * @param {type} e
      * @returns {undefined}
      */
-    function clickOnLinks(e) {
+    function loadWiki(e) {
       e.preventDefault(); // do not follow click ! 
-
-      /* check url to load */
+      /* load target link*/
       var href = e.currentTarget.getAttribute('href')
-          || e.currentTarget.parentNode.getAttribute('href')
-          || false,
-          targetUrl = new MyUrl(href);
+          || e.currentTarget.parentNode.getAttribute('href'),
+          targetUrl = new MyUrl(href),
+          page = new WikiPage(targetUrl);
 
-      if (!targetUrl.raw) {
-
-        if (targetUrl.href === document.URL) {
-          /* reload everything */
-          document.location.href = document.URL;
-        } else {
-          console.log("i give up...");
-          return;
-        }
-
-      } else if (targetUrl.samePage) {
-
-        currentPage.scrollTo(targetUrl.anchor);
-
-      } else if (!targetUrl.extern) {
-
-        /* load target link*/
-        var page = new WikiPage(targetUrl);
-        page.loadCache();
-        currentPage = page;
-        myhistory.push(targetUrl);
-
-      } else {
-
-        targetUrl.openInOSBrowser();
-
-      }
+      page.loadCache();
+      currentPage = page;
+      myhistory.push(targetUrl);
     }
+    
 
     /*
      * Callback for submit search form
@@ -664,6 +626,31 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
 
+    /*
+     * callback for external link
+     * @param {type} e
+     * @returns {undefined}
+     */
+    function openInOSBrowser(e) {
+      e.preventDefault();
+
+      console.log('open url in browser: ' + e.currentTarget.href);
+      // Open url in browser
+      var activity = new MozActivity({
+        name: "view",
+        data: {
+          type: "url",
+          url: e.currentTarget.href
+        }
+      });
+
+      activity.onerror = function () {
+        console.log("I can't open this link in OS Browser : " + this.error);
+      };
+    }
+
+
+
     /* ----------------------------------------
      * Database (indexedDB)
      * ------------------------------------------*/
@@ -680,7 +667,7 @@ window.addEventListener('DOMContentLoaded', function () {
         console.log("Why didn't you allow my web app to use IndexedDB?!");
       };
 
-      request.onsuccess = function (e) {
+      request.onsuccess = function () {
         console.log("indexeddb is opened!");
         db = this.result;
         db.onerror = function (e) {
@@ -688,11 +675,10 @@ window.addEventListener('DOMContentLoaded', function () {
         };
 
         /* start by (update) cache ofthe home page*/
-        currentPage = new WikiPage(new MyUrl(document.URL));
+        currentPage = new WikiPage(new MyUrl(myAppUrl));
         currentPage.setContent(document.getElementById("bodyContent").innerHTML);
         currentPage.toDb();
         myhistory.push(currentPage.url);
-        
       };
 
       request.onupgradeneeded = function (e) {
@@ -726,33 +712,12 @@ window.addEventListener('DOMContentLoaded', function () {
     /* ----------------------------------------
      * First add event listener (Initialisation)
      * ------------------------------------------*/
-    console.log("initialisation ");
+    console.log("initialisation script start");
 
     uiListeners.init();
-    opendb(); 
+    opendb();
+    console.log("main url was set to :" + myAppUrl);
 
-    console.log("initialisation script end");
+    console.log("initialisation script end (some steps may not have been completed yet)");
   })();
 });
-
-//var viewItems = document.getElementById('items-view');
-//viewItems.classList.add('fade-left');
-//
-//btnBackToFeed.addEventListener('click', function () {
-//  viewItems.classList.remove('move-center');
-//
-//  var drawer = document.getElementById('drawer');
-//  drawer.classList.remove('fade-left');
-//});
-//
-//btnBackToItems.addEventListener('click', function () {
-//  viewDetail.classList.remove('move-center');
-//
-//  if (displayTimeline.classList.contains('active')) {
-//    var drawer = document.getElementById('drawer');
-//    drawer.classList.remove('fade-left');
-//  } else {
-//    var viewItems = document.getElementById('items-view');
-//    viewItems.classList.remove('fade-left');
-//  }
-//});
