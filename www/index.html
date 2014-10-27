@@ -27,12 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <meta name="description" content="ArchWiki Viewer Main Page">
         <meta name="viewport" content="width=device-width">
 
+        <link rel="stylesheet" href="css/topbars.css">
+        <link rel="stylesheet" href="css/main.css">        
+        
         <link rel="stylesheet" href="css/transitions.css">
         <link rel="stylesheet" href="css/archwikistyle.css">
         <link rel="stylesheet" href="css/hackedarchwikistyle.css">
-        <link rel="stylesheet" href="css/topbars.css">
 
-        <link rel="stylesheet" href="css/main.css">
 
         <script type="text/javascript" src="app.js" defer="defer"></script>
     </head>
@@ -65,10 +66,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <progress id="progressBar" class="loadPage" value="0" max="100" ></progress>
 
             <!-- 
-            #globalWrapper : The part where wiki content is injected 
+            #aw-article : The part where wiki content is injected 
             -->
-            <article id="globalWrapper" class="globalWrapper">
-                <div id="bodyContent" class="bodyContent">
+            <article id="aw-article" class="aw-article">
+                <div id="aw-article-body" class="aw-article-body">
                     <!-- start content -->
 
                     <p><b>Welcome to the <a href="https://wiki.archlinux.org/index.php/ArchWiki:About" title="ArchWiki:About">ArchWiki</a>: your source for Arch Linux documentation on the web.</b>

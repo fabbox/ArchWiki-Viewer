@@ -1,5 +1,5 @@
 {
-  "version": "0.0.3dev",
+  "version": "0.1.0",
 
   "name": "ArchWiki Viewer",
 
@@ -16,7 +16,7 @@
 
   "permissions": {
     "systemXHR":{
-        "description": "Cross-domain requests needed to get html file from https://wiki.archlinux.org to the app."
+        "description": "Cross-domain requests needed to get article from https://wiki.archlinux.org."
     }
   },
 

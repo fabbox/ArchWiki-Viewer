@@ -19,10 +19,89 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : fbox
 */
 
-/* @TODO: Where is the cascade ?! you repeat yourself again and again */
+/*
+** header bar
+*/
+section[role="region"] > header:first-child  .icon {
+    display: block;
+    width: 3.6rem;
+    height: 3.6rem;
+    background: none no-repeat scroll center center / 3.6rem auto transparent;
+    font-size: 0px;
+}
+
+/* Main bar icons */
+section[role="region"] > header:first-child  .icon-home {
+    background-image: url("../icons/launcher.svg");
+}
+
+section[role="region"] > header:first-child  .icon-menu {
+    background-image: url("../icons/main/menu.svg");
+}
+
+section[role="region"] > header:first-child  .icon-search {
+    background-image: url("../icons/main/search.svg");
+}
+
+/* Navigation bar icons */
+section[role="region"] > header:first-child  .icon-back {
+    background-color: #333;
+    background-image: url("../icons/navigation/arrow-back.svg");   
+}
+
+section[role="region"] > header:first-child  .icon-reload {
+    background-color: #333;
+    background-image: url("../icons/navigation/reload.svg");
+
+}
+
+section[role="region"] > header:first-child  .icon-close {
+    background-color: #333;
+    background-image: url("../icons/navigation/close.svg");
+}
+
+
+/* other properties from ffos building block*/
+section[role="region"] > header:first-child > a:last-of-type {
+    display: block;
+}
+
+section[role="region"] > header:first-child a,
+section[role="region"] > header:first-child button {
+    /*box-sizing: border-box; XXX: declaration dropped*/
+    position: relative;
+    display: block;
+    overflow: hidden;
+    float: left;
+    min-width: 3rem;
+    width: auto;
+    height: 4rem;
+    border: 0px;
+    background: none repeat scroll 0% 0% transparent;
+    padding: 0px;
+    margin: 0px;
+
+    font-weight: 400;
+    font-size: 1.5rem;
+    line-height: 4rem;
+
+    border-radius: 0px;
+    text-decoration: none;
+    text-align: center;
+    text-shadow: none;
+    font-style: italic;
+}
+
+section[role="region"] > header:first-child menu {
+    height: 100%;
+    float: right;
+    padding: 0px;
+    margin: 0px;
+}
+
 
 /* ----------------------------------
-* Local app top menu style 
+* top main bar
 * ---------------------------------- */
 
 #archmainbar,
@@ -157,7 +236,7 @@ progress.loadPage {
     /*display: block;*/  
     display: none;  
 
-    background-image: url(../icons/archNavBar/activity.png);
+    background-image: url(../icons/main/activity.png);
     background-repeat: repeat;
     background-size: 1rem auto;
     animation: .5s move infinite ease; 

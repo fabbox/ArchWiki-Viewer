@@ -37,8 +37,8 @@ window.addEventListener('DOMContentLoaded', function () {
      * ------------------------------------------*/
     var currentPage = null, // "article" which is diplayed
         db = null, // indexeddb which store cache, pref... 
-        myAppUrl = document.URL, // reference url ("app://....")
-        myhistory = [];           // array of "MyUrl" used to manage history
+        myAppUrl = initAppUrl(), // reference url ("app://....")
+        myhistory = []; // array of "MyUrl" used to manage history
 
 
     /* ----------------------------------------
@@ -169,6 +169,7 @@ window.addEventListener('DOMContentLoaded', function () {
       titleElt.appendChild(strTitle);
     };
 
+
     /* ----------------------------------------
      * Content 
      * ------------------------------------------*/
@@ -184,21 +185,21 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     Content.prototype.print = function () {
-      document.getElementById("bodyContent").innerHTML = this.body;
+      document.getElementById("aw-article-body").innerHTML = this.body;
     };
 
 
     /* ----------------------------------------
-     * WikiPage 
+     * WikiArticle 
      * ------------------------------------------*/
 
     /*
      * Wikipage constructor : 
      * @param {type} url
-     * @returns {app_L12.WikiPage}
+     * @returns {app_L12.WikiArticle}
      */
-    function WikiPage(url) {
-      //console.log("new WikiPage instance");
+    function WikiArticle(url) {
+      //console.log("new WikiArticle instance");
 
       this.url = url;
       this.anchor = url.anchor;
@@ -207,7 +208,7 @@ window.addEventListener('DOMContentLoaded', function () {
       this.date = Date.now();
     }
 
-    WikiPage.prototype.loadCache = function () {
+    WikiArticle.prototype.loadCache = function () {
       document.getElementById("progressBar").style.display = "block";
 
       var self = this,
@@ -239,7 +240,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     };
 
-    WikiPage.prototype.loadUrl = function (save2db) {
+    WikiArticle.prototype.loadUrl = function (save2db) {
       /*get the page from the website*/
       document.getElementById("progressBar").style.display = "block";
 
@@ -271,7 +272,7 @@ window.addEventListener('DOMContentLoaded', function () {
         p1.textContent = " :-( I failed to get your article.";
         p2.textContent = "you may check your internet connection or go back to the previous page.";
 
-        var body = document.getElementById("bodyContent");
+        var body = document.getElementById("aw-article-body");
         body.innerHTML = "";
 
         body.appendChild(h2);
@@ -308,19 +309,18 @@ window.addEventListener('DOMContentLoaded', function () {
       xhr.send(null);
     };
 
-    WikiPage.prototype.setContent = function (str) {
+    WikiArticle.prototype.setContent = function (str) {
       this.content = new Content(str);
     };
 
-    WikiPage.prototype.print = function () {
-//      uiListeners.remove.links(); // Is it need to clean this in javascript ? 
+    WikiArticle.prototype.print = function () {
       this.title.print();
       this.content.print();
       this.scrollTo(this.anchor);
       uiListeners.add.links();
     };
 
-    WikiPage.prototype.toDb = function () {
+    WikiArticle.prototype.toDb = function () {
       var data = {
         url: this.url.href,
         title: this.title.str,
@@ -371,19 +371,16 @@ window.addEventListener('DOMContentLoaded', function () {
 
     };
 
-    WikiPage.prototype.title = new Title("ArchWiki Viewer");
+    WikiArticle.prototype.title = new Title("ArchWiki Viewer");
 
-    WikiPage.prototype.scrollTo = function (id) {
-      var gw = document.getElementById("globalWrapper");
+    WikiArticle.prototype.scrollTo = function (id) {
+      var gw = document.getElementById("aw-article");
       if (!id) {
         console.log("scroll to top");
         gw.scrollTop = 0;
       } else {
         console.log("scroll to id " + id);
         document.getElementById(id).scrollIntoView(true);
-        /* then scroll back by the "topbar height" ; bug ? */
-        /* XXX: check the new ccs style to avoid border overlaping*/
-        //gw.scrollTop = gw.scrollTop - 6; // menu border = 6px
       }
     };
 
@@ -406,7 +403,6 @@ window.addEventListener('DOMContentLoaded', function () {
         uiListeners.add.searchBar();
         uiListeners.add.navBar();
         uiListeners.add.links();
-//        uiListeners.add.global();
       },
       /*
        * add listener
@@ -444,7 +440,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btHome.addEventListener('click', function (e) {
             /* go home */
-            var page = new WikiPage(new MyUrl(myAppUrl));
+            var page = new WikiArticle(new MyUrl(myAppUrl));
             page.loadCache();
             myhistory.push(page.url);
             currentPage = page;
@@ -457,9 +453,9 @@ window.addEventListener('DOMContentLoaded', function () {
         links: function () {
           console.log("add links listener");
 
-          var myLinks = document.querySelectorAll('.globalWrapper a');
+          var myLinks = document.querySelectorAll('.aw-article a');
           //console.log("links to add :" + myLinks.length);
-          
+
           for (var i = 0; i < myLinks.length; i++) {
 
             var a = myLinks[i];
@@ -483,7 +479,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             } else {
               //console.log("external link event add : " + a.href);
-              a.addEventListener('click',openInOSBrowser, false);
+              a.addEventListener('click', openInOSBrowser, false);
 
             }
           }
@@ -534,7 +530,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
               myhistory.pop();
               // console.log("history length : " + myhistory.length);
-              var page = new WikiPage(myhistory[myhistory.length - 1]);
+              var page = new WikiArticle(myhistory[myhistory.length - 1]);
 
               page.loadCache();
               currentPage = page;
@@ -553,7 +549,7 @@ window.addEventListener('DOMContentLoaded', function () {
             currentPage.loadUrl(true);
           }, false);
 
-          document.getElementById("globalWrapper")
+          document.getElementById("aw-article")
               .addEventListener('click', function () {
                 // hide menu bar when click outside menubar
                 if (!document.getElementById("s_navbar").hidden) {
@@ -563,28 +559,13 @@ window.addEventListener('DOMContentLoaded', function () {
               }, false);
         }
       }
-      /* 
-       * HTML5 transition example        
-       */
-//        global: function () {
-//          console.log("add body event");
-//          document.body
-//              .addEventListener('click', function () {
-//                  // translate globaWrapper
-//                  console.log("hide menu bar");
-//                  document.getElementById("globalWrapper").classList.add('move-center');
-//                  document.getElementById("globalWrapper").className = "";
-//                  var list = document.getElementsByTagName('move-center');
-//                  console.log('move center element number : ' + list.length);
-//              });
-
     };
 
 
     /* ----------------------------------------
      * callback
      * ------------------------------------------*/
-  
+
 
     /*
      * Callback functions for Links Events Listener
@@ -597,13 +578,13 @@ window.addEventListener('DOMContentLoaded', function () {
       var href = e.currentTarget.getAttribute('href')
           || e.currentTarget.parentNode.getAttribute('href'),
           targetUrl = new MyUrl(href),
-          page = new WikiPage(targetUrl);
+          page = new WikiArticle(targetUrl);
 
       page.loadCache();
       currentPage = page;
       myhistory.push(targetUrl);
     }
-    
+
 
     /*
      * Callback for submit search form
@@ -616,7 +597,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
       var input = document.getElementById("topSearchInput").value || "sorry",
           url = new MyUrl("https://wiki.archlinux.org/index.php?search=" + input),
-          page = new WikiPage(url);
+          page = new WikiArticle(url);
 
       //console.log("input :" + input);
 
@@ -655,13 +636,14 @@ window.addEventListener('DOMContentLoaded', function () {
      * Database (indexedDB)
      * ------------------------------------------*/
 
+
     /*
      * Open and set database for cached content
      * @returns {undefined}
      */
     function opendb() {
       /* openning database */
-      var request = indexedDB.open("MyTestDatabase", 5);
+      var request = indexedDB.open("awv", 1);
 
       request.onerror = function () {
         console.log("Why didn't you allow my web app to use IndexedDB?!");
@@ -670,13 +652,14 @@ window.addEventListener('DOMContentLoaded', function () {
       request.onsuccess = function () {
         console.log("indexeddb is opened!");
         db = this.result;
+        
         db.onerror = function (e) {
           console.log("Database error: " + e.target.errorCode);
         };
 
-        /* start by (update) cache ofthe home page*/
-        currentPage = new WikiPage(new MyUrl(myAppUrl));
-        currentPage.setContent(document.getElementById("bodyContent").innerHTML);
+        /* start by (updating) caching the home page*/
+        currentPage = new WikiArticle(new MyUrl(myAppUrl));
+        currentPage.setContent(document.getElementById("aw-article-body").innerHTML);
         currentPage.toDb();
         myhistory.push(currentPage.url);
       };
@@ -706,8 +689,40 @@ window.addEventListener('DOMContentLoaded', function () {
      * Helper function ()
      * ------------------------------------------*/
 
-    // Nothing there ....
 
+    /*
+     * return the main document url at load
+     * @returns {Node.URL|Document.URL|document.URL|String}
+     */
+    function initAppUrl() {
+      /* It is need in devellopment when "reloading" from simulator on page
+       * with anchor */
+      var url = document.URL, // reference url ("app://....")
+          idtag = url.indexOf("#");
+
+      if (idtag) {
+        url = url.replace(url.slice(idtag), "");
+      }
+      console.log("init was :" + url);
+      return url;
+    }
+
+
+    /* 
+     * HTML5 transition example        
+     */
+//    function test() {
+//      console.log("add body event");
+//      document.body
+//          .addEventListener('click', function () {
+//            // translate article
+//            document.getElementById("aw-article").classList.add('move-center');
+//            document.getElementById("aw-article").className = "";
+//            var list = document.getElementsByTagName('move-center');
+//            console.log('move center element number : ' + list.length);
+//          });
+//    }
+    
 
     /* ----------------------------------------
      * First add event listener (Initialisation)
@@ -716,8 +731,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     uiListeners.init();
     opendb();
-    console.log("main url was set to :" + myAppUrl);
-
+    
     console.log("initialisation script end (some steps may not have been completed yet)");
   })();
 });

@@ -20,85 +20,108 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
-** header bar
-*/
-section[role="region"] > header:first-child  .icon {
-    display: block;
-    width: 3.6rem;
-    height: 3.6rem;
-    background: none no-repeat scroll center center / 3.6rem auto transparent;
-    font-size: 0px;
+ * very usual stuff
+ */
+
+html {
+    font-size: 62.5%; /* Setting base font to 10px and define all your units in rem. 1rem = 10px */
+    font-family: sans-serif;
+    height: 100%
 }
 
-/* Main bar*/
-section[role="region"] > header:first-child  .icon-home {
-    background-image: url("../icons/launcher.svg");
-}
-
-section[role="region"] > header:first-child  .icon-menu {
-    background-image: url("../icons/archNavBar/menu.svg");
-}
-
-section[role="region"] > header:first-child  .icon-search {
-    background-image: url("../icons/archNavBar/search.svg");
-}
-
-/* Navigation bar */
-section[role="region"] > header:first-child  .icon-back {
-    background-color: #333;
-    background-image: url("../icons/topMenuBar/arrow-back.svg");   
-}
-
-section[role="region"] > header:first-child  .icon-reload {
-    background-color: #333;
-    background-image: url("../icons/topMenuBar/reload.svg");
-
-}
-
-section[role="region"] > header:first-child  .icon-close {
-    background-color: #333;
-    background-image: url("../icons/topMenuBar/close.svg");
-}
-
-
-/* other properties from ffos building block*/
-section[role="region"] > header:first-child > a:last-of-type {
-    display: block;
-}
-
-section[role="region"] > header:first-child a,
-section[role="region"] > header:first-child button {
-    box-sizing: border-box;
-    position: relative;
-    display: block;
+body {
+    font: x-small sans-serif;
+    
+    text-align: justify;
+    color: #222;
+    
+    margin: 0;
+    padding: 0;
+    
+    direction: ltr;
+    unicode-bidi: embed ;
+    
     overflow: hidden;
-    float: left;
-    min-width: 3rem;
-    width: auto;
-    height: 4rem;
-    /*border: medium none;*/
-    border: 0px;
-    background: none repeat scroll 0% 0% transparent;
-    /*padding: 0px 1rem;*/
-    padding: 0px;
-    margin: 0px;
-
-    font-weight: 400;
-    font-size: 1.5rem;
-    line-height: 4rem;
-
-    border-radius: 0px;
-    text-decoration: none;
-    text-align: center;
-    text-shadow: none;
-    font-style: italic;
+    
+    background: #fff;
+    height: 100%
 }
 
-section[role="region"] > header:first-child menu {
-    height: 100%;
-    float: right;
-    padding: 0px;
-    margin: 0px;
+/* documents Level  */
+p {
+    margin: .4em 0 .5em 0;
+    line-height: 1.5em
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #222;
+    background: none;
+    font-weight: bold;
+    margin: 0;
+    overflow: hidden;
+    padding-top: .5em;
+    padding-bottom: .17em;
+    border-bottom: none;
+    width: auto
+}
+
+h1,
+h2 {
+    margin-bottom: .6em;
+    border-bottom:  1px solid #aaa;
+}
+
+h3,
+h4,
+h5 {
+    margin-bottom: .3em
+}
+
+h1 {
+    font-size: 188%;
+}
+
+h2 {
+    font-size: 150%;
+    font-weight: normal
+}
+
+h3 {
+    font-size: 132%
+}
+
+h4 {
+    font-size: 116%
+}
+
+h5 {
+    font-size: 100%
+}
+
+h6 {
+    font-size: 80%;
+    color: black
+}
+
+img {
+    border: none;
+    vertical-align: middle
+}
+
+table {
+    color: #222;
+    font-size: 100%;
+    border-collapse: collapse;
+    padding: 2px
+}
+
+p img {
+    margin: 0
 }
 
 
@@ -108,9 +131,9 @@ section[role="region"] > header:first-child menu {
  */
 
 
-/*div#globalWrapper {}*/ 
-
-.globalWrapper {
+/*div#globalWrapper*/ 
+.aw-article,
+.globalWrapper{
     position: fixed;
     top: calc(4rem + 6px);
     height: calc(100% - 4rem);
@@ -121,14 +144,14 @@ section[role="region"] > header:first-child menu {
     width: 100%;
     margin: 0;
 
-    box-sizing: border-box;
+    /*box-sizing: border-box; XXX: declaration dropped*/
 
     overflow-y: auto;
     overflow-x: hidden;
 }
 
 /*div#bodyContent{}*/
-
+.aw-article-body,
 .bodyContent{
     margin: 1em;
     position: relative;
