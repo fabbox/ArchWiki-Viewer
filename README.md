@@ -12,20 +12,22 @@ Viewed content is cached to enable offline consultation.
 Permissions
 -----------
 
-    * systemXHR : Cross-domain requests needed to get html file from https://wiki.archlinux.org to the app.
+* systemXHR : Cross-domain requests needed to get html file from https://wiki.archlinux.org to the app.
 
 Change log
 ----------
 
 ### 0.1.0 :
-    * add indexedDB to cached content (offline surfing is possible if the page was already consult).
-    * you can refresh the cache by pushing the reload button in the navigation menu.
-    * improve error handling.
-    * improve "responsive designess" in css (thanks to [Building Blocks](http://buildingfirefoxos.com)).
-    * navigation history is no more reset by pushing the app home button.
+
+* add indexedDB to cached content (offline surfing is possible if the page was already consult).
+* you can refresh the cache by pushing the reload button in the navigation menu.
+* improve error handling.
+* improve "responsive designess" in css (thanks to [Building Blocks](http://buildingfirefoxos.com)).
+* navigation history is no more reset by pushing the app home button.
 
 ### 0.0.2 :
-    * fix missing stylesheet in zip archive.
+
+* fix missing stylesheet in zip archive.
 
 Disclaimer
 ----------
