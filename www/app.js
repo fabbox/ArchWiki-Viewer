@@ -171,7 +171,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
       if (title.indexOf("#")) {
         var str2rm = title.slice(title.indexOf("#"));
-        title.replace(str2rm, "");
+        title = title.replace(str2rm, "");
       }
 
       if (title.indexOf('_')) {
