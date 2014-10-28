@@ -169,16 +169,16 @@ window.addEventListener('DOMContentLoaded', function () {
         title = title.replace("Category:", "");
       }
 
-      if (title.indexOf("#")) {
+      if (title.indexOf("#") >= 0) {
         var str2rm = title.slice(title.indexOf("#"));
         title = title.replace(str2rm, "");
       }
 
-      if (title.indexOf('_')) {
+      if (title.indexOf('_') >= 0) {
         title = title.replace(/_/g, " ");
       }
 
-      if (title.indexOf(' - ArchWiki')) {
+      if (title.indexOf(' - ArchWiki') >=0) {
         title = title.replace(' - ArchWiki', "");
       }
 
