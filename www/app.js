@@ -60,6 +60,12 @@ window.addEventListener('DOMContentLoaded', function () {
       this.length = this._array.length;
       if (this.length <= 1) {
         uiListeners.disable.navigation();
+        document.getElementById("s_navbar").hidden = true;
+//                      if (myhistory.length > 1) {
+//                document.getElementById("s_navbar").hidden = false;
+//              } else {
+//                document.getElementById("s_navbar").hidden = true;
+//              }
       }
       return popval;
     };
@@ -103,7 +109,7 @@ window.addEventListener('DOMContentLoaded', function () {
             str2inject = this.root + "/index.php?action=render&title=";
 
         if (str.indexOf(str2replace) === 0) {
-          this.href = encodeURI(str.replace(str2replace, str2inject));
+          this.href = str.replace(str2replace, str2inject);
         } else if (str.indexOf(str2inject) === 0) {
           this.href = str;
         } else { // search case
@@ -178,7 +184,7 @@ window.addEventListener('DOMContentLoaded', function () {
         title = title.replace(/_/g, " ");
       }
 
-      if (title.indexOf(' - ArchWiki') >=0) {
+      if (title.indexOf(' - ArchWiki') >= 0) {
         title = title.replace(' - ArchWiki', "");
       }
 
@@ -215,7 +221,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     Content.prototype.print = function () {
       var awart = document.querySelector("#aw-article-body");
-      
+
       /* set article content*/
       awart.innerHTML = this.body;
 
@@ -629,7 +635,11 @@ window.addEventListener('DOMContentLoaded', function () {
               page.loadCache();
               currentPage = page;
 
-              document.getElementById("s_navbar").hidden = false;
+//              if (myhistory.length > 1) {
+//                document.getElementById("s_navbar").hidden = false;
+//              } else {
+//                document.getElementById("s_navbar").hidden = true;
+//              }
             }
           }, false);
 
