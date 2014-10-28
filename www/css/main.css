@@ -23,28 +23,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * very usual stuff
  */
 
-html {
-    font-size: 62.5%; /* Setting base font to 10px and define all your units in rem. 1rem = 10px */
+html,body {
+    font-size: 10px; /* Setting base font to 10px and define all your units in rem. 1rem = 10px */
     font-family: sans-serif;
-    height: 100%
-}
+    height: 100%;
 
-body {
-    font: x-small sans-serif;
-    
     text-align: justify;
     color: #222;
+    background: #fff;
     
     margin: 0;
     padding: 0;
-    
+
     direction: ltr;
     unicode-bidi: embed ;
-    
+
     overflow: hidden;
-    
-    background: #fff;
-    height: 100%
 }
 
 /* documents Level  */
@@ -108,6 +102,14 @@ h6 {
     color: black
 }
 
+hr {
+    height: 1px;
+    color: #aaa;
+    background-color: #aaa;
+    border: 0;
+    margin: .2em 0
+}
+
 img {
     border: none;
     vertical-align: middle
@@ -126,40 +128,6 @@ p img {
 
 
 /*
- * Completly destroy this two id/tag/class from the arch wiki
- * so we can play with these ids.
- */
-
-
-/*div#globalWrapper*/ 
-.aw-article,
-.globalWrapper{
-    position: fixed;
-    top: calc(4rem + 6px);
-    height: calc(100% - 4rem);
-    
-    padding: 0;  
-
-    font-size: 115%; 
-    width: 100%;
-    margin: 0;
-
-    /*box-sizing: border-box; XXX: declaration dropped*/
-
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-/*div#bodyContent{}*/
-.aw-article-body,
-.bodyContent{
-    margin: 1em;
-    position: relative;
-    line-height: 1.5em;
-    color: #222;
-}
-
-/*
  *  section 
  */
 
@@ -170,7 +138,33 @@ section {
     transition: all 0.25s ease 0s;
 }
 
-/*section#main {
-    position:absolute;
-    top:0;
-}*/
+/*
+ * wiki article
+ */
+
+.aw-article{
+    position: fixed;
+    top: calc(4rem + 6px);
+    height: calc(100% - 4rem);
+    width: 100%; 
+    font-size: 115%; 
+    padding: 0;  
+    margin: 0;
+    /*box-sizing: border-box; XXX: declaration dropped*/
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.aw-article-body{
+    margin: 1em;
+    position: relative;
+    line-height: 1.5em;
+    color: #222;
+}
+
+.related-articles,
+#related-articles{
+    overflow: hidden;
+    border: thin solid #AAA;
+    margin: .5rem .5rem
+}

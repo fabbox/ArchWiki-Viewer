@@ -64,7 +64,7 @@ window.addEventListener('DOMContentLoaded', function () {
       return popval;
     };
 
-    MyHistory.prototype.popAndGetLast = function () {
+    MyHistory.prototype.popget = function () {
       this.pop();
       // console.log("history length : " + myhistory.length);
       return this._array[this.length - 1];
@@ -345,7 +345,11 @@ window.addEventListener('DOMContentLoaded', function () {
     WikiArticle.prototype.print = function () {
       this.title.print();
       this.content.print();
+      
+      getRelated();
+      
       this.scrollTo(this.anchor);
+
       uiListeners.add.links();
     };
 
@@ -596,7 +600,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (myhistory.length > 1) {
 
               // console.log("history length : " + myhistory.length);
-              var page = new WikiArticle(myhistory.popAndGetLast());
+              var page = new WikiArticle(myhistory.popget());
 
               page.loadCache();
               currentPage = page;
@@ -644,6 +648,7 @@ window.addEventListener('DOMContentLoaded', function () {
       page.loadCache();
       currentPage = page;
       myhistory.push(targetUrl);
+
     }
 
 
@@ -764,11 +769,31 @@ window.addEventListener('DOMContentLoaded', function () {
       if (idtag) {
         url = url.replace(url.slice(idtag), "");
       }
-      console.log("init was :" + url);
+      //console.log("init url was :" + url);
       return url;
     }
 
+    function getRelated() {
+      var currentArticle = document.querySelector("#aw-article-body"),
+          fec = currentArticle.firstElementChild;
 
+      do {
+        if (fec
+            && fec.tagName === "DIV"
+            && fec.hasAttributes()
+            && fec.attributes[0].name === "style"
+            && fec.attributes[0].value === "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;") {
+          console.log("found related artices div");
+          fec.id = "related-articles";
+          fec.removeAttribute("style");
+          fec = null;
+
+        } else {
+
+          fec = fec.nextElementSibling;
+        }
+      } while (fec);
+    }
     /* 
      * HTML5 transition example        
      */

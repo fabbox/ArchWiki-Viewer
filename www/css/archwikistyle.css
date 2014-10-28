@@ -32,6 +32,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 * still true!]
 */
 
+/*
+ * @XXX: In a perfect wolrd, all the content which is not seen in 
+ *       "mw-content-tex" should be deleted (and eventually add to 
+ *       hackedarchwikistyle with display none).
+ * @XXX: each css entry should be prefix by ".aw-article". 
+ */ 
+
+
 /* 
 * links
 */
@@ -87,6 +95,11 @@ a:visited {
     font-weight: normal
 }
 
+.plainlinks a {
+    background: none !important;
+    padding: 0 !important
+}
+
 a:link{
     color: #07b
 }
@@ -128,13 +141,8 @@ a.external:active {
     color: #b63
 }
 
-hr {
-    height: 1px;
-    color: #aaa;
-    background-color: #aaa;
-    border: 0;
-    margin: .2em 0
-}
+
+/* list and table*/
 
 ul {
     line-height: 1.5em;
@@ -176,7 +184,7 @@ td {
 }
 
 q {
-    font-family: Times, "Times New Roman", serif;
+    font-family: serif;
     font-style: italic
 }
 
@@ -229,10 +237,6 @@ span.texhtml {
     font-style: italic
 }
 
-.plainlinks a {
-    background: none !important;
-    padding: 0 !important
-}
 
 table.wikitable {
     margin: 1em 1em 1em 0;
@@ -455,18 +459,15 @@ table.floatleft {
     position: relative
 }
 
-#toc,
-.toc {
-    background-color: #f9faff;
-    border: 1px solid #d7dfe3
-}
+
+
 
 pre,
 code,
 tt,
 kbd,
 samp {
-    font-family: monospace, Courier
+    font-family: monospace
 }
 
 code {
@@ -518,6 +519,13 @@ select {
 
 table.small {
     font-size: 100%
+}
+
+/* Table of content */
+#toc,
+.toc {
+    background-color: #f9faff;
+    border: 1px solid #d7dfe3
 }
 
 #toc,
