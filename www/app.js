@@ -227,7 +227,7 @@ window.addEventListener('DOMContentLoaded', function () {
             && fec.hasAttributes()
             && fec.attributes[0].name === "style"
             && fec.attributes[0].value === "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;") {
-          console.log("found related artices div");
+          console.log("found 'related articles' div");
           fec.id = "related-articles";
           fec.removeAttribute("style");
           fec = null;
