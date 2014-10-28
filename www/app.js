@@ -345,9 +345,9 @@ window.addEventListener('DOMContentLoaded', function () {
     WikiArticle.prototype.print = function () {
       this.title.print();
       this.content.print();
-      
+
       getRelated();
-      
+
       this.scrollTo(this.anchor);
 
       uiListeners.add.links();
@@ -531,6 +531,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
             var a = myLinks[i];
 
+            console.log("links :" + "\n"
+                + a.host + "\n"
+                + a.protocol);
             if (!a.href) {
               //console.log("a with no ref found!");
               a.addEventListener('click',
@@ -544,7 +547,10 @@ window.addEventListener('DOMContentLoaded', function () {
               // let's local anchor manage by the html engine
               continue;
 
-            } else if (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") {
+            } else if (
+                (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") // <- common case 
+                || (a.host.startsWith(myAppUrl.replace("app://","")) && a.protocol === "app:") // <- happen when a research result redirect to a page (example of search: zsh)
+                ) {
               //console.log("wiki link event add : " + a.href);
               a.addEventListener('click', loadWiki, false);
 
