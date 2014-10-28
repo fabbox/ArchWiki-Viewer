@@ -214,7 +214,30 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     Content.prototype.print = function () {
-      document.getElementById("aw-article-body").innerHTML = this.body;
+      var awart = document.querySelector("#aw-article-body");
+      
+      /* set article content*/
+      awart.innerHTML = this.body;
+
+      /* reformat "related articles" part (if any)*/
+      var fec = awart.firstElementChild;
+      do {
+        if (fec
+            && fec.tagName === "DIV"
+            && fec.hasAttributes()
+            && fec.attributes[0].name === "style"
+            && fec.attributes[0].value === "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;") {
+          console.log("found related artices div");
+          fec.id = "related-articles";
+          fec.removeAttribute("style");
+          fec = null;
+
+        } else {
+
+          fec = fec.nextElementSibling;
+        }
+      } while (fec);
+
     };
 
 
@@ -345,9 +368,6 @@ window.addEventListener('DOMContentLoaded', function () {
     WikiArticle.prototype.print = function () {
       this.title.print();
       this.content.print();
-
-      getRelated();
-
       this.scrollTo(this.anchor);
 
       uiListeners.add.links();
@@ -530,10 +550,8 @@ window.addEventListener('DOMContentLoaded', function () {
           for (var i = 0; i < myLinks.length; i++) {
 
             var a = myLinks[i];
+            //console.log("links :" + i + "\n" + a.href + "\n" + a.host + "\n" + a.protocol);
 
-            console.log("links :" + "\n"
-                + a.host + "\n"
-                + a.protocol);
             if (!a.href) {
               //console.log("a with no ref found!");
               a.addEventListener('click',
@@ -549,7 +567,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             } else if (
                 (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") // <- common case 
-                || (a.host.startsWith(myAppUrl.replace("app://","")) && a.protocol === "app:") // <- happen when a research result redirect to a page (example of search: zsh)
+                || (a.host.startsWith(document.location.host) && a.protocol === document.location.protocol) // <- happen when a research result redirect to a page (example of search: zsh)
                 ) {
               //console.log("wiki link event add : " + a.href);
               a.addEventListener('click', loadWiki, false);
@@ -769,37 +787,11 @@ window.addEventListener('DOMContentLoaded', function () {
     function initAppUrl() {
       /* It is need in devellopment when "reloading" from simulator on page
        * with anchor */
-      var url = document.URL, // reference url ("app://....")
-          idtag = url.indexOf("#");
-
-      if (idtag) {
-        url = url.replace(url.slice(idtag), "");
-      }
-      //console.log("init url was :" + url);
+      var url = document.location.protocol + "//" + document.location.host + "/index.html";
+      console.log("appUrl is init to :\n" + url);
       return url;
     }
 
-    function getRelated() {
-      var currentArticle = document.querySelector("#aw-article-body"),
-          fec = currentArticle.firstElementChild;
-
-      do {
-        if (fec
-            && fec.tagName === "DIV"
-            && fec.hasAttributes()
-            && fec.attributes[0].name === "style"
-            && fec.attributes[0].value === "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;") {
-          console.log("found related artices div");
-          fec.id = "related-articles";
-          fec.removeAttribute("style");
-          fec = null;
-
-        } else {
-
-          fec = fec.nextElementSibling;
-        }
-      } while (fec);
-    }
     /* 
      * HTML5 transition example        
      */
