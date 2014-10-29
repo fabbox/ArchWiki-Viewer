@@ -39,7 +39,7 @@ window.addEventListener('DOMContentLoaded', function () {
      * ------------------------------------------*/
     var currentPage = null, // "article" which is diplayed
         db = null, // indexeddb which store cache, pref... 
-        myAppUrl = initAppUrl(), // reference url ("app://....")
+        myAppUrl = initAppUrl(), // reference url ("app://.../index.html")
         myhistory = []; // array of "MyUrl" used to manage history
 
     function MyHistory() {
@@ -217,12 +217,15 @@ window.addEventListener('DOMContentLoaded', function () {
     function Content(content) {
       //console.log("new Content instance");
       this.body = content;
+
+
+
     }
 
     Content.prototype.print = function () {
       /* create new article element */
       var awart = document.createElement("article");
-     
+
       awart.id = "aw-article-body";
       awart.className = "aw-article-body";
       awart.innerHTML = this.body;
@@ -235,16 +238,30 @@ window.addEventListener('DOMContentLoaded', function () {
             && fec.hasAttributes()
             && fec.attributes[0].name === "style"
             && fec.attributes[0].value === "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;") {
+
           console.log("found 'related articles' div");
           fec.id = "related-articles";
           fec.removeAttribute("style");
           fec = null;
 
         } else {
-
           fec = fec.nextElementSibling;
         }
       } while (fec);
+
+      /* find img to update link to point to archlinux */
+      /* XXX: Try to find img usage to include the most used in app */
+      var img = awart.querySelectorAll("img");
+      if (img) {
+        for (var i = 0; i < img.length; i++) {
+          
+          if (img[i].src.startsWith(appRoot() + "/images/")) {
+            console.log("update image src");
+            img[i].src = img[i].src.replace(appRoot(), "https://wiki.archlinux.org");
+          }
+          
+        }
+      }
 
       /* set article content*/
       document.querySelector("#aw-article-body").parentNode
@@ -404,7 +421,7 @@ window.addEventListener('DOMContentLoaded', function () {
           /* update cached data */
           cachedPage.body = data.body; // dom cannot be clone so we stock innerhtml
           cachedPage.title = data.title;
-          cachedPage.date = data.date; 
+          cachedPage.date = data.date;
 
           /*update the database */
           var reqUpdate = objStore.put(cachedPage);
@@ -469,8 +486,6 @@ window.addEventListener('DOMContentLoaded', function () {
         uiListeners.add.searchBar();
         uiListeners.add.navBar();
         uiListeners.add.links();
-
-//        uiListeners.disable.navigation();
       },
       /*
        * enable stuff
@@ -804,8 +819,15 @@ window.addEventListener('DOMContentLoaded', function () {
     function initAppUrl() {
       /* It is need in devellopment when "reloading" from simulator on page
        * with anchor */
-      var url = document.location.protocol + "//" + document.location.host + "/index.html";
+      var url = appRoot() + "/index.html";
       console.log("appUrl is init to :\n" + url);
+      return url;
+    }
+
+    function appRoot() {
+      /* It is need in devellopment when "reloading" from simulator on page
+       * with anchor */
+      var url = document.location.protocol + "//" + document.location.host;
       return url;
     }
 
