@@ -19,7 +19,7 @@ Change log
 
 ### 0.1.0 :
 
-* add indexedDB to cached content (offline surfing is possible if the page was already consult).
+* add indexedDB to cache content (so offline surfing is possible if the page has been loaded).
 * you can refresh the cache by pushing the reload button in the navigation menu.
 * improve error handling.
 * improve "responsive designess" in css (thanks to [Building Blocks](http://buildingfirefoxos.com)).
