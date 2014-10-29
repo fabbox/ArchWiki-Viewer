@@ -7,7 +7,7 @@ Description
 A simple viewer for the [wiki of Arch Linux](https://wiki.archlinux.org) adapted
 to mobile device runnning [Firefox OS](https://developer.mozilla.org/en-US/Firefox_OS).
 (clone of [ArchWiki Viewer](https://github.com/jtmcn/archwiki-viewer) for Android).
-Viewed content is cached to enable offline consultation.
+Viewed content is cached to enable offline reading.
 
 Permissions
 -----------
