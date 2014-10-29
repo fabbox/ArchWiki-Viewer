@@ -39,7 +39,7 @@ window.addEventListener('DOMContentLoaded', function () {
      * ------------------------------------------*/
     var currentPage = null, // "article" which is diplayed
         db = null, // indexeddb which store cache, pref... 
-        myAppUrl = initAppUrl(), // reference url ("app://.../index.html")
+        myAppUrl = appUrl(), // reference url ("app://.../index.html")
         myhistory = []; // array of "MyUrl" used to manage history
 
     function MyHistory() {
@@ -241,7 +241,7 @@ window.addEventListener('DOMContentLoaded', function () {
             && fec.attributes[0].name === "style"
             && fec.attributes[0].value === "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;") {
 
-          console.log("found 'related articles' div");
+          //console.log("format 'related articles'");
           fec.id = "related-articles";
           fec.removeAttribute("style");
           fec = null;
@@ -348,6 +348,8 @@ window.addEventListener('DOMContentLoaded', function () {
       xhr.responseType = "document"; // need "GET"
 
       xhr.onerror = function () {
+        console.error("load error");
+        
         var h2 = document.createElement('h2'),
             p1 = document.createElement('p'),
             p2 = document.createElement('p');
@@ -461,7 +463,7 @@ window.addEventListener('DOMContentLoaded', function () {
     WikiArticle.prototype.scrollTo = function (id) {
       var gw = document.getElementById("aw-article");
       if (!id) {
-        console.log("scroll to top");
+        //console.log("scroll to top");
         gw.scrollTop = 0;
       } else {
         console.log("scroll to id " + id);
@@ -816,11 +818,11 @@ window.addEventListener('DOMContentLoaded', function () {
      * return the main document url at load
      * @returns {Node.URL|Document.URL|document.URL|String}
      */
-    function initAppUrl() {
+    function appUrl() {
       /* It is need in devellopment when "reloading" from simulator on page
        * with anchor */
       var url = appRoot() + "/index.html";
-      console.log("appUrl is init to :\n" + url);
+      //console.log("appUrl is init to :\n" + url);
       return url;
     }
 
