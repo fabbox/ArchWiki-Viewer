@@ -31,7 +31,7 @@ html,body {
     text-align: justify;
     color: #222;
     background: #fff;
-    
+
     margin: 0;
     padding: 0;
 
@@ -167,4 +167,30 @@ section {
     overflow: hidden;
     border: thin solid #AAA;
     margin: .5rem .5rem
+}
+
+
+
+#divTerms_of_Uses {
+    
+    border-top: 1px solid #AAA;
+    color: #888;
+    font-size: 90%;
+    margin: 0.5em 0px 0px 0.0em;
+    /*text-align: center;*/
+}
+
+#divTerms_of_Uses ul{
+    list-style-image: none;
+    /*text-align: center;*/
+    margin: 0.0em 0px 0px 0.6em ;
+}
+
+#divTerms_of_Uses li{
+    display: inline;
+    margin: 0px 0.3em;
+}
+
+#Terms_of_Uses {
+    font-weight: bold;
 }
