@@ -220,9 +220,11 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     Content.prototype.print = function () {
-      var awart = document.querySelector("#aw-article-body");
-
-      /* set article content*/
+      /* create new article element */
+      var awart = document.createElement("article");
+     
+      awart.id = "aw-article-body";
+      awart.className = "aw-article-body";
       awart.innerHTML = this.body;
 
       /* reformat "related articles" part (if any)*/
@@ -243,6 +245,11 @@ window.addEventListener('DOMContentLoaded', function () {
           fec = fec.nextElementSibling;
         }
       } while (fec);
+
+      /* set article content*/
+      document.querySelector("#aw-article-body").parentNode
+          .replaceChild(awart, document.querySelector("#aw-article-body"));
+
 
     };
 
@@ -273,13 +280,13 @@ window.addEventListener('DOMContentLoaded', function () {
           localCache = db.transaction("pages").objectStore("pages").get(self.url.href);
 
       localCache.onsuccess = function (e) {
-        var cachedPage = e.target.result;
+        var cachedArticle = e.target.result;
 
-        if (cachedPage) {
+        if (cachedArticle) {
 
-          console.log("I know that url " + cachedPage.url);
-          self.title = new Title(cachedPage.title);
-          self.setContent(cachedPage.body);
+          console.log("I know that url " + cachedArticle.url);
+          self.title = new Title(cachedArticle.title);
+          self.setContent(cachedArticle.body);
           self.print();
 
           document.getElementById("progressBar").style.display = "";
@@ -395,9 +402,9 @@ window.addEventListener('DOMContentLoaded', function () {
         var cachedPage = e.target.result;
         if (cachedPage) { // page exists : 
           /* update cached data */
-          cachedPage.body = data.body;
+          cachedPage.body = data.body; // dom cannot be clone so we stock innerhtml
           cachedPage.title = data.title;
-          cachedPage.date = data.date;
+          cachedPage.date = data.date; 
 
           /*update the database */
           var reqUpdate = objStore.put(cachedPage);
