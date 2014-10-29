@@ -76,20 +76,20 @@ section[role="region"] > header:first-child button {
     min-width: 3rem;
     width: auto;
     height: 4rem;
-    border: 0px;
+    border: none;
     background: none repeat scroll 0% 0% transparent;
     padding: 0px;
     margin: 0px;
 
-    font-weight: 400;
-    font-size: 1.5rem;
-    line-height: 4rem;
-
-    border-radius: 0px;
-    text-decoration: none;
+    /*border-radius: 0px;*/
+/*    text-decoration: none;
     text-align: center;
     text-shadow: none;
-    font-style: italic;
+    font-style: italic;*/
+}
+
+section[role="region"] > header:first-child button::-moz-focus-inner { 
+    border: none;
 }
 
 section[role="region"] > header:first-child menu {
