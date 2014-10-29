@@ -1,0 +1,242 @@
+/*
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 21 oct. 2014, 19:07:46
+    Author     : fbox
+*/
+
+/*
+** header bar
+*/
+section[role="region"] > header:first-child  .icon {
+    display: block;
+    width: 3.6rem;
+    height: 3.6rem;
+    background: none no-repeat scroll center center / 3.6rem auto transparent;
+    font-size: 0px;
+}
+
+/* Main bar icons */
+section[role="region"] > header:first-child  .icon-home {
+    background-image: url("../icons/launcher.svg");
+}
+
+section[role="region"] > header:first-child  .icon-menu {
+    background-image: url("../icons/main/menu.svg");
+}
+
+section[role="region"] > header:first-child  .icon-search {
+    background-image: url("../icons/main/search.svg");
+}
+
+/* Navigation bar icons */
+section[role="region"] > header:first-child  .icon-back {
+    background-color: #333;
+    background-image: url("../icons/navigation/arrow-back.svg");   
+}
+
+section[role="region"] > header:first-child  .icon-reload {
+    background-color: #333;
+    background-image: url("../icons/navigation/reload.svg");
+
+}
+
+section[role="region"] > header:first-child  .icon-close {
+    background-color: #333;
+    background-image: url("../icons/navigation/close.svg");
+}
+
+
+/* other properties from ffos building block*/
+section[role="region"] > header:first-child > a:last-of-type {
+    display: block;
+}
+
+section[role="region"] > header:first-child a,
+section[role="region"] > header:first-child button {
+    /*box-sizing: border-box; XXX: declaration dropped*/
+    position: relative;
+    display: block;
+    overflow: hidden;
+    float: left;
+    min-width: 3rem;
+    width: auto;
+    height: 4rem;
+    border: none;
+    background: none repeat scroll 0% 0% transparent;
+    padding: 0px;
+    margin: 0px;
+}
+
+section[role="region"] > header:first-child button::-moz-focus-inner { 
+    border: none;
+}
+
+section[role="region"] > header:first-child menu {
+    height: 100%;
+    float: right;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+/* ----------------------------------
+* top main bar
+* ---------------------------------- */
+
+#archmainbar,
+.archmainbar{
+    background: #333;
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    border-bottom-style: solid;
+    border-bottom-width: 0.6rem;
+    border-bottom-color: #0088CC;
+
+    height:4rem;
+    position:fixed;
+    top:0px;
+
+    z-index:100000
+}
+
+#archmainbar h1,
+.archmainbar h1 {
+    color: white;
+    border:0;
+    padding: 0 1rem;
+    margin: 0;
+
+    text-align: left;
+    height: 4rem;
+    text-overflow: ellipsis;
+
+    line-height:4rem;
+    overflow: hidden;
+    display: block;
+    border:0px ;
+    padding: 0;
+
+    margin: 0;
+}
+
+
+.menubar {
+    display: inline-block;
+
+    vertical-align: middle;
+
+    border:0px ;
+    padding: 0;
+
+    margin: 0;
+    margin-top: 2px;
+    margin-left: 2px;
+
+    width: calc(100% - 120px)
+}
+
+#navbar{
+    background-color: transparent;
+    display: inline;
+
+    z-index:100001
+}
+
+/* ----------------------------------
+* Search form areas
+* ---------------------------------- */
+
+input::-moz-placeholder {
+    color: #a9a9a9;
+    /*opacity: 1;*/
+    font-style: italic;
+    font-weight: 400
+}
+
+form[role="search"] {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 4rem;
+    background: transparent
+}
+
+form[role="search"] p {
+    padding: 0 0 0 4rem;
+    overflow: hidden;
+    position: relative;
+    margin: 0;
+    width: 100%
+}
+
+form[role="search"] p input[type="text"] {
+    background: #333;   
+    height: 4rem;
+    width: calc(100% - 6rem);
+    border: none;
+    padding: 0 1rem 0 1rem;
+    box-shadow: none;
+
+    font-family: sans-serif;
+    resize: none;
+    font-size: 2rem;
+    color: #fff    
+}
+
+form[role="search"]#topSearchForm {
+    display: none;
+    z-index:100001
+}
+
+input#topSearchInput {
+    display: block
+}
+
+/* ----------------------------------
+ * Progress + activities
+ * ---------------------------------- */
+
+/* Progress bar (activities) */
+progress.loadPage {
+    position: fixed;
+    top: 4rem;
+
+    width: 100%;
+    background: #333;
+    border: none;
+    border-radius: .3rem;
+    height: .3rem;
+    /*display: block;*/  
+    display: none;  
+
+    background-image: url(../icons/main/activity.png);
+    background-repeat: repeat;
+    background-size: 1rem auto;
+    animation: .5s move infinite ease; 
+    /*steps(15)*/
+    
+    z-index:100010
+}
+
+@keyframes move {
+    from { background-position: 0 0; }
+    to   { background-position: 1rem 0; }
+}

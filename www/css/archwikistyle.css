@@ -1,0 +1,747 @@
+/*
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 21 oct. 2014, 12:33:45
+    Author     : fbox
+*/
+
+/* This file is an ugly mix of the archlinux MediaWiki skin based 
+* MediaWiki 'monobook' style sheet for CSS2-capable browsers [Copyright 
+* Gabriel Wicke - http://wikidev.net/ ; License GPL ] and of several "common"
+* stylesheet (in mediawiki/skins/common) and of the stylesheet from the 
+* ArchWiki Viewer for Androïd (the original app from jtmcn). 
+* After merging theses files, removing most of the line, changing some value
+* and adding few : it became this file
+*
+*
+** All you guys rock :) [from the mediawiki 'monobook' stylesheet but that's 
+* still true!]
+*/
+
+/*
+ * @XXX: In a perfect wolrd, all the content which is not seen in 
+ *       "mw-content-tex" should be deleted (and eventually add to 
+ *       hackedarchwikistyle with display none).
+ * @XXX: each css entry should be prefix by ".aw-article". 
+ */ 
+
+
+/* 
+* links
+*/
+
+a {
+    text-decoration: none;
+    color: #002bb8;
+    background: none;
+    outline: none;
+    font-weight: bold
+}
+
+a:hover,
+#toc a:hover,
+a:hover.external {
+    text-decoration: underline;
+    background-color: transparent;
+    color: #999
+}
+
+a:active {
+    /*color: #faa700;*/
+    color: #e90 !important
+}
+
+a:focus {
+    text-decoration: underline;
+    color: #e90 !important
+}
+
+a.stub {
+    color: #772233
+}
+
+a.new {
+    /*color: #ba0000;*/
+    /*color: #cc2200;*/
+    color: #b00 !important
+}
+
+a.new:visited {
+    color: #a55858
+}
+
+a:visited {
+    /*color: #5a3696*/
+    color: #666
+}
+
+#toc a,
+.special li> a,
+.special li span a {
+    font-weight: normal
+}
+
+.plainlinks a {
+    background: none !important;
+    padding: 0 !important
+}
+
+a:link{
+    color: #07b
+}
+
+/* External inter-wiki links*/
+a.external::after,
+a.extiw::after {
+    /* the usual arrow */
+    /*content: " " url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVElEQVR42n3PgQkAIAhEUXdqJ3dqJ3e6IoTPUSQcgj4EQ5IlUiLE0Jil3PECXhcHGBhZ8kg4hwxAu3MZeCGeyFnAXp4hqNQPnt7QL0nADpD6wHccLvnAKksq8iiaAAAAAElFTkSuQmCC");*/
+    /* the dagger test :*/
+    content: "†";
+    font-size: 80%;
+    vertical-align: super;
+    line-height: 0;
+}
+
+/* list and table*/
+
+ul {
+    line-height: 1.5em;
+    list-style-type: square;
+    margin: .3em 0 0 1.6em;
+    padding: 0;
+    list-style-image: none;
+}
+
+ol {
+    line-height: 1.5em;
+    margin: .3em 0 0 3.2em;
+    padding: 0;
+    list-style-image: none
+}
+
+li {
+    margin-bottom: .1em
+}
+
+dt {
+    font-weight: bold;
+    margin-bottom: .1em
+}
+
+dl {
+    margin-top: .2em;
+    margin-bottom: .5em
+}
+
+dd {
+    line-height: 1.5em;
+    margin-left: 1.6em;
+    margin-bottom: .1em
+}
+
+td {
+    padding: 2px
+}
+
+q {
+    font-family: serif;
+    font-style: italic
+}
+
+/*
+ * specific to very specific 
+ */
+
+abbr,
+acronym,
+.explain {
+    border-bottom: 1px dotted;
+    cursor: help
+}
+
+.allpagesredirect,
+.redirect-in-category,
+.watchlistredir {
+    font-style: italic
+}
+
+.redirectText {
+    font-size: 150%;
+    margin: 5px
+}
+
+/* Math */
+.texvc {
+    direction: ltr;
+    unicode-bidi: embed
+}
+
+img.tex {
+    vertical-align: middle
+}
+
+span.texhtml {
+    font-family: serif
+}
+
+.thumbcaption {
+    text-align: left
+}
+
+.magnify {
+    float: right
+}
+
+#shared-image-dup,
+#shared-image-conflict {
+    font-style: italic
+}
+
+
+table.wikitable {
+    margin: 1em 1em 1em 0;
+    background-color: #f9f9f9;
+    border: 1px #aaa solid;
+    border-collapse: collapse;
+    color: black;
+    font-size: 90%
+}
+
+table.wikitable> tr> th,
+table.wikitable> tr> td,
+table.wikitable> *> tr> th,
+table.wikitable> *> tr> td {
+    border: 1px #aaa solid;
+    padding: .2em
+}
+
+table.wikitable> tr> th,
+table.wikitable> *> tr> th {
+    background-color: #f2f2f2;
+    text-align: center
+}
+
+table.wikitable> caption {
+    font-weight: bold
+}
+
+table.collapsed tr.collapsable {
+    display: none
+}
+
+/**
+ * Data table style
+ *
+ * Transparent table with suddle borders
+ * and blue row-highlighting.
+ */
+
+.mw-datatable {
+    border-collapse: collapse
+}
+
+.mw-datatable,
+.mw-datatable td,
+.mw-datatable th {
+    border: 1px solid #aaaaaa;
+    padding: 0 .15em 0 .15em
+}
+
+.mw-datatable th {
+    background-color: #ddddff
+}
+
+.mw-datatable td {
+    background-color: #ffffff
+}
+
+.mw-datatable tr:hover td {
+    background-color: #eeeeff
+}
+
+/**
+ * TablePager tables generated by the TablePager PHP class
+ * in MediaWiki (e.g. Special:ListFiles).
+ */
+
+.TablePager {
+    min-width: 80%
+}
+
+.TablePager_nav {
+    margin: 0 auto
+}
+
+.TablePager_nav td {
+    padding: 3px;
+    text-align: center
+}
+
+.TablePager_nav a {
+    text-decoration: none
+}
+
+.imagelist td,
+.imagelist th {
+    white-space: nowrap
+}
+
+.imagelist .TablePager_col_links {
+    background-color: #eeeeff
+}
+
+.imagelist .TablePager_col_img_description {
+    white-space: normal
+}
+
+.imagelist th.TablePager_sort {
+    background-color: #ccccff
+}
+
+/* filetoc */
+ul#filetoc {
+    text-align: center;
+    border: 1px solid #aaaaaa;
+    background-color: #f9f9f9;
+    padding: 5px;
+    font-size: 95%;
+    margin-bottom: .5em;
+    margin-left: 0;
+    margin-right: 0
+}
+
+#filetoc li {
+    display: inline;
+    list-style-type: none;
+    padding-right: 2em
+}
+
+/* Classes for Exif data display */
+table.mw_metadata {
+    font-size: .8em;
+    margin-left: .5em;
+    margin-bottom: .5em;
+    width: 400px;
+    border: none;
+    border-collapse: collapse
+}
+
+table.mw_metadata caption {
+    font-weight: bold
+}
+
+table.mw_metadata th {
+    font-weight: normal;
+    background-color: #f9f9f9
+}
+
+table.mw_metadata td {
+    padding: .1em;
+    background-color: #fcfcfc
+}
+
+table.mw_metadata td,
+table.mw_metadata th {
+    text-align: center;
+    border: 1px solid #aaaaaa;
+    padding-left: 5px;
+    padding-right: 5px
+}
+
+table.mw_metadata ul.metadata-langlist {
+    list-style-type: none;
+    list-style-image: none;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 0
+}
+
+/* Correct directionality when page dir is different from site/user dir */
+.mw-content-ltr ul,
+.mw-content-rtl .mw-content-ltr ul {
+    margin: .3em 0 0 1.6em;
+    padding: 0
+}
+.mw-content-rtl ul,
+.mw-content-ltr .mw-content-rtl ul {
+    margin: .3em 1.6em 0 0;
+    padding: 0
+}
+
+.mw-content-ltr ol,
+.mw-content-rtl .mw-content-ltr ol {
+    margin: .3em 0 0 3.2em;
+    padding: 0
+}
+
+.mw-content-rtl ol,
+.mw-content-ltr .mw-content-rtl ol {
+    margin: .3em 3.2em 0 0;
+    padding: 0
+}
+
+.mw-content-ltr dd,
+.mw-content-rtl .mw-content-ltr dd {
+    margin-left: 1.6em;
+    margin-right: 0
+}
+
+.mw-content-rtl dd,
+.mw-content-ltr .mw-content-rtl dd {
+    margin-right: 1.6em;
+    margin-left: 0
+}
+
+#toc ul,
+.toc ul {
+    margin: .3em 0
+}
+
+/* Images */
+div.tright,
+div.floatright,
+table.floatright {
+    clear: right;
+    float: right
+}
+
+div.tleft,
+div.floatleft,
+table.floatleft {
+    float: left;
+    clear: left
+}
+
+div.floatright,
+table.floatright,
+div.floatleft,
+table.floatleft {
+    position: relative
+}
+
+
+
+
+pre,
+code,
+tt,
+kbd,
+samp {
+    font-family: monospace
+}
+
+code {
+    background-color: #f9f9f9
+}
+
+pre {
+    padding: 1em;
+    white-space: pre-wrap;
+    border: 1px dashed #2f6fab;
+    color: black;
+    background-color: #f9f9f9
+}
+
+fieldset {
+    border: 1px solid #2f6fab;
+    margin: 1em 0 1em 0;
+    padding: 0 1em 1em;
+    line-height: 1.5em
+}
+
+fieldset.nested {
+    margin: 0 0 .5em 0;
+    padding: 0 .5em .5em
+}
+
+legend {
+    padding: .5em;
+    font-size: 95%
+}
+
+select {
+    vertical-align: top
+}
+
+.center {
+    width: 100%;
+    text-align: center
+}
+
+*.center * {
+    margin-left: auto;
+    margin-right: auto
+}
+
+.small {
+    font-size: 94%
+}
+
+table.small {
+    font-size: 100%
+}
+
+/* Table of content */
+#toc,
+.toc {
+    background-color: #f9faff;
+    border: 1px solid #d7dfe3
+}
+
+#toc,
+.toc,
+.mw-warning {
+    border: 1px solid #aaa;
+    background-color: #f9f9f9;
+    padding: 5px;
+    font-size: 95%
+}
+
+#toc h2,
+.toc h2 {
+    display: inline;
+    border: none;
+    padding: 0;
+    font-size: 100%;
+    font-weight: bold
+}
+
+#toc #toctitle,
+.toc #toctitle,
+#toc .toctitle,
+.toc .toctitle {
+    text-align: center
+}
+
+#toc ul,
+.toc ul {
+    list-style-type: none;
+    list-style-image: none;
+    margin-left: 0;
+    padding: 0;
+    text-align: left
+}
+
+#toc ul ul,
+.toc ul ul {
+    margin: 0 0 0 2em
+}
+
+#toc .toctoggle,
+.toc .toctoggle {
+    font-size: 94%
+}
+
+.toccolours {
+    border: 1px solid #aaa;
+    background-color: #f9f9f9;
+    padding: 5px;
+    font-size: 95%
+}
+
+div.floatright,
+table.floatright {
+    margin: 0 0 .5em .5em;
+    border: 0
+}
+
+div.floatright p {
+    font-style: italic
+}
+
+div.floatleft,
+table.floatleft {
+    margin: 0 .5em .5em 0;
+    border: 0
+}
+
+div.floatleft p {
+    font-style: italic
+}
+
+div.thumb {
+    margin-bottom: .5em;
+    width: auto;
+    background-color: transparent
+}
+
+div.thumbinner {
+    border: 1px solid #ccc;
+    padding: 3px !important;
+    background-color: #f9f9f9;
+    font-size: 94%;
+    text-align: center;
+    overflow: hidden
+}
+
+html .thumbimage {
+    border: 1px solid #ccc
+}
+
+html .thumbcaption {
+    border: none;
+    text-align: left;
+    line-height: 1.4em;
+    padding: 3px !important;
+    font-size: 94%
+}
+
+div.magnify {
+    float: right;
+    border: none !important;
+    background: none !important
+}
+
+div.magnify a,
+div.magnify img {
+    display: block;
+    border: none !important;
+    background: none !important
+}
+
+div.tright {
+    margin: .5em 0 1.3em 1.4em
+}
+
+div.tleft {
+    margin: .5em 1.4em 1.3em 0
+}
+
+img.thumbborder {
+    border: 1px solid #dddddd
+}
+
+span.subpages {
+    display: block
+}
+
+pre {
+    line-height: 1.1em
+}
+
+table.rimage {
+    float: right;
+    position: relative;
+    margin-left: 1em;
+    margin-bottom: 1em;
+    text-align: center
+}
+
+.special li {
+    line-height: 1.4em;
+    margin: 0;
+    padding: 0
+}
+
+#t-ispermalink,
+#t-iscite {
+    color: #999
+}
+
+.sharedUploadNotice {
+    font-style: italic
+}
+
+span.updatedmarker {
+    color: black;
+    background-color: #0f0
+}
+
+.toggle {
+    margin-left: 2em;
+    text-indent: -2em
+}
+
+div.noarticletext {
+    border: 1px solid #ccc;
+    background: #fff;
+    padding: .2em 1em;
+    color: #000
+}
+
+div#searchTargetContainer {
+    left: 10px;
+    top: 10px;
+    width: 90%;
+    background: white
+}
+
+div#searchTarget {
+    padding: 3px;
+    margin: 5px;
+    background: #F0F0F0;
+    border: solid 1px blue
+}
+
+div#searchTarget ul li {
+    list-style: none
+}
+
+div#searchTarget ul li:before {
+    color: orange;
+    content: "\00BB \0020"
+}
+
+div#searchTargetHide {
+    float: right;
+    border: solid 1px black;
+    background: #DCDCDC;
+    padding: 2px
+}
+
+#powersearch p {
+    margin-top: 0
+}
+
+div.multipageimagenavbox {
+    border: solid 1px silver;
+    padding: 4px;
+    margin: 1em;
+    background: #f0f0f0
+}
+
+div.multipageimagenavbox div.thumb {
+    border: none;
+    margin-left: 2em;
+    margin-right: 2em
+}
+
+div.multipageimagenavbox hr {
+    margin: 6px
+}
+
+table.multipageimage td {
+    text-align: center
+}
+
+.templatesUsed {
+    margin-top: 1.5em
+}
+
+pre,
+code,
+tt {
+    background-color: #ebf1f5;
+    color: #222;  
+    font-family: monospace;
+    padding: .3em
+}
+
+pre {
+    border: 1px solid #bcd;
+    overflow: auto
+}

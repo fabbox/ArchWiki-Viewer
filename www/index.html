@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!--
+    Created on : 21 oct. 2014, 23:55:52
+    Author     : fbox
+-->
+<html lang="en" dir="ltr">
+
+    <head>
+        <meta charset="utf-8">
+        <title>ArchWiki Viewer</title>
+        <meta name="description" content="ArchWiki Viewer Main Page">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="css/topbars.css">
+        <link rel="stylesheet" href="css/main.css">        
+
+        <link rel="stylesheet" href="css/transitions.css">
+        <link rel="stylesheet" href="css/archwikistyle.css">
+        <link rel="stylesheet" href="css/hackedarchwikistyle.css">
+
+
+        <script type="text/javascript" src="app.js" defer="defer"></script>
+    </head>
+
+    <body>
+
+
+        <section id="main" role="region">
+            <!-- 
+            # Main Bar 
+            -->
+            <header class="archmainbar">
+
+                <button>    
+                    <span class="icon icon-home" id="action_home"></span>
+                </button>    
+                <menu type="toolbar">
+                    <button>
+                        <span class="icon icon-search" id="action_search"></span>
+                    </button>
+                    <button>
+                        <span class="icon icon-menu" id="action_menu"></span>
+                    </button>
+                </menu>
+                <h1 id="awPageTitle">
+                    ArchWiki Viewer
+                </h1>
+            </header>
+
+            <progress id="progressBar" class="loadPage" value="0" max="100" ></progress>
+
+            <!-- 
+            #aw-article : The part where wiki content is injected 
+            -->
+            <article id="aw-article" class="aw-article">
+                <div id="aw-article-body" class="aw-article-body">
+                    <!-- start content -->
+
+                    <p><b>Welcome to the <a href="https://wiki.archlinux.org/index.php/ArchWiki:About" title="ArchWiki:About">ArchWiki</a>: your source for Arch Linux documentation on the web.</b>
+                    </p><p>Visit the <a href="https://wiki.archlinux.org/index.php/Table_of_contents" title="Table of contents">Table of contents</a> for a listing of article categories.
+                    </p>
+
+
+                    <h2><span id="The_distribution">The distribution</span></h2>
+
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/Arch_Linux" title="Arch Linux">Arch Linux</a></dt>
+                        <dd> Brief overview of Arch Linux describing what to expect from an Arch Linux system.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/The_Arch_Way" title="The Arch Way">The Arch Way</a></dt>
+                        <dd> Illustrates the principles and philosophy of Arch Linux.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/Arch_compared_to_other_distributions" title="Arch compared to other distributions">Arch compared to other distributions</a></dt>
+                        <dd> Summarizes the similarities and differences between Arch and other distributions.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/Arch_Linux_press_coverage" title="Arch Linux press coverage">Arch Linux press coverage</a></dt>
+                        <dd> What they say about us.
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/Beginners%27_guide" title="Beginners' guide">Beginners' guide</a></dt>
+                        <dd> Detailed guide through the whole process of installing and configuring Arch Linux.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/Installation_guide" title="Installation guide">Installation guide</a></dt>
+                        <dd> Concise installation guide aimed at experienced Arch users.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/General_recommendations" title="General recommendations">General recommendations</a></dt>
+                        <dd> Annotated index of post-installation tutorials and other popular articles.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/FAQ" title="FAQ">FAQ</a></dt>
+                        <dd> List of common and frequently asked questions.
+                        </dd>
+                    </dl>
+
+                    <h2><span id="Our_community">Our community</span></h2>
+
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/Getting_involved" title="Getting involved">Getting involved</a></dt>
+                        <dd> Describes various ways Archers can contribute to the Arch community.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/ArchWiki:Contributing" title="ArchWiki:Contributing">ArchWiki:Contributing</a></dt>
+                        <dd> If willing and able to contribute to the wiki, please see this article for ideas.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/Help:Editing" title="Help:Editing">Help:Editing</a></dt>
+                        <dd> Short tutorial on editing and contributing to the Arch Linux wiki.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/International_communities" title="International communities">International communities</a></dt>
+                        <dd> Collection of links to the Arch Linux communities around the world.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/Forum_etiquette" title="Forum etiquette">Forum etiquette</a></dt>
+                        <dd> Guidelines for Arch forum members.
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt> <a href="https://wiki.archlinux.org/index.php/IRC_channels" title="IRC channels">IRC channels</a></dt>
+                        <dd> Get together with your fellow Archers for a good chat.
+                        </dd>
+                    </dl>
+
+
+                    <h2><span id="Help">Help</span></h2>
+
+                    <p>ArchWiki pages follow specific conventions, so if you have trouble reading ArchWiki or understanding some instructions, see <a href="https://wiki.archlinux.org/index.php/Help:Reading" title="Help:Reading">Help:Reading</a> for a clarification.
+                    </p><p>If looking for specific information, try using the search box to 
+                        the left. Alternatively, use your favorite web search engine which 
+                        likely provides a special syntax or interface for restricting results to
+                        a particular website (usually appending <code style="display:inline-block; padding: 0.1em 0.3em;">site:wiki.archlinux.org</code> to the search terms is enough). See <a href="https://wiki.archlinux.org/index.php/Help:Searching" title="Help:Searching">Help:Searching</a> for other tricks.
+                    </p>
+
+
+                    <h2><span id="Wiki_News"> Wiki News </span></h2>
+
+                    <p>
+                        Check the
+                        <a href="https://wiki.archlinux.org/index.php/Wiki_News" title="Wiki News">    
+                            Wiki News
+                        </a> 
+                        page for the latest lowdown on the wiki.
+                    </p>
+
+                    <div id="divTerms_of_Uses">
+                        <span id="Terms_of_Uses">ArchWiki Terms of use :</span>    
+
+                        <ul >
+                            <li id="copyright">Content is available under <a class="external" rel="nofollow" href="http://www.gnu.org/copyleft/fdl.html">GNU Free Documentation License 1.3 or later</a> unless otherwise noted.</li>
+                            <li id="privacy"><a href="https://wiki.archlinux.org/index.php/ArchWiki:Privacy_policy" title="ArchWiki:Privacy policy">Privacy policy</a></li>
+                            <li id="about"><a href="https://wiki.archlinux.org/index.php/ArchWiki:About" title="ArchWiki:About">About ArchWiki</a></li>
+                            <li id="disclaimer"><a href="https://wiki.archlinux.org/index.php/ArchWiki:General_disclaimer" title="ArchWiki:General disclaimer">Disclaimers</a></li>
+                        </ul>
+
+                    </div>
+                    <!-- end content -->
+
+                </div>
+            </article>
+
+            <!-- 
+            # Search form (bar)
+            -->
+            <form role="search" id="topSearchForm">
+                <p>
+                    <input type="text" placeholder="Search..." id="topSearchInput">
+                </p>
+            </form>
+
+        </section>
+
+
+        <!-- 
+        # Navigation Bar
+        -->
+        <section role="region" id="s_navbar" hidden="">
+            <header id="navbar" class="archmainbar">
+                <button>    
+                    <span class="icon icon-back" id="action_back"></span>
+                </button>    
+                <menu type="toolbar">
+                    <button>
+                        <span class="icon icon-reload" id="action_reload"></span>
+                    </button>
+                    <button>
+                        <span class="icon icon-close" id="action_close"></span>
+                    </button>
+                </menu>
+            </header>
+        </section>
+
+    </body>
+</html>

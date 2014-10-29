@@ -1,0 +1,196 @@
+/*
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 21 oct. 2014, 12:35:48
+    Author     : fbox
+*/
+
+/*
+ * very usual stuff
+ */
+
+html,body {
+    font-size: 10px; /* Setting base font to 10px and define all your units in rem. 1rem = 10px */
+    font-family: sans-serif;
+    height: 100%;
+
+    text-align: justify;
+    color: #222;
+    background: #fff;
+
+    margin: 0;
+    padding: 0;
+
+    direction: ltr;
+    unicode-bidi: embed ;
+
+    overflow: hidden;
+}
+
+/* documents Level  */
+p {
+    margin: .4em 0 .5em 0;
+    line-height: 1.5em
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #222;
+    background: none;
+    font-weight: bold;
+    margin: 0;
+    overflow: hidden;
+    padding-top: .5em;
+    padding-bottom: .17em;
+    border-bottom: none;
+    width: auto
+}
+
+h1,
+h2 {
+    margin-bottom: .6em;
+    border-bottom:  1px solid #aaa;
+}
+
+h3,
+h4,
+h5 {
+    margin-bottom: .3em
+}
+
+h1 {
+    font-size: 188%;
+}
+
+h2 {
+    font-size: 150%;
+    font-weight: normal
+}
+
+h3 {
+    font-size: 132%
+}
+
+h4 {
+    font-size: 116%
+}
+
+h5 {
+    font-size: 100%
+}
+
+h6 {
+    font-size: 80%;
+    color: black
+}
+
+hr {
+    height: 1px;
+    color: #aaa;
+    background-color: #aaa;
+    border: 0;
+    margin: .2em 0
+}
+
+img {
+    border: none;
+    vertical-align: middle
+}
+
+table {
+    color: #222;
+    font-size: 100%;
+    border-collapse: collapse;
+    padding: 2px
+}
+
+p img {
+    margin: 0
+}
+
+
+/*
+ *  section 
+ */
+
+section {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: all 0.25s ease 0s;
+}
+
+/*
+ * wiki article
+ */
+
+.aw-article{
+    position: fixed;
+    top: calc(4rem + 6px);
+    height: calc(100% - 4rem);
+    width: 100%; 
+    font-size: 115%; 
+    padding: 0;  
+    margin: 0;
+    /*box-sizing: border-box; XXX: declaration dropped*/
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.aw-article-body{
+    margin: 1em;
+    position: relative;
+    line-height: 1.5em;
+    color: #222;
+}
+
+.related-articles,
+#related-articles{
+    overflow: hidden;
+    border: thin solid #AAA;
+    margin: .5rem .5rem
+}
+
+
+/*
+ * Terms of uses (at the bottom of the index.html start page)
+ */
+#divTerms_of_Uses {
+    
+    border-top: 1px solid #AAA;
+    color: #888;
+    font-size: 90%;
+    margin: 0.5em 0px 0px 0.0em;
+}
+
+#divTerms_of_Uses ul{
+    list-style-image: none;
+    margin: 0.0em 0px 0px 0.6em ;
+}
+
+#divTerms_of_Uses li{
+    display: inline;
+    margin: 0px 0.3em;
+}
+
+#Terms_of_Uses {
+    font-weight: bold;
+}
