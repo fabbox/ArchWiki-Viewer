@@ -43,30 +43,32 @@ window.addEventListener('DOMContentLoaded', function () {
         myhistory = []; // array of "MyUrl" used to manage history
 
     function MyHistory() {
-      console.log("new MyHistory instance");
+      //console.log("new MyHistory instance");
+      
       this._array = [];
       this.length = this._array;
+      
       uiListeners.disable.navigation();
     }
 
     MyHistory.prototype.push = function (url) {
+      
       this._array.push(url);
       this.length = this._array.length;
+      
       uiListeners.enable.navigation();
     };
 
     MyHistory.prototype.pop = function () {
+      
       var popval = this._array.pop();
       this.length = this._array.length;
+      
       if (this.length <= 1) {
         uiListeners.disable.navigation();
         document.getElementById("s_navbar").hidden = true;
-//                      if (myhistory.length > 1) {
-//                document.getElementById("s_navbar").hidden = false;
-//              } else {
-//                document.getElementById("s_navbar").hidden = true;
-//              }
       }
+      
       return popval;
     };
 
@@ -224,7 +226,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     Content.prototype.print = function () {
       /* create new article element */
-      var awart = document.createElement("article");
+      var awart = document.createElement("div");
 
       awart.id = "aw-article-body";
       awart.className = "aw-article-body";
@@ -753,7 +755,6 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
 
-
     /* ----------------------------------------
      * Database (indexedDB)
      * ------------------------------------------*/
@@ -790,8 +791,8 @@ window.addEventListener('DOMContentLoaded', function () {
         // Create an objectStore to hold information about our visited pages
         var db = e.currentTarget.result;
 
-        //        console.log("removing old database");
-        //        db.deleteObjectStore("pages");
+        // console.log("removing old database");
+        // db.deleteObjectStore("pages");
 
         console.log("creating new database");
         var objectStore = db.createObjectStore("pages", {keyPath: "url"});
@@ -810,7 +811,6 @@ window.addEventListener('DOMContentLoaded', function () {
     /* ----------------------------------------
      * Helper function ()
      * ------------------------------------------*/
-
 
     /*
      * return the main document url at load

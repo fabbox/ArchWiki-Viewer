@@ -105,51 +105,16 @@ a:link{
 }
 
 /* External inter-wiki links*/
-/*a.extiw,
-a.extiw:active {
-    color: #36b
-}*/
-
-/*a.extiw:visited {
-    color: #636
-}*/
-
-/* External links */
-/*a.external {
-    color: #07b
-    color: #36b;
-}*/
-
 a.external::after,
 a.extiw::after {
+    /* the usual arrow */
     /*content: " " url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVElEQVR42n3PgQkAIAhEUXdqJ3dqJ3e6IoTPUSQcgj4EQ5IlUiLE0Jil3PECXhcHGBhZ8kg4hwxAu3MZeCGeyFnAXp4hqNQPnt7QL0nADpD6wHccLvnAKksq8iiaAAAAAElFTkSuQmCC");*/
+    /* the dagger test :*/
     content: "†";
     font-size: 80%;
     vertical-align: super;
     line-height: 0;
 }
-
-/*
-** keep the whitespace in front of the ^=, hides rule from konqueror
-** this is css3, the validator doesn't like it when validating as css2
-** XXX: I DO NOT UNDERSTAND THE SENTENCE: "space" --> css2 or css3 ??
-*/
-/*a.external[href ^="https://"],
-.link-https {
-    background: none;
-    padding: 0
-}*/
-
-/*a.external:visited {
-    a:visited.external 
-    color: #666
-    color: #636
-}*/
-
-/*a.external:active {
-    color: #b63
-}*/
-
 
 /* list and table*/
 

@@ -170,19 +170,19 @@ section {
 }
 
 
-
+/*
+ * Terms of uses (at the bottom of the index.html start page)
+ */
 #divTerms_of_Uses {
     
     border-top: 1px solid #AAA;
     color: #888;
     font-size: 90%;
     margin: 0.5em 0px 0px 0.0em;
-    /*text-align: center;*/
 }
 
 #divTerms_of_Uses ul{
     list-style-image: none;
-    /*text-align: center;*/
     margin: 0.0em 0px 0px 0.6em ;
 }
 
