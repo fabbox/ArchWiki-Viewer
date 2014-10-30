@@ -47,18 +47,18 @@ div{
 
 .fade-out {
     opacity: 0;
-    transition: all 0.5s ease;
+    transition: all 0.2s ease;
 }
 
 .fade-in {
     opacity: 1;
-    transition: all 0.5s ease;
+    transition: all 0.2s ease;
 }
 
 .fade-left {
     opacity: 0.3;
     transform: translateX(-60%);
-    transition: all 0.5s ease;
+    transition: all 0.3s ease;
 }
 
 

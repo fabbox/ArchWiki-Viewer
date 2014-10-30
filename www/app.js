@@ -227,12 +227,23 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     Content.prototype.print = function () {
+
+      var awart_old = document.getElementById("aw-article"),
+          awart_content_old = document.getElementById("aw-article-body"),
+          awsect = awart_old.parentNode;
+
+      awart_old.id = "aw-article_old";
+      awart_content_old.id = "aw-article-body_old";
+      
+//      awart_old = document.getElementById("aw-article_old");
+//      awart_content_old = document.getElementById("aw-article-body_old");
+
       /* create new article element */
       var awart = document.createElement("article");
       var awart_content = document.createElement("div");
-      
+
       awart.id = "aw-article";
-      awart.className = "aw-article fade-in fade-out";
+      awart.className = "aw-article fade-out";
 
       awart_content.id = "aw-article-body";
       awart_content.className = "aw-article-body";
@@ -271,30 +282,24 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       }
 
-
-      /* set article content*/ 
+      /* set article content*/
       awart.appendChild(awart_content);
-      
+
       /* replace current article by this article*/
-      var awart_old = document.querySelector("#aw-article"),
-          awart_content_old = document.querySelector("#aw-article-body"),
-          awsect = awart_old.parentNode;
-          
-      awsect.replaceChild(awart,awart_old);
-      
-//    TEST TO MAKE SMOOTH TRANSITION
-//                
-//      awart_old.id = "";
-//      awart_content_old.id="";
-//      
-//      awsect.appendChild(awart);
-//      
-//      awart_old.addEventListener("transitionend", function(e){
-//        awsect.removeChild(awart_old);
-//      }, true);
-//      
-//      awart_old.classList.add('fade-out');
-//      awart.classList.remove('fade-out');
+
+      /* Direct transition */
+      // awsect.replaceChild(awart,awart_old);
+      /* TEST TO MAKE SMOOTH TRANSITION*/
+      awsect.appendChild(awart);
+
+      awart_old.addEventListener("transitionend", function (e) {
+        //console.log(awart_old.id);
+        //console.log(awart.id);
+        awart.classList.add('fade-in');
+        awart_old.parentNode.removeChild(awart_old);
+      }, true);
+
+      awart_old.classList.remove('fade-in');
     };
 
 
