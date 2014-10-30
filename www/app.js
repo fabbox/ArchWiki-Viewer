@@ -42,6 +42,11 @@ window.addEventListener('DOMContentLoaded', function () {
         myAppUrl = appUrl(), // reference url ("app://.../index.html")
         myhistory = []; // array of "MyUrl" used to manage history
 
+
+    /* ----------------------------------------
+     * MyHistory
+     * ------------------------------------------*/
+
     function MyHistory() {
       //console.log("new MyHistory instance");
 
@@ -506,225 +511,225 @@ window.addEventListener('DOMContentLoaded', function () {
      * namespace uiListeners: manage events listenner function from the UI
      * ------------------------------------------*/
 
+    
+/*
+ * Namespace for UI Listeners
+ * @type type
+ */
+var uiListeners = {
+  /*
+   * initialize (add) all UI listerners
+   * @returns {undefined}
+   */
+  init: function () {
+    uiListeners.add.mainBar();
+    uiListeners.add.searchBar();
+    uiListeners.add.navBar();
+    uiListeners.add.links();
+    uiListeners.add.awArticle();
+  },
+  /*
+   * enable stuff
+   */
+  enable: {
     /*
-     * Namespace for UI Listeners
-     * @type type
+     * enable navigation button
+     * @returns {undefined}
      */
-    var uiListeners = {
-      /*
-       * initialize (add) all UI listerners
-       * @returns {undefined}
-       */
-      init: function () {
-        uiListeners.add.mainBar();
-        uiListeners.add.searchBar();
-        uiListeners.add.navBar();
-        uiListeners.add.links();
-        uiListeners.add.awArticle();
-      },
-      /*
-       * enable stuff
-       */
-      enable: {
-        /*
-         * enable navigation button
-         * @returns {undefined}
-         */
-        navigation: function () {
-          var btReload = document.getElementById("action_reload"),
-              btBack = document.getElementById("action_back");
-          if (btReload.hasAttributes("disabled")) {
-            btReload.removeAttribute("disabled");
-          }
-          if (btBack.hasAttributes("disabled")) {
-            btBack.removeAttribute("disabled");
-          }
+    navigation: function () {
+      var btReload = document.getElementById("action_reload"),
+          btBack = document.getElementById("action_back");
+      if (btReload.hasAttributes("disabled")) {
+        btReload.removeAttribute("disabled");
+      }
+      if (btBack.hasAttributes("disabled")) {
+        btBack.removeAttribute("disabled");
+      }
+    }
+  },
+  /*
+   * disable stuff
+   */
+  disable: {
+    /*
+     * disable navigation button
+     * @returns {undefined}
+     */
+    navigation: function () {
+      var btReload = document.getElementById("action_reload"),
+          btBack = document.getElementById("action_back");
+
+      btReload.setAttribute("disabled", "true");
+      btBack.setAttribute("disabled", "true");
+    }
+
+  },
+  /*
+   * add listener
+   */
+  add: {
+    /*
+     * Main bar listeners
+     * @returns {undefined}
+     */
+    mainBar: function () {
+      console.log("add main event");
+
+      var btSearch = document.querySelector("#action_search").parentNode,
+          btMenu = document.querySelector("#action_menu").parentNode,
+          btHome = document.querySelector("#action_home").parentNode;
+
+      btSearch.addEventListener('click', function () {
+        /* show search form*/
+        console.log("show search bar");
+        if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
+          console.log("hide navigation bar");
+          document.getElementById("navbar").classList.remove('navShown');
         }
-      },
-      /*
-       * disable stuff
-       */
-      disable: {
-        /*
-         * disable navigation button
-         * @returns {undefined}
-         */
-        navigation: function () {
-          var btReload = document.getElementById("action_reload"),
-              btBack = document.getElementById("action_back");
+        var form = document.getElementById("topSearchForm");
+        if (form) {
+          var input = document.getElementById("topSearchInput");
+          input.value = "";
+          form.style.display = "inline";
+          input.focus();
+        }
+      }, false);
 
-          btReload.setAttribute("disabled", "true");
-          btBack.setAttribute("disabled", "true");
+      btMenu.addEventListener('click', function () {
+        /* toggle navigation bar */
+        if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
+          console.log("hide navigation bar");
+          document.getElementById("navbar").classList.remove('navShown');
+        } else {
+          console.log("show navigation bar");
+          document.getElementById("navbar").classList.add('navShown');
         }
 
-      },
-      /*
-       * add listener
-       */
-      add: {
-        /*
-         * Main bar listeners
-         * @returns {undefined}
-         */
-        mainBar: function () {
-          console.log("add main event");
+      }, false);
 
-          var btSearch = document.querySelector("#action_search").parentNode,
-              btMenu = document.querySelector("#action_menu").parentNode,
-              btHome = document.querySelector("#action_home").parentNode;
+      btHome.addEventListener('click', function () {
+        /* go home */
+        var page = new WikiArticle(new MyUrl(myAppUrl));
+        page.loadCache();
+        myhistory.push(page.url);
+        currentPage = page;
+      }, false);
+    },
+    /*
+     * Links (<a href=... > listeners
+     * @returns {undefined}
+     */
+    links: function () {
+      console.log("add links listener");
 
-          btSearch.addEventListener('click', function () {
-            /* show search form*/
-            console.log("show search bar");
-            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
-              console.log("hide navigation bar");
-              document.getElementById("navbar").classList.remove('navShown');
-            }
-            var form = document.getElementById("topSearchForm");
-            if (form) {
-              var input = document.getElementById("topSearchInput");
-              input.value = "";
-              form.style.display = "inline";
-              input.focus();
-            }
-          }, false);
+      var myLinks = document.querySelectorAll('.aw-article a');
+      //console.log("links to add :" + myLinks.length);
 
-          btMenu.addEventListener('click', function () {
-            /* toggle navigation bar */
-            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
-              console.log("hide navigation bar");
-              document.getElementById("navbar").classList.remove('navShown');
-            } else {
-              console.log("show navigation bar");
-              document.getElementById("navbar").classList.add('navShown');
-            }
+      for (var i = 0; i < myLinks.length; i++) {
 
-          }, false);
+        var a = myLinks[i];
+        //console.log("links :" + i + "\n" + a.href + "\n" + a.host + "\n" + a.protocol);
 
-          btHome.addEventListener('click', function () {
-            /* go home */
-            var page = new WikiArticle(new MyUrl(myAppUrl));
-            page.loadCache();
-            myhistory.push(page.url);
-            currentPage = page;
-          }, false);
-        },
-        /*
-         * Links (<a href=... > listeners
-         * @returns {undefined}
-         */
-        links: function () {
-          console.log("add links listener");
+        if (!a.href) {
+          //console.log("a with no ref found!");
+          a.addEventListener('click',
+              function (e) {
+                e.preventDefault();
+                console.error("no href found");
+              }
+          , false);
 
-          var myLinks = document.querySelectorAll('.aw-article a');
-          //console.log("links to add :" + myLinks.length);
+        } else if (a.href.startsWith(myAppUrl + '#')) {
+          // let's local anchor manage by the html engine
+          continue;
 
-          for (var i = 0; i < myLinks.length; i++) {
+        } else if (
+            (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") // <- common case 
+            || (a.host.startsWith(document.location.host) && a.protocol === document.location.protocol) // <- happen when a research result redirect to a page (example of search: zsh)
+            ) {
+          //console.log("wiki link event add : " + a.href);
+          a.addEventListener('click', loadWiki, false);
 
-            var a = myLinks[i];
-            //console.log("links :" + i + "\n" + a.href + "\n" + a.host + "\n" + a.protocol);
+        } else {
+          //console.log("external link event add : " + a.href);
+          a.addEventListener('click', openInOSBrowser, false);
 
-            if (!a.href) {
-              //console.log("a with no ref found!");
-              a.addEventListener('click',
-                  function (e) {
-                    e.preventDefault();
-                    console.error("no href found");
-                  }
-              , false);
-
-            } else if (a.href.startsWith(myAppUrl + '#')) {
-              // let's local anchor manage by the html engine
-              continue;
-
-            } else if (
-                (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") // <- common case 
-                || (a.host.startsWith(document.location.host) && a.protocol === document.location.protocol) // <- happen when a research result redirect to a page (example of search: zsh)
-                ) {
-              //console.log("wiki link event add : " + a.href);
-              a.addEventListener('click', loadWiki, false);
-
-            } else {
-              //console.log("external link event add : " + a.href);
-              a.addEventListener('click', openInOSBrowser, false);
-
-            }
-          }
-        },
-        /*
-         * Search form Listeners 
-         * @returns {undefined}
-         */
-        searchBar: function () {
-          console.log("add search event");
-
-          var form = document.getElementById("topSearchForm");
-
-          if (form) {
-            form.addEventListener('submit', searchWiki, true);
-
-            form.addEventListener('blur', function (e) {
-              console.log("hide search bar");
-              e.preventDefault();
-              document.getElementById("topSearchForm").style.display = "";
-            }, true);
-          } else {
-            console.log("couldn't get search form");
-          }
-
-        },
-        /*
-         * Navigation bar Listeners
-         * @returns {undefined}
-         */
-        navBar: function () {
-          console.log("add navbar event");
-
-          var btClose = document.getElementById("action_close"),
-              btReload = document.getElementById("action_reload"),
-              btBack = document.getElementById("action_back");
-
-          btClose.addEventListener('click', function () {
-            console.log("close");
-            window.close();
-          }, false);
-
-
-          btBack.addEventListener('click', function () {
-            console.log("back");
-
-            if (myhistory.length > 1) {
-
-              // console.log("history length : " + myhistory.length);
-              var page = new WikiArticle(myhistory.popget());
-
-              page.loadCache();
-              currentPage = page;
-            }
-          }, false);
-
-          btReload.addEventListener('click', function () {
-            console.log("reload");
-            currentPage.loadUrl(true);
-          }, false);
-        },
-        /*
-         * clicking somewhere in an article
-         * @returns {undefined}
-         */
-        awArticle: function (){
-          document.getElementById("aw-article")
-              .addEventListener('click', function () {
-                // hide menu bar when click outside menubar
-                if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
-                  console.log("hide navigation bar");
-                  document.getElementById("navbar").classList.remove('navShown');
-                }
-              }, false);
         }
       }
-    };
+    },
+    /*
+     * Search form Listeners 
+     * @returns {undefined}
+     */
+    searchBar: function () {
+      console.log("add search event");
 
+      var form = document.getElementById("topSearchForm");
+
+      if (form) {
+        form.addEventListener('submit', searchWiki, true);
+
+        form.addEventListener('blur', function (e) {
+          console.log("hide search bar");
+          e.preventDefault();
+          document.getElementById("topSearchForm").style.display = "";
+        }, true);
+      } else {
+        console.log("couldn't get search form");
+      }
+
+    },
+    /*
+     * Navigation bar Listeners
+     * @returns {undefined}
+     */
+    navBar: function () {
+      console.log("add navbar event");
+
+      var btClose = document.getElementById("action_close"),
+          btReload = document.getElementById("action_reload"),
+          btBack = document.getElementById("action_back");
+
+      btClose.addEventListener('click', function () {
+        console.log("close");
+        window.close();
+      }, false);
+
+
+      btBack.addEventListener('click', function () {
+        console.log("back");
+
+        if (myhistory.length > 1) {
+
+          // console.log("history length : " + myhistory.length);
+          var page = new WikiArticle(myhistory.popget());
+
+          page.loadCache();
+          currentPage = page;
+        }
+      }, false);
+
+      btReload.addEventListener('click', function () {
+        console.log("reload");
+        currentPage.loadUrl(true);
+      }, false);
+    },
+    /*
+     * clicking somewhere in an article
+     * @returns {undefined}
+     */
+    awArticle: function () {
+      document.getElementById("aw-article")
+          .addEventListener('click', function () {
+            // hide menu bar when click outside menubar
+            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
+              console.log("hide navigation bar");
+              document.getElementById("navbar").classList.remove('navShown');
+            }
+          }, false);
+    }
+  }
+};
 
     /* ----------------------------------------
      * callback
@@ -825,6 +830,8 @@ window.addEventListener('DOMContentLoaded', function () {
         currentPage = new WikiArticle(new MyUrl(myAppUrl));
         currentPage.setContent(document.getElementById("aw-article-body").innerHTML);
         currentPage.toDb();
+        
+        myhistory = new MyHistory();
         myhistory.push(currentPage.url);
       };
 
@@ -895,8 +902,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     uiListeners.init();
     opendb();
-    myhistory = new MyHistory();
-
+    
     console.log("initialisation script end (some steps may not have been completed yet)");
   })();
 });

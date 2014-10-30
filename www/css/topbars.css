@@ -53,24 +53,6 @@ section[role="region"] > header:first-child .icon-search {
     background-image: url("../icons/main/search.svg");
 }
 
-/* Navigation bar icons */
-div[role="toolbar"] > ul > li  .icon-back {
-    /*background-color: #333;*/
-    background-image: url("../icons/navigation/arrow-back.svg");   
-}
-
-div[role="toolbar"] > ul > li .icon-reload {
-    /*background-color: #333;*/
-    background-image: url("../icons/navigation/reload.svg");
-
-}
-
-div[role="toolbar"] > ul > li  .icon-close {
-    /*background-color: #333;*/
-    background-image: url("../icons/navigation/close.svg");
-}
-
-
 /* other properties from ffos building block*/
 section[role="region"] > header:first-child > a:last-of-type {
     display: block;
