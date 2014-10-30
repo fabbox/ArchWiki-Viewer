@@ -1,0 +1,127 @@
+/*
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 30 oct. 2014, 13:38:03
+    Author     : fbox
+*/
+
+/*based on https://developer.mozilla.org/en-US/Apps/Design/Patterns/Drawer/Coding*/
+
+section[data-type="sidebar"] {
+    position: absolute;
+    width: 80%;
+    background: #333;
+    /*background: url("drawer/images/ui/pattern.png") repeat scroll 0% 0% transparent;*/
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    overflow: hidden;
+    font-family: "MozTT",sans-serif;
+    color:#F0F0F0;
+}
+
+section[data-type="sidebar"] h1,
+section[data-type="sidebar"] h2,
+section[data-type="sidebar"] h3,
+section[data-type="sidebar"] h4,
+section[data-type="sidebar"] h5,
+section[data-type="sidebar"] h6,
+section[data-type="sidebar"] p,
+section[data-type="sidebar"] a {
+    color:#F0F0F0;
+
+}
+
+section[data-type="sidebar"] > header {
+    position: relative;
+    z-index: 10;
+    height: 4rem;
+    color: #fff;
+    /*background: url(drawer/images/ui/header.png) repeat-x left top;*/
+}
+section[data-type="sidebar"] > header h1 {
+    font: 2.2rem/3.8rem "MozTT",sans-serif;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+    overflow: hidden;
+    width: auto;
+    margin: 0px 0px 0px 3rem;
+    height: 100%;
+    border: none;
+    padding: 0;
+    background: none ;
+}
+
+section[data-type="sidebar"] > nav {
+    overflow-y: auto;
+    max-height: 100%;
+    margin-right: -0.8rem;
+}
+
+section[data-type="sidebar"] > nav > ul {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+section[data-type="sidebar"] > nav > ul > li {
+    color: #FFF;
+    list-style: outside none none;
+    transition: background 0.2s ease 0s;
+}
+
+section[data-type="sidebar"] > nav > h2 {
+    font-weight: bold;
+    font-size: 1.4rem;
+    line-height: 3.3rem;
+    text-indent: 3rem;
+    color: #FFF;
+    /*background: url("drawer/images/ui/pattern_subheader.png") repeat scroll left top transparent;*/
+    border-bottom: 1px solid #596068;
+    margin: 0px;
+    padding-right: 0.8rem;
+}
+
+
+section[data-type="sidebar"] > nav > ul > li { 
+    color: #fff;
+    text-indent: 3rem;
+    list-style: none;
+    transition: background 0.2s ease;
+}
+
+section[data-type="sidebar"] > nav > ul > li:active {
+    background: #00ABCC;  
+}
+
+section[data-type="sidebar"] > nav > ul > li > a { 
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.6rem;
+    line-height: 4.35rem;
+    border-bottom: 1px solid #596068; 
+    text-indent: 3rem;
+    padding-right: 0.8rem;
+    width: 100%;
+    -moz-box-sizing: border-box;
+    display: block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

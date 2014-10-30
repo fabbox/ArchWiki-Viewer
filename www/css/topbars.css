@@ -22,16 +22,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*
 ** header bar && toolbar (navigation)
 */
-section[role="region"] > header:first-child  .icon,
-div[role="toolbar"] > ul > li .icon{
+section[role="region"] > header:first-child  .icon{
     display: block;
     background: none no-repeat scroll center center / 3.6rem auto transparent;
     font-size: 0px;
 }
 
 section[role="region"] > header:first-child  .icon{
-    width: 3.6rem;
-    height: 3.6rem;
+    width: 4rem;
+    height: 4rem;
 }
 
 div[role="toolbar"] > ul > li .icon{
@@ -53,14 +52,25 @@ section[role="region"] > header:first-child .icon-search {
     background-image: url("../icons/main/search.svg");
 }
 
+section[role="region"] > header:first-child .icon-settings {
+    background-image: url("../icons/main/settings.svg");
+}
+
 /* other properties from ffos building block*/
 section[role="region"] > header:first-child > a:last-of-type {
     display: block;
 }
 
+section[role="region"] > header:first-child .hidden{
+    visibility: hidden !important
+}
+
+section[role="region"] > header:first-child .visible{
+    visibility: visible
+}
+
 section[role="region"] > header:first-child a,
-section[role="region"] > header:first-child button,
-div[role="toolbar"] > ul > li button {
+section[role="region"] > header:first-child button{
     /*box-sizing: border-box; XXX: declaration dropped*/
     position: relative;
     display: block;
@@ -74,6 +84,26 @@ div[role="toolbar"] > ul > li button {
     padding: 0px;
     margin: 0px;
 }
+
+section[role="region"] > header:first-child .btSettings{
+    position: absolute;
+    top:0;
+    left:0;
+}
+
+section[role="region"]:target {
+    transform: translateX(80%);
+    /*z-index:100;*/
+}
+
+section[role="region"] #a_settings_show {
+    visibility: visible;
+}
+
+section[role="region"]:target #a_settings_show {
+    visibility: hidden;
+}
+
 
 section[role="region"] header button:active {
     background-color: #008aaa;

@@ -62,6 +62,27 @@ div[role="toolbar"] > ul > li button:active {
   background-color: #008aaa;
 }
 
+div[role="toolbar"] > ul > li button {
+    /*box-sizing: border-box; XXX: declaration dropped*/
+    position: relative;
+    display: block;
+    overflow: hidden;
+    float: left;
+    min-width: 3rem;
+    width: auto;
+    height: 4rem;
+    border: none;
+    background: none repeat scroll 0% 0% transparent;
+    padding: 0px;
+    margin: 0px;
+}
+
+div[role="toolbar"] > ul > li .icon {
+    display: block;
+    background: none no-repeat scroll center center / 3.6rem auto transparent;
+    font-size: 0px;
+}
+
 /* Navigation bar icons */
 div[role="toolbar"] > ul > li  .icon-back {
     background-image: url("../icons/navigation/arrow-back.svg");   

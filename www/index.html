@@ -29,9 +29,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
         <link rel="stylesheet" href="css/main.css">   
-        
+
         <link rel="stylesheet" href="css/toolbar.css">
         <link rel="stylesheet" href="css/topbars.css">
+        <link rel="stylesheet" href="css/sidebar.css">
 
         <link rel="stylesheet" href="css/archwikistyle.css">
         <link rel="stylesheet" href="css/hackedarchwikistyle.css">        
@@ -39,11 +40,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         <script type="text/javascript" src="js/uiListeners.js" defer="defer"></script>
         <script type="text/javascript" src="app.js" defer="defer"></script>
-        
+
     </head>
 
     <body role="application">
 
+        <section data-type="sidebar">
+            <header>
+                 <h1>Settings</h1>
+            </header>
+            <nav>
+                <h2>Database</h2>
+                <ul>
+                    <li>use cache</li>
+                    <li>cache refresh</li>
+                </ul>
+                <h2></h2>
+                <ul>
+                    <li><a href="#">about</a></li>
+                    <li><a href="#">quit</a></li>
+                </ul>
+            </nav>
+        </section>        
 
         <section id="main" role="region">
             <!-- 
@@ -51,9 +69,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             -->
             <header class="archmainbar">
 
-                <button>    
+                <button >    
                     <span class="icon icon-home" id="action_home"></span>
                 </button>    
+                <a class="btSettings hidden" href="#" id="a_settings_hide"> 
+                    <span class="icon icon-settings" id="action_settings_hide"></span>
+                </a>
+                <a class="btSettings hidden" href="#main" id="a_settings_show"> 
+                    <span class="icon icon-settings" id="action_settings_show"></span>
+                </a>
+                
                 <menu type="toolbar">
                     <button>
                         <span class="icon icon-search" id="action_search"></span>
@@ -75,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <input type="text" placeholder="Search..." id="topSearchInput">
                 </p>
             </form>
-            
+
             <!-- 
             # Progress bar
             -->
@@ -216,8 +241,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </ul>
                 <ul>
                     <li><button class="icon icon-reload" id="action_reload">Reload</button></li>
-<!--                    <li><button class="icon icon-star-full" id="action_star">Index</button></li>
-                    <li><button class="icon icon-settings" id="action_settings">Settings</button></li>-->
+                    <li><button class="icon icon-star-full" id="action_star">Index</button></li>
+                    <!--<li><button class="icon icon-settings" id="action_settings">Settings</button></li>-->
                     <li><button class="icon icon-close" id="action_close">Quit</button></li>
                 </ul>
             </div>
