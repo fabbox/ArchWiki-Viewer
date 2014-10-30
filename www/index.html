@@ -27,18 +27,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <meta name="description" content="ArchWiki Viewer Main Page">
         <meta name="viewport" content="width=device-width">
 
+
+        <link rel="stylesheet" href="css/main.css">   
+        
+        <link rel="stylesheet" href="css/toolbar.css">
         <link rel="stylesheet" href="css/topbars.css">
-        <link rel="stylesheet" href="css/main.css">        
 
-        <link rel="stylesheet" href="css/transitions.css">
         <link rel="stylesheet" href="css/archwikistyle.css">
-        <link rel="stylesheet" href="css/hackedarchwikistyle.css">
-
+        <link rel="stylesheet" href="css/hackedarchwikistyle.css">        
+        <link rel="stylesheet" href="css/transitions.css">
 
         <script type="text/javascript" src="app.js" defer="defer"></script>
     </head>
 
-    <body>
+    <body role="application">
 
 
         <section id="main" role="region">
@@ -63,6 +65,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </h1>
             </header>
 
+            <!-- 
+            # Search form (bar)
+            -->
+            <form role="search" id="topSearchForm">
+                <p>
+                    <input type="text" placeholder="Search..." id="topSearchInput">
+                </p>
+            </form>
+            
+            <!-- 
+            # Progress bar
+            -->
             <progress id="progressBar" class="loadPage" value="0" max="100" ></progress>
 
             <!-- 
@@ -192,34 +206,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </article>
 
             <!-- 
-            # Search form (bar)
+            # toolbar / navigation bar
             -->
-            <form role="search" id="topSearchForm">
-                <p>
-                    <input type="text" placeholder="Search..." id="topSearchInput">
-                </p>
-            </form>
+            <div role="toolbar" id="navbar" class="navHidden">
+                <ul>
+                    <li><button class="icon icon-back" id="action_back"></button></li>
+                </ul>
+                <ul>
+                    <li><button class="icon icon-reload" id="action_reload"></button></li>
+                    <li><button class="icon icon-close" id="action_close"></button></li>
+<!--                    <li><button class="pack-icon-mark">Mark</button></li>
+                    <li><button class="pack-icon-send">Send</button></li>
+                    <li><button class="pack-icon-move">Move</button></li>
+                    <li><button class="pack-icon-share">Share</button></li>-->
+                </ul>
+            </div>
 
-        </section>
-
-
-        <!-- 
-        # Navigation Bar
-        -->
-        <section role="region" id="s_navbar" hidden="">
-            <header id="navbar" class="archmainbar">
-                <button>    
-                    <span class="icon icon-back" id="action_back"></span>
-                </button>    
-                <menu type="toolbar">
-                    <button>
-                        <span class="icon icon-reload" id="action_reload"></span>
-                    </button>
-                    <button>
-                        <span class="icon icon-close" id="action_close"></span>
-                    </button>
-                </menu>
-            </header>
         </section>
 
     </body>

@@ -126,7 +126,6 @@ p img {
     margin: 0
 }
 
-
 /*
  *  section 
  */
@@ -136,7 +135,23 @@ section {
     height: 100%;
     position: relative;
     transition: all 0.25s ease 0s;
+    background: none;
 }
+
+/*
+ *  button
+ */
+
+
+button[disabled="true"]{
+    pointer-events: none;    
+}
+
+button::-moz-focus-inner { 
+    border: none;
+}
+
+
 
 /*
  * wiki article
@@ -146,6 +161,7 @@ section {
     position: fixed;
     top: calc(4rem + 6px);
     height: calc(100% - 4rem);
+    /*height: calc(100% - 4rem - 4rem);*/
     width: 100%; 
     font-size: 115%; 
     padding: 0;  
@@ -153,6 +169,7 @@ section {
     /*box-sizing: border-box; XXX: declaration dropped*/
     overflow-y: auto;
     overflow-x: hidden;
+    background: #fff;
 }
 
 .aw-article-body{
@@ -194,3 +211,6 @@ section {
 #Terms_of_Uses {
     font-weight: bold;
 }
+
+
+

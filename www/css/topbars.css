@@ -20,43 +20,53 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
-** header bar
+** header bar && toolbar (navigation)
 */
-section[role="region"] > header:first-child  .icon {
+section[role="region"] > header:first-child  .icon,
+div[role="toolbar"] > ul > li .icon{
     display: block;
-    width: 3.6rem;
-    height: 3.6rem;
     background: none no-repeat scroll center center / 3.6rem auto transparent;
     font-size: 0px;
 }
 
+section[role="region"] > header:first-child  .icon{
+    width: 3.6rem;
+    height: 3.6rem;
+}
+
+div[role="toolbar"] > ul > li .icon{
+    width: 4rem;
+    height: 4rem;
+}
+
 /* Main bar icons */
-section[role="region"] > header:first-child  .icon-home {
+section[role="region"] > header:first-child .icon-home
+{
     background-image: url("../icons/launcher.svg");
 }
 
-section[role="region"] > header:first-child  .icon-menu {
+section[role="region"] > header:first-child .icon-menu {
     background-image: url("../icons/main/menu.svg");
 }
 
-section[role="region"] > header:first-child  .icon-search {
+section[role="region"] > header:first-child .icon-search {
     background-image: url("../icons/main/search.svg");
 }
 
 /* Navigation bar icons */
-section[role="region"] > header:first-child  .icon-back {
-    background-color: #333;
+div[role="toolbar"] > ul > li  .icon-back {
+    /*background-color: #333;*/
     background-image: url("../icons/navigation/arrow-back.svg");   
 }
 
-section[role="region"] > header:first-child  .icon-reload {
-    background-color: #333;
+div[role="toolbar"] > ul > li .icon-reload {
+    /*background-color: #333;*/
     background-image: url("../icons/navigation/reload.svg");
 
 }
 
-section[role="region"] > header:first-child  .icon-close {
-    background-color: #333;
+div[role="toolbar"] > ul > li  .icon-close {
+    /*background-color: #333;*/
     background-image: url("../icons/navigation/close.svg");
 }
 
@@ -67,7 +77,8 @@ section[role="region"] > header:first-child > a:last-of-type {
 }
 
 section[role="region"] > header:first-child a,
-section[role="region"] > header:first-child button {
+section[role="region"] > header:first-child button,
+div[role="toolbar"] > ul > li button {
     /*box-sizing: border-box; XXX: declaration dropped*/
     position: relative;
     display: block;
@@ -82,8 +93,8 @@ section[role="region"] > header:first-child button {
     margin: 0px;
 }
 
-section[role="region"] > header:first-child button::-moz-focus-inner { 
-    border: none;
+section[role="region"] header button:active {
+    background-color: #008aaa;
 }
 
 section[role="region"] > header:first-child menu {
@@ -114,7 +125,7 @@ section[role="region"] > header:first-child menu {
     position:fixed;
     top:0px;
 
-    z-index:100000
+    z-index:1000
 }
 
 #archmainbar h1,
@@ -135,29 +146,6 @@ section[role="region"] > header:first-child menu {
     padding: 0;
 
     margin: 0;
-}
-
-
-.menubar {
-    display: inline-block;
-
-    vertical-align: middle;
-
-    border:0px ;
-    padding: 0;
-
-    margin: 0;
-    margin-top: 2px;
-    margin-left: 2px;
-
-    width: calc(100% - 120px)
-}
-
-#navbar{
-    background-color: transparent;
-    display: inline;
-
-    z-index:100001
 }
 
 /* ----------------------------------
@@ -203,7 +191,7 @@ form[role="search"] p input[type="text"] {
 
 form[role="search"]#topSearchForm {
     display: none;
-    z-index:100001
+    z-index:1001
 }
 
 input#topSearchInput {
@@ -232,8 +220,8 @@ progress.loadPage {
     background-size: 1rem auto;
     animation: .5s move infinite ease; 
     /*steps(15)*/
-    
-    z-index:100010
+
+    z-index:1010
 }
 
 @keyframes move {

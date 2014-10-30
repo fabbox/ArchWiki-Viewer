@@ -44,31 +44,33 @@ window.addEventListener('DOMContentLoaded', function () {
 
     function MyHistory() {
       //console.log("new MyHistory instance");
-      
+
       this._array = [];
       this.length = this._array;
-      
+
       uiListeners.disable.navigation();
     }
 
     MyHistory.prototype.push = function (url) {
-      
+
       this._array.push(url);
       this.length = this._array.length;
-      
-      uiListeners.enable.navigation();
+      if (this.length > 1) {
+        uiListeners.enable.navigation();
+      }
     };
 
     MyHistory.prototype.pop = function () {
-      
+
       var popval = this._array.pop();
       this.length = this._array.length;
-      
+
       if (this.length <= 1) {
         uiListeners.disable.navigation();
-        document.getElementById("s_navbar").hidden = true;
+        //document.getElementById("navbar").hidden = true;
+        document.getElementById("navbar").classList.remove('navShown');
       }
-      
+
       return popval;
     };
 
@@ -226,14 +228,18 @@ window.addEventListener('DOMContentLoaded', function () {
 
     Content.prototype.print = function () {
       /* create new article element */
-      var awart = document.createElement("div");
+      var awart = document.createElement("article");
+      var awart_content = document.createElement("div");
+      
+      awart.id = "aw-article";
+      awart.className = "aw-article fade-in fade-out";
 
-      awart.id = "aw-article-body";
-      awart.className = "aw-article-body";
-      awart.innerHTML = this.body;
+      awart_content.id = "aw-article-body";
+      awart_content.className = "aw-article-body";
+      awart_content.innerHTML = this.body;
 
       /* reformat "related articles" part (if any)*/
-      var fec = awart.firstElementChild;
+      var fec = awart_content.firstElementChild;
       do {
         if (fec
             && fec.tagName === "DIV"
@@ -253,23 +259,42 @@ window.addEventListener('DOMContentLoaded', function () {
 
       /* find img to update link to point to archlinux */
       /* XXX: Try to find img usage to include the most used in app */
-      var img = awart.querySelectorAll("img");
+      var img = awart_content.querySelectorAll("img");
       if (img) {
         for (var i = 0; i < img.length; i++) {
-          
+
           if (img[i].src.startsWith(appRoot() + "/images/")) {
             console.log("update image src");
             img[i].src = img[i].src.replace(appRoot(), "https://wiki.archlinux.org");
           }
-          
+
         }
       }
 
-      /* set article content*/
-      document.querySelector("#aw-article-body").parentNode
-          .replaceChild(awart, document.querySelector("#aw-article-body"));
 
-
+      /* set article content*/ 
+      awart.appendChild(awart_content);
+      
+      /* replace current article by this article*/
+      var awart_old = document.querySelector("#aw-article"),
+          awart_content_old = document.querySelector("#aw-article-body"),
+          awsect = awart_old.parentNode;
+          
+      awsect.replaceChild(awart,awart_old);
+      
+//    TEST TO MAKE SMOOTH TRANSITION
+//                
+//      awart_old.id = "";
+//      awart_content_old.id="";
+//      
+//      awsect.appendChild(awart);
+//      
+//      awart_old.addEventListener("transitionend", function(e){
+//        awsect.removeChild(awart_old);
+//      }, true);
+//      
+//      awart_old.classList.add('fade-out');
+//      awart.classList.remove('fade-out');
     };
 
 
@@ -349,7 +374,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
       xhr.onerror = function () {
         console.error("load error");
-        
+
         var h2 = document.createElement('h2'),
             p1 = document.createElement('p'),
             p2 = document.createElement('p');
@@ -365,7 +390,8 @@ window.addEventListener('DOMContentLoaded', function () {
         body.appendChild(p1);
         body.appendChild(p2);
 
-        document.getElementById("s_navbar").hidden = false;
+        //document.getElementById("navbar").hidden = false;
+        document.getElementById("navbar").classList.add('navShown');
       };
 
       xhr.onloadend = function () {
@@ -500,8 +526,8 @@ window.addEventListener('DOMContentLoaded', function () {
          * @returns {undefined}
          */
         navigation: function () {
-          var btReload = document.getElementById("action_reload").parentNode,
-              btBack = document.getElementById("action_back").parentNode;
+          var btReload = document.getElementById("action_reload"),
+              btBack = document.getElementById("action_back");
           if (btReload.hasAttributes("disabled")) {
             btReload.removeAttribute("disabled");
           }
@@ -519,8 +545,8 @@ window.addEventListener('DOMContentLoaded', function () {
          * @returns {undefined}
          */
         navigation: function () {
-          var btReload = document.getElementById("action_reload").parentNode,
-              btBack = document.getElementById("action_back").parentNode;
+          var btReload = document.getElementById("action_reload"),
+              btBack = document.getElementById("action_back");
 
           btReload.setAttribute("disabled", "true");
           btBack.setAttribute("disabled", "true");
@@ -545,6 +571,10 @@ window.addEventListener('DOMContentLoaded', function () {
           btSearch.addEventListener('click', function () {
             /* show search form*/
             console.log("show search bar");
+            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
+              console.log("hide navigation bar");
+              document.getElementById("navbar").classList.remove('navShown');
+            }
             var form = document.getElementById("topSearchForm");
             if (form) {
               var input = document.getElementById("topSearchInput");
@@ -555,9 +585,14 @@ window.addEventListener('DOMContentLoaded', function () {
           }, false);
 
           btMenu.addEventListener('click', function () {
-            /* show menu bar */
-            console.log("show navigation bar");
-            document.getElementById("s_navbar").hidden = false;
+            /* toggle navigation bar */
+            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
+              console.log("hide navigation bar");
+              document.getElementById("navbar").classList.remove('navShown');
+            } else {
+              console.log("show navigation bar");
+              document.getElementById("navbar").classList.add('navShown');
+            }
 
           }, false);
 
@@ -640,9 +675,9 @@ window.addEventListener('DOMContentLoaded', function () {
         navBar: function () {
           console.log("add navbar event");
 
-          var btClose = document.getElementById("action_close").parentNode,
-              btReload = document.getElementById("action_reload").parentNode,
-              btBack = document.getElementById("action_back").parentNode;
+          var btClose = document.getElementById("action_close"),
+              btReload = document.getElementById("action_reload"),
+              btBack = document.getElementById("action_back");
 
           btClose.addEventListener('click', function () {
             console.log("close");
@@ -660,12 +695,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
               page.loadCache();
               currentPage = page;
-
-//              if (myhistory.length > 1) {
-//                document.getElementById("s_navbar").hidden = false;
-//              } else {
-//                document.getElementById("s_navbar").hidden = true;
-//              }
             }
           }, false);
 
@@ -677,9 +706,9 @@ window.addEventListener('DOMContentLoaded', function () {
           document.getElementById("aw-article")
               .addEventListener('click', function () {
                 // hide menu bar when click outside menubar
-                if (!document.getElementById("s_navbar").hidden) {
+                if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
                   console.log("hide navigation bar");
-                  document.getElementById("s_navbar").hidden = true;
+                  document.getElementById("navbar").classList.remove('navShown');
                 }
               }, false);
         }
