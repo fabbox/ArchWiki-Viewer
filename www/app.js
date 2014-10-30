@@ -289,14 +289,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
       /* Direct transition */
       // awsect.replaceChild(awart,awart_old);
-      /* TEST TO MAKE SMOOTH TRANSITION*/
+      /* fade out/in transition*/
       awsect.appendChild(awart);
 
       awart_old.addEventListener("transitionend", function (e) {
-        //console.log(awart_old.id);
-        //console.log(awart.id);
         awart.classList.add('fade-in');
         awart_old.parentNode.removeChild(awart_old);
+        uiListeners.add.awArticle();
       }, true);
 
       awart_old.classList.remove('fade-in');
@@ -521,6 +520,7 @@ window.addEventListener('DOMContentLoaded', function () {
         uiListeners.add.searchBar();
         uiListeners.add.navBar();
         uiListeners.add.links();
+        uiListeners.add.awArticle();
       },
       /*
        * enable stuff
@@ -707,7 +707,12 @@ window.addEventListener('DOMContentLoaded', function () {
             console.log("reload");
             currentPage.loadUrl(true);
           }, false);
-
+        },
+        /*
+         * clicking somewhere in an article
+         * @returns {undefined}
+         */
+        awArticle: function (){
           document.getElementById("aw-article")
               .addEventListener('click', function () {
                 // hide menu bar when click outside menubar
