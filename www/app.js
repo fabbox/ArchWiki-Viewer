@@ -40,8 +40,8 @@ window.addEventListener('DOMContentLoaded', function () {
     var currentPage = null, // "article" which is diplayed
         db = null, // indexeddb which store cache, pref... 
         myAppUrl = appUrl(), // reference url ("app://.../index.html")
-        myhistory = []; // array of "MyUrl" used to manage history
-
+        myhistory = [], // array of "MyUrl" used to manage history
+        USE_CACHE; // use cache or not ? 
 
     /* ----------------------------------------
      * MyHistory
@@ -73,7 +73,7 @@ window.addEventListener('DOMContentLoaded', function () {
       if (this.length <= 1) {
         uiListeners.disable.navigation();
         //document.getElementById("navbar").hidden = true;
-        document.getElementById("navbar").classList.remove('navShown');
+        ui.navbar.hide();
       }
 
       return popval;
@@ -226,9 +226,6 @@ window.addEventListener('DOMContentLoaded', function () {
     function Content(content) {
       //console.log("new Content instance");
       this.body = content;
-
-
-
     }
 
     Content.prototype.print = function () {
@@ -326,6 +323,16 @@ window.addEventListener('DOMContentLoaded', function () {
       this.date = Date.now();
     }
 
+    WikiArticle.prototype.loadArticle = function (useCache) {
+      if (useCache) {
+        this.loadCache();
+      } else if (this.url.href === appUrl()) {
+        this.loadCache();
+      } else {
+        this.loadUrl(false);
+      }
+    };
+
     WikiArticle.prototype.loadCache = function () {
       document.getElementById("progressBar").style.display = "block";
 
@@ -400,7 +407,7 @@ window.addEventListener('DOMContentLoaded', function () {
         body.appendChild(p2);
 
         //document.getElementById("navbar").hidden = false;
-        document.getElementById("navbar").classList.add('navShown');
+        ui.navbar.show();
       };
 
       xhr.onloadend = function () {
@@ -511,6 +518,41 @@ window.addEventListener('DOMContentLoaded', function () {
      * namespace uiListeners: manage events listenner function from the UI
      * ------------------------------------------*/
 
+    var ui = {
+      navbar: {
+        hide: function () {
+          if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
+            console.log("hide navigation bar");
+            document.getElementById("navbar").classList.remove('navShown');
+
+            document.getElementById("action_settings_show").parentNode.classList.add('hidden');
+            document.getElementById("action_settings_hide").parentNode.classList.add('hidden');
+
+            document.getElementById("action_home").parentNode.classList.remove('hidden');
+
+          }
+        },
+        show: function () {
+          if (document.getElementById("navbar").className.indexOf("navShown") < 0) {
+            console.log("show navigation bar");
+            document.getElementById("navbar").classList.add('navShown');
+
+            document.getElementById("action_home").parentNode.classList.add('hidden');
+
+            document.getElementById("action_settings_show").parentNode.classList.remove('hidden');
+            document.getElementById("action_settings_hide").parentNode.classList.remove('hidden');
+
+          }
+        },
+        toggle: function () {
+          if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
+            ui.navbar.hide();
+          } else {
+            ui.navbar.show();
+          }
+        }
+      }
+    };
 
     /*
      * Namespace for UI Listeners
@@ -527,6 +569,7 @@ window.addEventListener('DOMContentLoaded', function () {
         uiListeners.add.navBar();
         uiListeners.add.links();
         uiListeners.add.awArticle();
+        uiListeners.add.sidebar();
       },
       /*
        * enable stuff
@@ -581,11 +624,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btSearch.addEventListener('click', function () {
             /* show search form*/
+            ui.navbar.hide();
+
             console.log("show search bar");
-            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
-              console.log("hide navigation bar");
-              document.getElementById("navbar").classList.remove('navShown');
-            }
             var form = document.getElementById("topSearchForm");
             if (form) {
               var input = document.getElementById("topSearchInput");
@@ -597,14 +638,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btMenu.addEventListener('click', function () {
             /* toggle navigation bar */
-            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
-              console.log("hide navigation bar");
-              document.getElementById("navbar").classList.remove('navShown');
-            } else {
-              console.log("show navigation bar");
-              document.getElementById("navbar").classList.add('navShown');
-            }
-
+            ui.navbar.toggle();
           }, false);
 
           btHome.addEventListener('click', function () {
@@ -614,6 +648,46 @@ window.addEventListener('DOMContentLoaded', function () {
             myhistory.push(page.url);
             currentPage = page;
           }, false);
+
+          /* 
+           * Setting button :
+           * show/hide sidebar is driven by css.
+           * the two latter events are used to disable the default 
+           * behaviour of the main article (which stay 20% visible and 
+           * so clickable)
+           * */
+
+          /* action_settings : show sidebar -> disable article behaviour*/
+          document.getElementById("action_settings_show").parentNode.addEventListener('click', function () {
+
+            console.log("disable hide navitation bar");
+            uiListeners.remove.awArticle();
+
+            console.log("disable click on navitation bar");
+            uiListeners.disable.navigation();
+
+            console.log("prevent click link event");
+            uiListeners.remove.links();
+            uiListeners.add.stoppedLinks();
+          }, false);
+
+          /* action_settings : hide sidebar -> re-enable article behaviour*/
+          document.getElementById("action_settings_hide").parentNode.addEventListener('click', function () {
+
+            console.log("enable hide navitation bar");
+            uiListeners.add.awArticle();
+
+
+            if (myhistory.length > 1) {
+              console.log("enable click on navitation bar");
+              uiListeners.enable.navigation();
+            }
+
+            console.log("enable click link event");
+            uiListeners.remove.stoppedLinks();
+            uiListeners.add.links();
+          }, false);
+
         },
         /*
          * Links (<a href=... > listeners
@@ -688,7 +762,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
           var btClose = document.getElementById("action_close"),
               btReload = document.getElementById("action_reload"),
-              btBack = document.getElementById("action_back");
+              btBack = document.getElementById("action_back"),
+              btStar = document.getElementById("action_star");
 
           btClose.addEventListener('click', function () {
             console.log("close");
@@ -704,7 +779,7 @@ window.addEventListener('DOMContentLoaded', function () {
               // console.log("history length : " + myhistory.length);
               var page = new WikiArticle(myhistory.popget());
 
-              page.loadCache();
+              page.loadArticle(USE_CACHE);
               currentPage = page;
             }
           }, false);
@@ -714,61 +789,93 @@ window.addEventListener('DOMContentLoaded', function () {
             currentPage.loadUrl(true);
           }, false);
 
-          document.getElementById("action_settings_show").parentNode.addEventListener('click', function () {
-            console.log("prevent hidding navitation bar");
-            uiListeners.remove.awArticle();
+          btStar.addEventListener('click', function () {
+            console.log("star");
+            getCachedArticleList();
           }, false);
 
-          document.getElementById("action_settings_hide").parentNode.addEventListener('click', function () {
-            console.log("allow hidding navitation bar");
-            uiListeners.add.awArticle();
-          }, false);
-
-
-          document.getElementById("navbar").addEventListener('transitionend', function (e) {
-
-//        console.log(getComputedStyle(document.getElementById("main")).getAttribute(left));
-
-            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
-
-              document.getElementById("action_home").parentNode.classList.add('hidden');
-              document.getElementById("action_settings_show").parentNode.classList.remove('hidden');
-              document.getElementById("action_settings_hide").parentNode.classList.remove('hidden');
-//              document.getElementById("action_settings").parentNode.classList.remove('fade-in');
-
-            } else {
-              document.getElementById("action_home").parentNode.classList.remove('hidden');
-              document.getElementById("action_settings_show").parentNode.classList.add('hidden');
-              document.getElementById("action_settings_hide").parentNode.classList.add('hidden');
-
-
-            }
-          }, false);
+//          document.getElementById("navbar").addEventListener('transitionend', function (e) {
+//
+//            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
+//
+//              document.getElementById("action_home").parentNode.classList.add('hidden');
+//              document.getElementById("action_settings_show").parentNode.classList.remove('hidden');
+//              document.getElementById("action_settings_hide").parentNode.classList.remove('hidden');
+//
+//            } else {
+//
+//              document.getElementById("action_home").parentNode.classList.remove('hidden');
+//              document.getElementById("action_settings_show").parentNode.classList.add('hidden');
+//              document.getElementById("action_settings_hide").parentNode.classList.add('hidden');
+//            }
+//          }, false);
 
         },
-        sectionMain: function () {
-//          document.getElementById("main").addEventListener('transitionend',function(e){
-//            
-//          },false);
+        stoppedLinks: function () {
+          var myLinks = document.querySelectorAll('.aw-article a');
+
+          for (var i = 0; i < myLinks.length; i++) {
+            myLinks[i].addEventListener('click', stopprop, false);
+          }
         },
         /*
          * clicking somewhere in an article
          * @returns {undefined}
          */
         awArticle: function () {
-
-//          console.log(document.getElementById("main").getAttribute("transform"));
-//          console.log(window.getComputedStyle(document.getElementById("main"), null));
-
           document.getElementById("aw-article")
-              .addEventListener('click', hideNavBar, false);
+              .addEventListener('click', ui.navbar.hide, false);
+        },
+        sidebar: function () {
+          document.getElementById("sideQuit")
+              .addEventListener('click', function (e) {
+                e.preventDefault();
+                console.log("close");
+                window.close();
+              }, false);
+
+          document.getElementById("use_cache").addEventListener('click', function (e) {
+            setUseCache(e.target.checked);
+          }, false);
+
+          document.getElementById("cleardb").addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById("cleardb_confirm").classList.remove("hidden");
+            //clearObjectStore("pages");
+          }, false);
+
+          document.getElementById("cleardb_cancel").addEventListener('click', function (e) {
+            document.getElementById("cleardb_confirm").classList.add("hidden");
+          }, false);
+          
+          document.getElementById("cleardb_ok").addEventListener('click', function (e) {
+            document.getElementById("cleardb_confirm").classList.add("hidden");
+            clearObjectStore("pages");
+          }, false);
         }
       },
       remove: {
         awArticle: function () {
           document.getElementById("aw-article")
-              .removeEventListener('click', hideNavBar, false);
+              .removeEventListener('click', ui.navbar.hide, false);
 
+        },
+        links: function () {
+          var myLinks = document.querySelectorAll('.aw-article a');
+
+          for (var i = 0; i < myLinks.length; i++) {
+            var a = myLinks[i];
+            a.removeEventListener('click', loadWiki, false);
+            a.removeEventListener('click', openInOSBrowser, false);
+            a.addEventListener('click', stopprop, false);
+          }
+        },
+        stoppedLinks: function () {
+          var myLinks = document.querySelectorAll('.aw-article a');
+
+          for (var i = 0; i < myLinks.length; i++) {
+            myLinks[i].removeEventListener('click', stopprop, false);
+          }
         }
       }
     };
@@ -777,17 +884,21 @@ window.addEventListener('DOMContentLoaded', function () {
      * callback
      * ------------------------------------------*/
 
-    function hideNavBar() {
-      // hide navigation menu
-      if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
-        console.log("hide navigation bar");
-        document.getElementById("navbar").classList.remove('navShown');
-      }
+    function stopprop(e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
 
+//    function hideNavBar() {
+//      // hide navigation menu
+//      if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
+//        console.log("hide navigation bar");
+//        document.getElementById("navbar").classList.remove('navShown');
+//      }
+//    }
 
     /*
-     * Callback functions for Links Events Listener
+     * Callback for Links Events Listener
      * @param {type} e
      * @returns {undefined}
      */
@@ -799,7 +910,7 @@ window.addEventListener('DOMContentLoaded', function () {
           targetUrl = new MyUrl(href),
           page = new WikiArticle(targetUrl);
 
-      page.loadCache();
+      page.loadArticle(USE_CACHE);
       currentPage = page;
       myhistory.push(targetUrl);
 
@@ -828,7 +939,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
     /*
-     * callback for external link
+     * Callback for external link
      * @param {type} e
      * @returns {undefined}
      */
@@ -850,6 +961,49 @@ window.addEventListener('DOMContentLoaded', function () {
       };
     }
 
+    /*
+     * Callback for action_star (saved articles in the database)
+     * @returns {undefined}
+     */
+    function getCachedArticleList() {
+
+      /* retrieve all cached page and make a list*/
+      var objectStore = db.transaction("pages").objectStore("pages"),
+          ul = document.createElement("ul");
+
+      objectStore.openCursor().onsuccess = function (event) {
+
+        var cursor = event.target.result;
+
+        if (cursor) {
+
+          var li = document.createElement("li"),
+              a = document.createElement("a");
+          a.href = cursor.key;
+          a.textContent = cursor.value.title;
+
+          li.appendChild(a);
+          ul.appendChild(li);
+          //console.log(" the URL " + cursor.key + " is entitle " + cursor.value.title);
+
+          cursor.continue();
+
+        } else {
+
+          console.log("printing star page");
+          var list = document.createElement("body");
+          list.appendChild(ul);
+
+          var cachedArticleList = new WikiArticle(new MyUrl(""));
+          cachedArticleList.title = new Title("Cached articles");
+          cachedArticleList.setContent(list.innerHTML);
+          cachedArticleList.print();
+          
+          ui.navbar.hide();
+        }
+      };
+    }
+
 
     /* ----------------------------------------
      * Database (indexedDB)
@@ -862,7 +1016,7 @@ window.addEventListener('DOMContentLoaded', function () {
      */
     function opendb() {
       /* openning database */
-      var request = indexedDB.open("awv", 1);
+      var request = indexedDB.open("awv", 2);
 
       request.onerror = function () {
         console.log("Why didn't you allow my web app to use IndexedDB?!");
@@ -883,17 +1037,43 @@ window.addEventListener('DOMContentLoaded', function () {
 
         myhistory = new MyHistory();
         myhistory.push(currentPage.url);
+
+        /* set pref*/
+        var objStore = db.transaction(["settings"], "readonly").objectStore("settings");
+        var localCache = objStore.get("use_cache");
+
+        localCache.onsuccess = function (e) {
+          var use_cache = e.target.result;
+          if (use_cache) {
+            USE_CACHE = use_cache.value;
+            document.getElementById("use_cache").checked = USE_CACHE;
+            console.log("use_cache is " + USE_CACHE);
+          } else {
+            console.error("what is use_cache ?");
+          }
+        };
+
+        localCache.onerror = function (e) {
+          console.log("local setting cache init error");
+        };
       };
 
       request.onupgradeneeded = function (e) {
         // Create an objectStore to hold information about our visited pages
-        var db = e.currentTarget.result;
-
-        // console.log("removing old database");
-        // db.deleteObjectStore("pages");
+        db = e.currentTarget.result;
+        
+        console.log(db.version);
+        //console.log(db.objectStoreNames);
+        
+        if(db.objectStoreNames[0] === "pages"){
+         console.log("removing old pages objet store");
+         db.deleteObjectStore("pages");
+       }
+       //  db.deleteObjectStore("settings");
 
         console.log("creating new database");
         var objectStore = db.createObjectStore("pages", {keyPath: "url"});
+
 
         objectStore.createIndex("title", "title", {unique: false});
         objectStore.createIndex("date", "date", {unique: false});
@@ -902,6 +1082,30 @@ window.addEventListener('DOMContentLoaded', function () {
         objectStore.transaction.oncomplete = function () {
           console.log("creating object transaction complete");
         };
+
+        var objectStore_2 = db.createObjectStore("settings", {keyPath: "name"});
+        objectStore_2.transaction.oncomplete = function () {
+          console.log("creating object 2 transaction complete");
+          setUseCache("true");
+        };
+      };
+    }
+
+    function getObjectStore(store_name, mode) {
+      var tx = db.transaction(store_name, mode);
+      return tx.objectStore(store_name);
+    }
+
+    function clearObjectStore(store_name) {
+      var store = getObjectStore([store_name], 'readwrite');
+      var req = store.clear();
+      req.onsuccess = function () {
+        console.log("Store cleared");
+//        document.location.href = appUrl();
+        document.location.href = "./index.html";
+      };
+      req.onerror = function (evt) {
+        console.error("clearObjectStore:", evt.target.errorCode);
       };
     }
 
@@ -929,20 +1133,47 @@ window.addEventListener('DOMContentLoaded', function () {
       return url;
     }
 
-    /* 
-     * HTML5 transition example        
-     */
-//    function test() {
-//      console.log("add body event");
-//      document.body
-//          .addEventListener('click', function () {
-//            // translate article
-//            document.getElementById("aw-article").classList.add('move-center');
-//            document.getElementById("aw-article").className = "";
-//            var list = document.getElementsByTagName('move-center');
-//            console.log('move center element number : ' + list.length);
-//          });
-//    }
+    function setUseCache(value) {
+      var objStore = db.transaction(["settings"], "readwrite").objectStore("settings");
+      var localCache = objStore.get("use_cache");
+
+      localCache.onsuccess = function (e) {
+        var use_cache = e.target.result;
+        if (use_cache) { // value exist
+          /* update cached data */
+          use_cache.value = value;
+          USE_CACHE = value;
+          console.log('use cache : ' + USE_CACHE);
+
+          /*update the database */
+          var reqUpdate = objStore.put(use_cache);
+
+          reqUpdate.onerror = function () {
+            console.log("update settings db error");
+          };
+
+          reqUpdate.onsuccess = function () {
+            console.log("settings db update");
+          };
+        } else { // value does not exist
+          /*write it to the database */
+          var req = objStore.add({name: "use_cache", value: value});
+          req.onsuccess = function () {
+            console.log("settings db request done");
+          };
+
+          req.onerror = function () {
+            console.log("settings db request error");
+          };
+        }
+
+      };
+
+      localCache.onerror = function (e) {
+        console.log("local setting cache error");
+      };
+    }
+
 
 
     /* ----------------------------------------

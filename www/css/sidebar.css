@@ -48,7 +48,7 @@ section[data-type="sidebar"] a {
 
 section[data-type="sidebar"] > header {
     position: relative;
-    z-index: 10;
+    z-index: 2;
     height: 4rem;
     color: #fff;
     /*background: url(drawer/images/ui/header.png) repeat-x left top;*/
@@ -61,11 +61,14 @@ section[data-type="sidebar"] > header h1 {
     display: block;
     overflow: hidden;
     width: auto;
-    margin: 0px 0px 0px 3rem;
+    /*margin: 0px 0px 0px 3rem;*/
+    margin: 0px 0px 0px 0rem;
+    text-indent: 3rem;
     height: 100%;
     border: none;
     padding: 0;
     background: none ;
+    border-bottom: 1px solid #596068;
 }
 
 section[data-type="sidebar"] > nav {
@@ -110,6 +113,16 @@ section[data-type="sidebar"] > nav > ul > li:active {
     background: #00ABCC;  
 }
 
+section[data-type="sidebar"] > nav > ul > li.inactive:active {
+    background: none;      
+}
+
+section[data-type="sidebar"] > nav > ul > li.disable,
+section[data-type="sidebar"] > nav > ul > li .disable {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
 section[data-type="sidebar"] > nav > ul > li > a { 
     text-decoration: none;
     color: #fff;
@@ -124,4 +137,74 @@ section[data-type="sidebar"] > nav > ul > li > a {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+/* switch*/
+
+label.pack-switch {
+    display: inline-block;
+    vertical-align: middle;
+    width: 17rem;
+    height: 4rem;
+    position: relative;
+    background: none;
+    text-indent: 0px;
+}
+
+label.pack-switch #spanCache{
+    vertical-align: middle;
+    font-size: 1.6rem;
+    line-height: 4rem;
+    font-weight: bold;
+}
+
+label.pack-switch input {
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    width: 0px;
+}
+
+
+
+label.pack-switch input:checked ~ span:after {
+    background-position: center bottom;
+}
+
+
+
+label.pack-switch input ~ span:after {
+    content: "";
+    position: absolute;
+    /*position: relative;*/
+    /*right: 0px;*/
+    right: 0rem;
+    top: 50%;
+
+    width: 3.77rem;
+    height: 1.7rem;
+
+    margin: -0.88rem 0px 0px;
+
+    pointer-events: none;
+    border-radius: 1.35rem;
+    overflow: hidden;
+    background: url("../images/switch/background_off.png") no-repeat scroll -2.0rem 0px / 5.8rem 1.7rem #E6E6E6;
+    transition: background 0.2s ease 0s;
+}
+
+label.pack-switch input:checked ~ span:after {
+    background: url("../images/switch/background.png") no-repeat scroll 0px 0px / 5.8rem 1.7rem #E6E6E6;
+}
+
+/* switch: disabled state */
+label.pack-switch input:disabled ~ span:after {
+    opacity: 0.4;
+}
+
+label.pack-switch input.uninit ~ span:after {
+    transition: none;
 }

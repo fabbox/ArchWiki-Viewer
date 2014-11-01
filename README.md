@@ -17,6 +17,13 @@ Permissions
 Change log
 ----------
 
+### 0.2.0 :
+* navigation bar is now at bottom to a better accessibility.
+* possibility to enable/disable cache.
+* possibility to clear the cache (WIP).
+* access to cache page index (WIP).
+* autorefresh cache after a certain time (WIP).
+
 ### 0.1.0 :
 
 * add indexedDB to cache content (so offline surfing is possible if the page has been loaded).

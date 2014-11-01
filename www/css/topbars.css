@@ -62,11 +62,11 @@ section[role="region"] > header:first-child > a:last-of-type {
 }
 
 section[role="region"] > header:first-child .hidden{
-    visibility: hidden !important
+    visibility: hidden !important;
 }
 
 section[role="region"] > header:first-child .visible{
-    visibility: visible
+    visibility: visible;
 }
 
 section[role="region"] > header:first-child a,
@@ -83,6 +83,7 @@ section[role="region"] > header:first-child button{
     background: none repeat scroll 0% 0% transparent;
     padding: 0px;
     margin: 0px;
+    /*transition: all 0.2s ease;*/
 }
 
 section[role="region"] > header:first-child .btSettings{

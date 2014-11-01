@@ -25,7 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 html,body {
     font-size: 10px; /* Setting base font to 10px and define all your units in rem. 1rem = 10px */
-    font-family: sans-serif;
+    font-family: "MozTT",sans-serif;
+
     height: 100%;
 
     text-align: justify;
@@ -135,7 +136,11 @@ section {
     height: 100%;
     position: relative;
     transition: all 0.25s ease 0s;
-    background: none;
+    background: #fff;
+}
+
+section#main {
+   z-index: 100;
 }
 
 /*
@@ -144,7 +149,8 @@ section {
 
 
 button[disabled="true"]{
-    pointer-events: none;    
+    pointer-events: none;  
+    opacity: 0.5;
 }
 
 button::-moz-focus-inner { 
@@ -199,6 +205,7 @@ button::-moz-focus-inner {
 }
 
 #divTerms_of_Uses ul{
+    text-align: center;
     list-style-image: none;
     margin: 0.0em 0px 0px 0.6em ;
 }
@@ -211,6 +218,5 @@ button::-moz-focus-inner {
 #Terms_of_Uses {
     font-weight: bold;
 }
-
 
 
