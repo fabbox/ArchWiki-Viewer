@@ -555,6 +555,28 @@ window.addEventListener('DOMContentLoaded', function () {
           } else {
             ui.navbar.show();
           }
+        },
+        disable: {
+          btReload: function () {
+            document.getElementById("action_reload").setAttribute("disabled", "true");
+          },
+          btBack: function () {
+            document.getElementById("action_back").setAttribute("disabled", "true");
+          }
+        },
+        enable: {
+          btBack: function () {
+            var btBack = document.getElementById("action_back");
+            if (btBack.hasAttributes("disabled")) {
+              btBack.removeAttribute("disabled");
+            }
+          },
+          btReload: function () {
+            var btReload = document.getElementById("action_reload");
+            if (btReload.hasAttributes("disabled")) {
+              btReload.removeAttribute("disabled");
+            }
+          }
         }
       }
     };
@@ -585,14 +607,8 @@ window.addEventListener('DOMContentLoaded', function () {
          * @returns {undefined}
          */
         navigation: function () {
-          var btReload = document.getElementById("action_reload"),
-              btBack = document.getElementById("action_back");
-          if (btReload.hasAttributes("disabled")) {
-            btReload.removeAttribute("disabled");
-          }
-          if (btBack.hasAttributes("disabled")) {
-            btBack.removeAttribute("disabled");
-          }
+          ui.navbar.enable.btBack();
+          ui.navbar.enable.btReload();
         }
       },
       /*
@@ -604,13 +620,9 @@ window.addEventListener('DOMContentLoaded', function () {
          * @returns {undefined}
          */
         navigation: function () {
-          var btReload = document.getElementById("action_reload"),
-              btBack = document.getElementById("action_back");
-
-          btReload.setAttribute("disabled", "true");
-          btBack.setAttribute("disabled", "true");
+          ui.navbar.disable.btBack();
+          ui.navbar.disable.btReload();
         }
-
       },
       /*
        * add listener
@@ -669,7 +681,8 @@ window.addEventListener('DOMContentLoaded', function () {
             uiListeners.remove.awArticle();
 
             console.log("disable click on navitation bar");
-            uiListeners.disable.navigation();
+            //uiListeners.disable.navigation();
+            ui.navbar.disable.btBack();
 
             console.log("prevent click link event");
             uiListeners.remove.links();
@@ -685,7 +698,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (myhistory.length > 1) {
               console.log("enable click on navitation bar");
-              uiListeners.enable.navigation();
+              ui.navbar.enable.btBack();
             }
 
             console.log("enable click link event");
@@ -797,23 +810,8 @@ window.addEventListener('DOMContentLoaded', function () {
           btStar.addEventListener('click', function () {
             console.log("star");
             getCachedArticleList();
+            ui.navbar.disable.btReload();
           }, false);
-
-//          document.getElementById("navbar").addEventListener('transitionend', function (e) {
-//
-//            if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
-//
-//              document.getElementById("action_home").parentNode.classList.add('hidden');
-//              document.getElementById("action_settings_show").parentNode.classList.remove('hidden');
-//              document.getElementById("action_settings_hide").parentNode.classList.remove('hidden');
-//
-//            } else {
-//
-//              document.getElementById("action_home").parentNode.classList.remove('hidden');
-//              document.getElementById("action_settings_show").parentNode.classList.add('hidden');
-//              document.getElementById("action_settings_hide").parentNode.classList.add('hidden');
-//            }
-//          }, false);
 
         },
         stoppedLinks: function () {
@@ -998,7 +996,7 @@ window.addEventListener('DOMContentLoaded', function () {
           var list = document.createElement("body");
           list.appendChild(ul);
 
-          var cachedArticleList = new WikiArticle(new MyUrl(""));
+          var cachedArticleList = new WikiArticle(new MyUrl(myAppUrl));
           cachedArticleList.title = new Title("Cached articles");
           cachedArticleList.setContent(list.innerHTML);
           cachedArticleList.print();
@@ -1043,8 +1041,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
         /* Initialise Application Settings*/
         var objStore = db.transaction(["settings"], "readonly").objectStore("settings");
-        
-        
+
+
         /* "use cache" setting */
         var reqCacheEnable = objStore.get("use_cache");
 
