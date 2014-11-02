@@ -25,12 +25,13 @@ div{
     transition: all 0.3s;
 }
 
+
 .move-down {
     transform: translateY(100%);
 }
 
 .move-up {
-    transform: translateY(0);
+    transform: translateY(-100%);
 }
 
 .move-right {

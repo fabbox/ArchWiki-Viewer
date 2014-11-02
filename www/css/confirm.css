@@ -21,10 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /*from confirm.css building block*/
 
-section[role="dialog"][data-type="confirm"]#cleardb_confirm.hidden{
-    display: none !important;
+section[role="dialog"][data-type="confirm"]#cleardb_confirm {
+    /*display: none !important;*/
+    display: none;
 }
 
+section[role="dialog"][data-type="confirm"]#cleardb_confirm:target {
+    display:block;
+}
 
 form[role="dialog"][data-type="confirm"]#cleardb_confirm_form{
     display: block;
@@ -35,7 +39,7 @@ form[role="dialog"][data-type="confirm"] {
     background: #2d2d2d;
     overflow: hidden;
     position: absolute;
-    z-index: 2000;
+    z-index: 11;
     top: 0;
     left: 0;
     right: 0;

@@ -1,0 +1,164 @@
+/*
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 1 nov. 2014, 22:17:02
+    Author     : fbox
+*/
+
+
+/* based on simpleRSS (settings.css)*/
+
+section[data-type="sidebar"]#cacheSettings  {
+    width: 100%;
+    z-index: 10;
+    left: -100%;
+}
+
+section[data-type="sidebar"]#cacheSettings:target  {
+    transform: translateX(100%);
+}
+
+section[data-type="sidebar"]#cacheSettings h1 {
+    text-indent: 0rem;
+}
+
+section[data-type="sidebar"]#cacheSettings > nav > ul > li {
+    position: relative;
+    text-indent: 0rem;
+}
+
+section[data-type="sidebar"]#cacheSettings > nav > ul > li#licacheswitch {
+    text-indent: 0.2rem;
+}
+
+section[data-type="sidebar"]#cacheSettings > nav > ul > li.active {
+    background: #00ABCC;
+}
+
+section[data-type="sidebar"]#cacheSettings > nav > ul > li > a {
+    text-indent: 9rem;
+}
+
+section[data-type="sidebar"]#cacheSettings > nav > ul > li > a > img, 
+section[data-type="sidebar"]#cacheSettings > nav > ul > li > span, 
+section[data-type="sidebar"]#cacheSettings > nav > ul > li > label#refresh_label {
+    position: absolute;
+    left: 0;
+    pointer-events: none;
+}
+
+#refresh_cache_period {
+    height: 4.2rem;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+}
+.add-img {
+    margin-left: 2.5rem;
+    margin-top: 8px;
+}
+.reload-img {
+    margin-left: 3rem;
+    margin-top: 12px;
+}
+.settings-icon {
+    margin-left: 2.5rem;
+    margin-top: 8px;
+}
+
+.settings_label {
+    font-size: medium;
+    font-weight: bold;
+    margin-top: 1.4rem;
+    text-align: right;
+    width: 8rem;
+}
+
+
+/* based on building blocks*/
+
+/* switch*/
+
+label.switcher {
+    display: inline-block;
+    vertical-align: middle;
+    width: 8rem;
+    height: 4rem;
+    position: relative;
+    background: none;
+    text-indent: 0px;
+}
+
+section[data-type="sidebar"]#cacheSettings > nav > ul > li #spanCache{
+    position: absolute;
+    left: 0;
+    text-indent: 9rem;
+    height: 4rem;
+    vertical-align: middle;
+    font-size: 1.6rem;
+    line-height: 4rem;
+    font-weight: bold;
+}
+
+label.switcher input {
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    width: 0px;
+}
+
+label.switcher input:checked ~ span:after {
+    background-position: center bottom;
+}
+label.switcher input:checked ~ span {
+    height: 4rem;
+}
+
+label.switcher input ~ span:after {
+    content: "";
+    position: absolute;
+    right: 0rem;
+    top: 50%;
+
+    width: 3.55rem;
+    height: 1.6rem;
+
+    margin: -0.82rem 0px 0px;
+
+    pointer-events: none;
+    border-radius: 1.35rem;
+    overflow: hidden;
+    background: url("../images/switch/background_off.png") no-repeat scroll -1.9rem 0px / 5.45rem 1.6rem #E6E6E6;
+    transition: background 0.2s ease 0s;
+}
+
+label.switcher input:checked ~ span:after {
+    background: url("../images/switch/background.png") no-repeat scroll 0px 0px / 5.45rem 1.6rem #E6E6E6;
+}
+
+/* switch: disabled state */
+label.switcher input:disabled ~ span:after {
+    opacity: 0.4;
+}
+
+label.switcher input.uninit ~ span:after {
+    transition: none;
+}
+

@@ -41,7 +41,9 @@ window.addEventListener('DOMContentLoaded', function () {
         db = null, // indexeddb which store cache, pref... 
         myAppUrl = appUrl(), // reference url ("app://.../index.html")
         myhistory = [], // array of "MyUrl" used to manage history
-        USE_CACHE; // use cache or not ? 
+        USE_CACHE = null, // use cache or not ? 
+        REFRESH_CACHE_PERIOD = null; // 
+
 
     /* ----------------------------------------
      * MyHistory
@@ -237,9 +239,6 @@ window.addEventListener('DOMContentLoaded', function () {
       awart_old.id = "aw-article_old";
       awart_content_old.id = "aw-article-body_old";
 
-//      awart_old = document.getElementById("aw-article_old");
-//      awart_content_old = document.getElementById("aw-article-body_old");
-
       /* create new article element */
       var awart = document.createElement("article");
       var awart_content = document.createElement("div");
@@ -326,7 +325,7 @@ window.addEventListener('DOMContentLoaded', function () {
     WikiArticle.prototype.loadArticle = function (useCache) {
       if (useCache) {
         this.loadCache();
-      } else if (this.url.href === appUrl()) {
+      } else if (this.url.href === myAppUrl) {
         this.loadCache();
       } else {
         this.loadUrl(false);
@@ -337,19 +336,25 @@ window.addEventListener('DOMContentLoaded', function () {
       document.getElementById("progressBar").style.display = "block";
 
       var self = this,
-          localCache = db.transaction("pages").objectStore("pages").get(self.url.href);
+          request = db.transaction("pages").objectStore("pages").get(self.url.href);
 
-      localCache.onsuccess = function (e) {
-        var cachedArticle = e.target.result;
+      request.onsuccess = function (e) {
+        var cache = e.target.result;
 
-        if (cachedArticle) {
+        if (cache) {
+          console.log("I know that url " + cache.url);
 
-          console.log("I know that url " + cachedArticle.url);
-          self.title = new Title(cachedArticle.title);
-          self.setContent(cachedArticle.body);
-          self.print();
+          if (self.date - cache.date < REFRESH_CACHE_PERIOD) {
 
-          document.getElementById("progressBar").style.display = "";
+            self.title = new Title(cache.title);
+            self.setContent(cache.body);
+            self.print();
+            document.getElementById("progressBar").style.display = "";
+
+          } else {
+            console.log("updating cache");
+            self.loadUrl(true);
+          }
 
         } else {
 
@@ -359,7 +364,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       };
 
-      localCache.onerror = function () {
+      request.onerror = function () {
         console.log("problem with getting url in db");
       };
 
@@ -835,24 +840,32 @@ window.addEventListener('DOMContentLoaded', function () {
               }, false);
 
           document.getElementById("use_cache").addEventListener('click', function (e) {
-            setUseCache(e.target.checked);
+            USE_CACHE = e.target.checked;
+            console.log('use_cache : ' + USE_CACHE);
+            updateSettings("use_cache", USE_CACHE);
           }, false);
 
-          document.getElementById("cleardb").addEventListener('click', function (e) {
-            e.preventDefault();
-            document.getElementById("cleardb_confirm").classList.remove("hidden");
-            //clearObjectStore("pages");
-          }, false);
 
+          /* confirm dialog*/
           document.getElementById("cleardb_cancel").addEventListener('click', function (e) {
-            document.getElementById("cleardb_confirm").classList.add("hidden");
+            document.location.href = "#cacheSettings";
           }, false);
-          
+
           document.getElementById("cleardb_ok").addEventListener('click', function (e) {
-            document.getElementById("cleardb_confirm").classList.add("hidden");
             clearObjectStore("pages");
           }, false);
+
+
+          /* Change refresh cache */
+          document.getElementById("refresh_cache_period").addEventListener('change', function () {
+            REFRESH_CACHE_PERIOD = this.value;
+            console.log('refresh cache page periode (ms): ' + REFRESH_CACHE_PERIOD);
+            updateSettings("refresh_cache_period", REFRESH_CACHE_PERIOD);
+            document.getElementById("refresh_label").textContent = this.options[this.selectedIndex].text;
+          });
         }
+
+
       },
       remove: {
         awArticle: function () {
@@ -889,14 +902,6 @@ window.addEventListener('DOMContentLoaded', function () {
       e.stopPropagation();
     }
 
-//    function hideNavBar() {
-//      // hide navigation menu
-//      if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
-//        console.log("hide navigation bar");
-//        document.getElementById("navbar").classList.remove('navShown');
-//      }
-//    }
-
     /*
      * Callback for Links Events Listener
      * @param {type} e
@@ -913,7 +918,6 @@ window.addEventListener('DOMContentLoaded', function () {
       page.loadArticle(USE_CACHE);
       currentPage = page;
       myhistory.push(targetUrl);
-
     }
 
 
@@ -998,7 +1002,7 @@ window.addEventListener('DOMContentLoaded', function () {
           cachedArticleList.title = new Title("Cached articles");
           cachedArticleList.setContent(list.innerHTML);
           cachedArticleList.print();
-          
+
           ui.navbar.hide();
         }
       };
@@ -1009,15 +1013,14 @@ window.addEventListener('DOMContentLoaded', function () {
      * Database (indexedDB)
      * ------------------------------------------*/
 
-
     /*
      * Open and set database for cached content
      * @returns {undefined}
      */
     function opendb() {
       /* openning database */
-      var request = indexedDB.open("awv", 2);
-
+      var request = indexedDB.open("awv", 3);
+      /* XXX : checked if db is already opened ? */
       request.onerror = function () {
         console.log("Why didn't you allow my web app to use IndexedDB?!");
       };
@@ -1038,11 +1041,14 @@ window.addEventListener('DOMContentLoaded', function () {
         myhistory = new MyHistory();
         myhistory.push(currentPage.url);
 
-        /* set pref*/
+        /* Initialise Application Settings*/
         var objStore = db.transaction(["settings"], "readonly").objectStore("settings");
-        var localCache = objStore.get("use_cache");
+        
+        
+        /* "use cache" setting */
+        var reqCacheEnable = objStore.get("use_cache");
 
-        localCache.onsuccess = function (e) {
+        reqCacheEnable.onsuccess = function (e) {
           var use_cache = e.target.result;
           if (use_cache) {
             USE_CACHE = use_cache.value;
@@ -1053,27 +1059,55 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         };
 
-        localCache.onerror = function (e) {
+        reqCacheEnable.onerror = function (e) {
           console.log("local setting cache init error");
         };
+
+        /* "refresh article period in cache" setting */
+        var reqRefreshCache = objStore.get("refresh_cache_period");
+
+        reqRefreshCache.onsuccess = function (e) {
+          var refresh = e.target.result;
+          if (refresh) {
+            REFRESH_CACHE_PERIOD = refresh.value;
+
+            var selectElt = document.getElementById("refresh_cache_period");
+
+            selectElt.value = REFRESH_CACHE_PERIOD;
+
+            document.getElementById("refresh_label").textContent =
+                selectElt.options[selectElt.selectedIndex].text;
+
+            console.log("refresh_cache_period is " + REFRESH_CACHE_PERIOD);
+
+          } else {
+            console.error("what is refresh_cache_period ?");
+          }
+        };
+
+        reqRefreshCache.onerror = function (e) {
+          console.log("local setting refresh init error");
+        };
+
       };
 
       request.onupgradeneeded = function (e) {
         // Create an objectStore to hold information about our visited pages
         db = e.currentTarget.result;
-        
+
         console.log(db.version);
         //console.log(db.objectStoreNames);
-        
-        if(db.objectStoreNames[0] === "pages"){
-         console.log("removing old pages objet store");
-         db.deleteObjectStore("pages");
-       }
-       //  db.deleteObjectStore("settings");
 
         console.log("creating new database");
-        var objectStore = db.createObjectStore("pages", {keyPath: "url"});
+        var objectStore = null;
 
+        if (db.objectStoreNames[0] === "pages") {
+          console.log("removing old pages objet store");
+          db.deleteObjectStore("pages");
+          objectStore = db.createObjectStore("pages", {keyPath: "url"});
+        } else {
+          objectStore = db.createObjectStore("pages", {keyPath: "url"});
+        }
 
         objectStore.createIndex("title", "title", {unique: false});
         objectStore.createIndex("date", "date", {unique: false});
@@ -1083,10 +1117,24 @@ window.addEventListener('DOMContentLoaded', function () {
           console.log("creating object transaction complete");
         };
 
-        var objectStore_2 = db.createObjectStore("settings", {keyPath: "name"});
+        var objectStore_2 = null;
+
+        if (db.objectStoreNames[1] === "settings") {
+          console.log("removing old settings objet store");
+          db.deleteObjectStore("settings");
+          objectStore_2 = db.createObjectStore("settings", {keyPath: "name"});
+        } else {
+          objectStore_2 = db.createObjectStore("settings", {keyPath: "name"});
+        }
+
         objectStore_2.transaction.oncomplete = function () {
           console.log("creating object 2 transaction complete");
-          setUseCache("true");
+          console.log("settings default value");
+          USE_CACHE = "true";
+          updateSettings("use_cache", USE_CACHE);
+
+          REFRESH_CACHE_PERIOD = "2629743830";
+          updateSettings("refresh_cache_period", REFRESH_CACHE_PERIOD);
         };
       };
     }
@@ -1097,11 +1145,10 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     function clearObjectStore(store_name) {
-      var store = getObjectStore([store_name], 'readwrite');
-      var req = store.clear();
+      var store = getObjectStore([store_name], 'readwrite'),
+          req = store.clear();
       req.onsuccess = function () {
-        console.log("Store cleared");
-//        document.location.href = appUrl();
+        console.log("Store '" + store_name + "' cleared");
         document.location.href = "./index.html";
       };
       req.onerror = function (evt) {
@@ -1133,20 +1180,18 @@ window.addEventListener('DOMContentLoaded', function () {
       return url;
     }
 
-    function setUseCache(value) {
-      var objStore = db.transaction(["settings"], "readwrite").objectStore("settings");
-      var localCache = objStore.get("use_cache");
+    function updateSettings(name, value) {
+      var objStore = db.transaction(["settings"], "readwrite").objectStore("settings"),
+          request = objStore.get(name);
 
-      localCache.onsuccess = function (e) {
-        var use_cache = e.target.result;
-        if (use_cache) { // value exist
-          /* update cached data */
-          use_cache.value = value;
-          USE_CACHE = value;
-          console.log('use cache : ' + USE_CACHE);
+      request.onsuccess = function (e) {
+        var result = e.target.result;
+        if (result) { // value exist
+          /* update the data */
+          result.value = value;
 
           /*update the database */
-          var reqUpdate = objStore.put(use_cache);
+          var reqUpdate = objStore.put(result);
 
           reqUpdate.onerror = function () {
             console.log("update settings db error");
@@ -1157,24 +1202,21 @@ window.addEventListener('DOMContentLoaded', function () {
           };
         } else { // value does not exist
           /*write it to the database */
-          var req = objStore.add({name: "use_cache", value: value});
-          req.onsuccess = function () {
+          var reqNew = objStore.add({name: name, value: value});
+          reqNew.onsuccess = function () {
             console.log("settings db request done");
           };
 
-          req.onerror = function () {
+          reqNew.onerror = function () {
             console.log("settings db request error");
           };
         }
-
       };
 
-      localCache.onerror = function (e) {
-        console.log("local setting cache error");
+      request.onerror = function (e) {
+        console.log("local setting error");
       };
     }
-
-
 
     /* ----------------------------------------
      * First add event listener (Initialisation)

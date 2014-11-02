@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     position: fixed;
     bottom: 0px;
     left: 0px;
-    z-index: 1020;
+    z-index: 2;
     background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.85);
 }
 

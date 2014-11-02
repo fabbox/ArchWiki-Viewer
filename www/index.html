@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <link rel="stylesheet" href="css/main.css">   
 
         <link rel="stylesheet" href="css/confirm.css">
+        <link rel="stylesheet" href="css/dbsettings.css">
         <link rel="stylesheet" href="css/toolbar.css">
         <link rel="stylesheet" href="css/topbars.css">
         <link rel="stylesheet" href="css/sidebar.css">
@@ -47,32 +48,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <body role="application">
 
         <section data-type="sidebar">
-            <header>
+            <header  class="archmainbar">
                 <h1>Settings</h1>
             </header>
             <nav>
-                <h2>Database</h2>
                 <ul>
-                    <li class="inactive"> 
-                        <label class="pack-switch"> 
-                            <span id="spanCache">use cache : </span>
-                            <input id="use_cache" type="checkbox" checked>
-                            <span></span>
-                        </label>
-                    </li>
-
-                </ul>
-                <ul>
-                    <li class="inactive disable" hidden="">cache refresh</li>
-                    <li> <a href="" id="cleardb"> clear (& reboot)</a> </li>
-                </ul>
-                <h2></h2>
-                <ul>
+                    <li><a href="#cacheSettings" >database settings</a></li>
                     <li class="inactive disable" hidden=""><a href="" >about</a></li>
                     <li><a href="" id="sideQuit">quit</a></li>
                 </ul>
             </nav>
-
         </section>        
 
         <section id="cleardb_confirm" role="dialog" data-type="confirm" class="hidden">
@@ -88,6 +73,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </form>
         </section>      
 
+        <!--
+        database settings
+        -->
+        <section id="cacheSettings" role="region" data-type="sidebar" >
+            <header class="archmainbar">
+                <a href="#main"><span class="icon icon-back">back</span></a>
+                <h1> Database settings</h1>
+            </header>
+
+            <nav>
+                <ul>
+                    <li id="licacheswitch" class="inactive"> 
+                        <span id="spanCache">use cache</span>
+                        <label class="switcher" id="cacheswitch"> 
+                            <input id="use_cache" type="checkbox" checked>
+                            <span></span>
+                        </label>
+                    </li>
+
+                    <li class="inactive">
+                        <select id="refresh_cache_period" >
+                            <option value="86400000">1 Day</option>
+                            <option value="604800000">1 Week</option>
+                            <option value="2629743830">1 Month</option>
+                            <option value="7889231490">3 Months</option>
+                            <option value="Infinity">Manually</option>
+                        </select>
+                        <label class="settings_label" id="refresh_label">XXX</label>
+                        <a>
+                            <span>refresh article period</span>
+                        </a>
+                    </li>
+
+                    <li> <a href="#cleardb_confirm" id="cleardb">clear</a> </li>
+                </ul>
+            </nav>
+
+        </section>
 
         <section id="main" role="region">
             <!-- 
@@ -131,6 +154,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             # Progress bar
             -->
             <progress id="progressBar" class="loadPage" value="0" max="100" ></progress>
+
+            <!-- 
+            # toolbar / navigation bar
+            -->
+            <div role="toolbar" id="navbar" class="navHidden">
+                <ul>
+                    <li><button class="icon icon-back" id="action_back">Back</button></li>
+                </ul>
+                <ul>
+                    <li><button class="icon icon-reload" id="action_reload">Reload</button></li>
+                    <li><button class="icon icon-star-full" id="action_star">Index</button></li>
+                    <li><button class="icon icon-close" id="action_close">Quit</button></li>
+                </ul>
+            </div>
 
             <!-- 
             #aw-article : The part where wiki content is injected 
@@ -259,21 +296,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                 </div>
             </article>
-
-            <!-- 
-            # toolbar / navigation bar
-            -->
-            <div role="toolbar" id="navbar" class="navHidden">
-                <ul>
-                    <li><button class="icon icon-back" id="action_back">Back</button></li>
-                </ul>
-                <ul>
-                    <li><button class="icon icon-reload" id="action_reload">Reload</button></li>
-                    <li><button class="icon icon-star-full" id="action_star">Index</button></li>
-                    <!--<li><button class="icon icon-settings" id="action_settings">Settings</button></li>-->
-                    <li><button class="icon icon-close" id="action_close">Quit</button></li>
-                </ul>
-            </div>
 
         </section>
 

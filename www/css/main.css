@@ -140,7 +140,7 @@ section {
 }
 
 section#main {
-   z-index: 100;
+   z-index: 5;
 }
 
 /*
@@ -218,5 +218,3 @@ button::-moz-focus-inner {
 #Terms_of_Uses {
     font-weight: bold;
 }
-
-
