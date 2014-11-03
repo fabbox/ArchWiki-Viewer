@@ -49,6 +49,10 @@ window.addEventListener('DOMContentLoaded', function () {
      * MyHistory
      * ------------------------------------------*/
 
+    /*
+     * MyHistory constructor ()
+     * @returns {app_L35.MyHistory}
+     */
     function MyHistory() {
       //console.log("new MyHistory instance");
 
@@ -58,34 +62,54 @@ window.addEventListener('DOMContentLoaded', function () {
       uiListeners.disable.navigation();
     }
 
-    MyHistory.prototype.push = function (url) {
 
-      this._array.push(url);
-      this.length = this._array.length;
-      if (this.length > 1) {
-        uiListeners.enable.navigation();
+    MyHistory.prototype = {
+      /*
+       * push url object in myhistory
+       * @param {type} url
+       * @returns {undefined}
+       */
+      push: function (url) {
+        if (!(url instanceof MyUrl)) {
+          console.error("Who try to corrupt my history ?");
+          return false;
+        }
+        this._array.push(url);
+        this.length = this._array.length;
+        if (this.length > 1) {
+          uiListeners.enable.navigation();
+        }
+      },
+      /*
+       * pop url object in myhistory
+       * @returns {app_L35.MyHistory@pro;_array@call;pop}
+       */
+      pop: function () {
+
+        var popval = this._array.pop();
+        this.length = this._array.length;
+
+        if (this.length <= 1) {
+          uiListeners.disable.navigation();
+          //document.getElementById("navbar").hidden = true;
+          ui.navbar.hide();
+        }
+
+        return popval;
+      },
+      /*
+       * delete the last element of myhistory and 
+       * return the value of the new last element.
+       * @returns {Array}
+       */
+      popget: function () {
+        this.pop();
+        // console.log("history length : " + myhistory.length);
+        return this._array[this.length - 1];
       }
     };
 
-    MyHistory.prototype.pop = function () {
 
-      var popval = this._array.pop();
-      this.length = this._array.length;
-
-      if (this.length <= 1) {
-        uiListeners.disable.navigation();
-        //document.getElementById("navbar").hidden = true;
-        ui.navbar.hide();
-      }
-
-      return popval;
-    };
-
-    MyHistory.prototype.popget = function () {
-      this.pop();
-      // console.log("history length : " + myhistory.length);
-      return this._array[this.length - 1];
-    };
 
     /* ----------------------------------------
      * MyUrl
@@ -94,7 +118,7 @@ window.addEventListener('DOMContentLoaded', function () {
     /*
      * MyUrl constructor
      * @param {type} str
-     * @returns {undefined}
+     * @returns {app_L35.MyUrl}
      */
     function MyUrl(str) {
       //console.log("new MyUrl Instance");
@@ -202,17 +226,26 @@ window.addEventListener('DOMContentLoaded', function () {
       this.str = title;
     }
 
-    Title.prototype.print = function () {
-      /* parse tilte string */
-      if (!this.str || this.str.startsWith("app://")) {
-        return "ArchWiki Viewer";
-      }
+    Title.prototype = {
+      /*
+       * Display title in the document
+       * @returns {undefined}
+       */
+      print: function () {
+        //  XXX: Why it is still there ? it return a string to who ? o_O
+        ///* parse tilte string */
+        //if (!this.str || this.str.startsWith("app://")) {
+        //  return "ArchWiki Viewer";
+        //}
 
-      /* set page title */
-      var strTitle = document.createTextNode(this.str),
-          titleElt = document.getElementById("awPageTitle");
-      titleElt.removeChild(titleElt.firstChild);
-      titleElt.appendChild(strTitle);
+        /* set page title */
+//      var strTitle = document.createTextNode(this.str),
+//          titleElt = document.getElementById("awPageTitle");
+//      titleElt.removeChild(titleElt.firstChild);
+//      titleElt.appendChild(strTitle);
+
+        document.getElementById("awPageTitle").textContent = this.str;
+      }
     };
 
 
@@ -230,76 +263,98 @@ window.addEventListener('DOMContentLoaded', function () {
       this.body = content;
     }
 
-    Content.prototype.print = function () {
+    Content.prototype = {
+      /*
+       * Display content in a new article in the document
+       * it delete the old article. 
+       * @returns {undefined}
+       */
+      print: function () {
 
-      var awart_old = document.getElementById("aw-article"),
-          awart_content_old = document.getElementById("aw-article-body"),
-          awsect = awart_old.parentNode;
+        var awart_old = document.getElementById("aw-article"),
+            awart_content_old = document.getElementById("aw-article-body"),
+            awsect = awart_old.parentNode;
 
-      awart_old.id = "aw-article_old";
-      awart_content_old.id = "aw-article-body_old";
+        awart_old.id = "aw-article_old";
+        awart_content_old.id = "aw-article-body_old";
 
-      /* create new article element */
-      var awart = document.createElement("article");
-      var awart_content = document.createElement("div");
+        /* create new article element */
+        var awart = document.createElement("article");
+        var awart_content = document.createElement("div");
 
-      awart.id = "aw-article";
-      awart.className = "aw-article fade-out";
+        awart.id = "aw-article";
+        awart.className = "aw-article fade-out";
 
-      awart_content.id = "aw-article-body";
-      awart_content.className = "aw-article-body";
-      awart_content.innerHTML = this.body;
+        awart_content.id = "aw-article-body";
+        awart_content.className = "aw-article-body";
+        awart_content.innerHTML = this.body;
 
-      /* reformat "related articles" part (if any)*/
-      var fec = awart_content.firstElementChild;
-      do {
-        if (fec
-            && fec.tagName === "DIV"
-            && fec.hasAttributes()
-            && fec.attributes[0].name === "style"
-            && fec.attributes[0].value === "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;") {
+        /* reformat "related articles" part (if any)*/
+        var fec = awart_content.firstElementChild;
+        do {
+          if (fec
+              && fec.tagName === "DIV"
+              && fec.hasAttributes()
+              && fec.attributes[0].name === "style"
+              && fec.attributes[0].value === "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;") {
 
-          //console.log("format 'related articles'");
-          fec.id = "related-articles";
-          fec.removeAttribute("style");
-          fec = null;
+            //console.log("format 'related articles'");
+            fec.id = "related-articles";
+            fec.removeAttribute("style");
+            fec = null;
 
-        } else {
-          fec = fec.nextElementSibling;
-        }
-      } while (fec);
-
-      /* find img to update link to point to archlinux */
-      /* XXX: Try to find img usage to include the most used in app */
-      var img = awart_content.querySelectorAll("img");
-      if (img) {
-        for (var i = 0; i < img.length; i++) {
-
-          if (img[i].src.startsWith(appRoot() + "/images/")) {
-            console.log("update image src");
-            img[i].src = img[i].src.replace(appRoot(), "https://wiki.archlinux.org");
+          } else {
+            fec = fec.nextElementSibling;
           }
+        } while (fec);
 
+        /* find img to update link to point to archlinux */
+        /*
+         * the collection of tango icon provide in the 
+         * arch-wiki-doc package is use locally to do not 
+         * downloading common icon
+         */
+        var img = awart_content.querySelectorAll("img");
+        if (img) {
+          var imgRoot = appRoot();
+
+          for (var i = 0; i < img.length; i++) {
+
+            if (img[i].src.startsWith(imgRoot + "/images/")) {
+              var src = img[i].src;
+              console.log(src);
+
+              if (src.indexOf("Tango-") >= 0) {
+                img[i].src = src.replace(/.*Tango-/g, imgRoot + "/images/tango/File:Tango-");
+              } else {
+                console.log("update image src");
+                img[i].src = img[i].src.replace(imgRoot, "https://wiki.archlinux.org");
+              }
+              
+              console.log(img[i].src);
+            }
+
+          }
         }
+
+        /* set article content*/
+        awart.appendChild(awart_content);
+
+        /* replace current article by this article*/
+
+        /* Direct transition */
+        // awsect.replaceChild(awart,awart_old);
+        /* fade out/in transition*/
+        awsect.appendChild(awart);
+
+        awart_old.addEventListener("transitionend", function (e) {
+          awart.classList.add('fade-in');
+          awart_old.parentNode.removeChild(awart_old);
+          uiListeners.add.awArticle();
+        }, true);
+
+        awart_old.classList.remove('fade-in');
       }
-
-      /* set article content*/
-      awart.appendChild(awart_content);
-
-      /* replace current article by this article*/
-
-      /* Direct transition */
-      // awsect.replaceChild(awart,awart_old);
-      /* fade out/in transition*/
-      awsect.appendChild(awart);
-
-      awart_old.addEventListener("transitionend", function (e) {
-        awart.classList.add('fade-in');
-        awart_old.parentNode.removeChild(awart_old);
-        uiListeners.add.awArticle();
-      }, true);
-
-      awart_old.classList.remove('fade-in');
     };
 
 
@@ -309,7 +364,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     /*
      * Wikipage constructor : 
-     * @param {type} url
+     * @param {type} url (MyUrl object)
      * @returns {app_L12.WikiArticle}
      */
     function WikiArticle(url) {
@@ -322,209 +377,266 @@ window.addEventListener('DOMContentLoaded', function () {
       this.date = Date.now();
     }
 
-    WikiArticle.prototype.loadArticle = function (useCache) {
-      if (useCache) {
-        this.loadCache();
-      } else if (this.url.href === myAppUrl) {
-        this.loadCache();
-      } else {
-        this.loadUrl(false);
-      }
-    };
+    WikiArticle.prototype = {
+      /*
+       * load (and print article)
+       * it just call the good method if we use or not the cache
+       * @param {type} useCache
+       * @returns {undefined}
+       */
+      loadArticle: function (useCache) {
 
-    WikiArticle.prototype.loadCache = function () {
-      document.getElementById("progressBar").style.display = "block";
+        if (useCache) {
+          this.loadCache();
+        } else if (this.url.href === myAppUrl) {
+          this.loadCache();
+        } else {
+          this.loadUrl(false);
+        }
+      },
+      /*
+       * load (and print article) : It try to load the cache page, if there is no such
+       * page it download it.
+       * @returns {undefined}
+       */
+      loadCache: function () {
+        document.getElementById("progressBar").style.display = "block";
 
-      var self = this,
-          request = db.transaction("pages").objectStore("pages").get(self.url.href);
+        var self = this,
+            request = db.transaction("pages").objectStore("pages").get(self.url.href);
 
-      request.onsuccess = function (e) {
-        var cache = e.target.result;
+        request.onsuccess = function (e) {
+          var cache = e.target.result;
 
-        if (cache) {
-          console.log("I know that url " + cache.url);
+          if (cache) {
+            console.log("I know that url " + cache.url);
 
-          if (self.date - cache.date < REFRESH_CACHE_PERIOD) {
+            if (self.date - cache.date < REFRESH_CACHE_PERIOD) {
 
-            self.title = new Title(cache.title);
-            self.setContent(cache.body);
-            self.print();
-            document.getElementById("progressBar").style.display = "";
+              self.title = new Title(cache.title);
+              self.setContent(cache.body);
+              self.print();
+              document.getElementById("progressBar").style.display = "";
+
+            } else {
+              console.log("updating cache");
+
+              self.loadUrl(true);
+            }
 
           } else {
-            console.log("updating cache");
+
+            console.log("I do not know that url yet : " + self.url.href);
             self.loadUrl(true);
+
+          }
+        };
+
+        request.onerror = function () {
+          console.log("problem with getting url in db");
+        };
+
+      },
+      /*
+       * load (and print article) : It download the article from the archwiki website.
+       * Here, we use a privilige XMLHttpRequest to contact the archwiki because 
+       * we are not the archwiki !
+       * @param {type} save2db : wether it must save the got page in the indexedDB
+       * @returns {undefined}
+       */
+      loadUrl: function (save2db) {
+        /*get the page from the website*/
+        document.getElementById("progressBar").style.display = "block";
+
+        var self = this;
+
+        console.log("http request url : " + self.url.href);
+
+        if (typeof save2db === 'undefined') {
+          save2db = true;
+        }
+
+        var self = this,
+            xhr = new XMLHttpRequest({mozSystem: true});
+
+        //* Initialize Cross XMLHttprequest 
+        //* and open a http request with "document" responseType.
+        //* It also define basic error handler 
+        //* and mask the progress bar on request end
+
+        xhr.open('GET', self.url.href, true); // asynchrone
+        xhr.responseType = "document"; // need "GET"
+
+        xhr.onerror = function () {
+          console.error("load error");
+
+          var h2 = document.createElement('h2'),
+              p1 = document.createElement('p'),
+              p2 = document.createElement('p');
+
+          h2.textContent = xhr.errorMessage || 'Loading error';
+          p1.textContent = " :-( I failed to get your article.";
+          p2.textContent = "you may check your internet connection or go back to the previous page.";
+
+          var body = document.getElementById("aw-article-body");
+          body.innerHTML = "";
+
+          body.appendChild(h2);
+          body.appendChild(p1);
+          body.appendChild(p2);
+
+          //document.getElementById("navbar").hidden = false;
+          ui.navbar.show();
+        };
+
+        xhr.onloadend = function () {
+          console.log("load end");
+          document.getElementById("progressBar").style.display = "";
+        };
+
+        xhr.onload = function () {
+          console.log("load success");
+          self.title = new Title(xhr.responseXML.title, self.url);
+
+          var resp = xhr.responseXML.getElementById("mw-content-text") || xhr.responseXML.body;
+
+          if (!resp) {
+            log.error("empty response");
+            return;
           }
 
+          self.setContent(resp.innerHTML);
+          self.print();
+
+          if (save2db) {
+            self.toDb();
+          }
+        };
+
+        xhr.send(null);
+      },
+      /*
+       * set the content properties
+       * @param {type} str 
+       * @returns {undefined}
+       */
+      setContent: function (str) {
+        this.content = new Content(str);
+      },
+      /*
+       * set the title properties
+       * @param {type} str
+       * @param {type} url
+       * @returns {undefined}
+       */
+      setTitle: function (str, url) {
+        this.title = new Title(str, url);
+      },
+      /*
+       * Dipslay the different properties to the current document
+       * @returns {undefined}
+       */
+      print: function () {
+        this.title.print();
+        this.content.print();
+        this.scrollTo(this.anchor);
+
+        uiListeners.add.links();
+      },
+      /*
+       * Save or update article in the indexedb
+       * @returns {undefined}
+       */
+      toDb: function () {
+        var data = {
+          url: this.url.href,
+          title: this.title.str,
+          body: this.content.body,
+          date: this.date
+        };
+
+        /* check if page exist*/
+        var objStore = db.transaction(["pages"], "readwrite").objectStore("pages");
+        var localCache = objStore.get(this.url.href);
+
+        localCache.onsuccess = function (e) {
+          var cachedPage = e.target.result;
+          if (cachedPage) { // page exists : 
+            /* update cached data */
+            cachedPage.body = data.body; // dom cannot be clone so we stock innerhtml
+            cachedPage.title = data.title;
+            cachedPage.date = data.date;
+
+            /*update the database */
+            var reqUpdate = objStore.put(cachedPage);
+
+            reqUpdate.onerror = function () {
+              console.log("update cached page error");
+            };
+
+            reqUpdate.onsuccess = function () {
+              console.log("page cached update");
+            };
+          } else { // page does not exist
+            /*write it to the database */
+            var req = objStore.add(data);
+
+            req.onsuccess = function () {
+              console.log("new page cached");
+            };
+
+            req.onerror = function () {
+              console.log("caching page request error");
+            };
+          }
+
+        };
+
+        localCache.onerror = function (e) {
+          console.log("local cache error");
+        };
+
+      },
+      /*
+       * default article title
+       */
+      title: new Title("ArchWiki Viewer"),
+      /*
+       * Scroll to an id : 
+       * XXX: This method do not depend on a wikiArticle properties...
+       * @param {type} id
+       * @returns {undefined}
+       */
+      scrollTo: function (id) {
+        var gw = document.getElementById("aw-article");
+        if (!id) {
+          //console.log("scroll to top");
+          gw.scrollTop = 0;
         } else {
-
-          console.log("I do not know that url yet : " + self.url.href);
-          self.loadUrl(true);
-
+          console.log("scroll to id " + id);
+          document.getElementById(id).scrollIntoView(true);
         }
-      };
-
-      request.onerror = function () {
-        console.log("problem with getting url in db");
-      };
-
-    };
-
-    WikiArticle.prototype.loadUrl = function (save2db) {
-      /*get the page from the website*/
-      document.getElementById("progressBar").style.display = "block";
-
-      var self = this;
-
-      console.log("http request url : " + self.url.href);
-
-      if (typeof save2db === 'undefined') {
-        save2db = true;
       }
 
-      var self = this,
-          xhr = new XMLHttpRequest({mozSystem: true});
-
-      //* Initialize Cross XMLHttprequest 
-      //* and open a http request with "document" responseType.
-      //* It also define basic error handler 
-      //* and mask the progress bar on request end
-
-      xhr.open('GET', self.url.href, true); // asynchrone
-      xhr.responseType = "document"; // need "GET"
-
-      xhr.onerror = function () {
-        console.error("load error");
-
-        var h2 = document.createElement('h2'),
-            p1 = document.createElement('p'),
-            p2 = document.createElement('p');
-
-        h2.textContent = xhr.errorMessage || 'Loading error';
-        p1.textContent = " :-( I failed to get your article.";
-        p2.textContent = "you may check your internet connection or go back to the previous page.";
-
-        var body = document.getElementById("aw-article-body");
-        body.innerHTML = "";
-
-        body.appendChild(h2);
-        body.appendChild(p1);
-        body.appendChild(p2);
-
-        //document.getElementById("navbar").hidden = false;
-        ui.navbar.show();
-      };
-
-      xhr.onloadend = function () {
-        console.log("load end");
-        document.getElementById("progressBar").style.display = "";
-      };
-
-      xhr.onload = function () {
-        console.log("load success");
-        self.title = new Title(xhr.responseXML.title, self.url);
-
-        var resp = xhr.responseXML.getElementById("mw-content-text") || xhr.responseXML.body;
-
-        if (!resp) {
-          log.error("empty response");
-          return;
-        }
-
-        self.setContent(resp.innerHTML);
-        self.print();
-
-        if (save2db) {
-          self.toDb();
-        }
-      };
-
-      xhr.send(null);
     };
-
-    WikiArticle.prototype.setContent = function (str) {
-      this.content = new Content(str);
-    };
-
-    WikiArticle.prototype.print = function () {
-      this.title.print();
-      this.content.print();
-      this.scrollTo(this.anchor);
-
-      uiListeners.add.links();
-    };
-
-    WikiArticle.prototype.toDb = function () {
-      var data = {
-        url: this.url.href,
-        title: this.title.str,
-        body: this.content.body,
-        date: this.date
-      };
-
-      /* check if page exist*/
-      var objStore = db.transaction(["pages"], "readwrite").objectStore("pages");
-      var localCache = objStore.get(this.url.href);
-
-      localCache.onsuccess = function (e) {
-        var cachedPage = e.target.result;
-        if (cachedPage) { // page exists : 
-          /* update cached data */
-          cachedPage.body = data.body; // dom cannot be clone so we stock innerhtml
-          cachedPage.title = data.title;
-          cachedPage.date = data.date;
-
-          /*update the database */
-          var reqUpdate = objStore.put(cachedPage);
-
-          reqUpdate.onerror = function () {
-            console.log("update cached page error");
-          };
-
-          reqUpdate.onsuccess = function () {
-            console.log("page cached update");
-          };
-        } else { // page does not exist
-          /*write it to the database */
-          var req = objStore.add(data);
-
-          req.onsuccess = function () {
-            console.log("new page cached");
-          };
-
-          req.onerror = function () {
-            console.log("caching page request error");
-          };
-        }
-
-      };
-
-      localCache.onerror = function (e) {
-        console.log("local cache error");
-      };
-
-    };
-
-    WikiArticle.prototype.title = new Title("ArchWiki Viewer");
-
-    WikiArticle.prototype.scrollTo = function (id) {
-      var gw = document.getElementById("aw-article");
-      if (!id) {
-        //console.log("scroll to top");
-        gw.scrollTop = 0;
-      } else {
-        console.log("scroll to id " + id);
-        document.getElementById(id).scrollIntoView(true);
-      }
-    };
-
 
     /* ----------------------------------------
-     * namespace uiListeners: manage events listenner function from the UI
+     * namespace related to the User Interface (UI)
      * ------------------------------------------*/
 
+    /*
+     * 
+     * @type type
+     */
     var ui = {
+      /*
+       * 
+       */
       navbar: {
+        /*
+         * 
+         * @returns {undefined}
+         */
         hide: function () {
           if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
             console.log("hide navigation bar");
@@ -537,6 +649,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
           }
         },
+        /*
+         * 
+         * @returns {undefined}
+         */
         show: function () {
           if (document.getElementById("navbar").className.indexOf("navShown") < 0) {
             console.log("show navigation bar");
@@ -549,6 +665,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
           }
         },
+        /*
+         * 
+         * @returns {undefined}
+         */
         toggle: function () {
           if (document.getElementById("navbar").className.indexOf("navShown") >= 0) {
             ui.navbar.hide();
@@ -556,21 +676,43 @@ window.addEventListener('DOMContentLoaded', function () {
             ui.navbar.show();
           }
         },
+        /*
+         * 
+         */
         disable: {
+          /*
+           * 
+           * @returns {undefined}
+           */
           btReload: function () {
             document.getElementById("action_reload").setAttribute("disabled", "true");
           },
+          /*
+           * 
+           * @returns {undefined}
+           */
           btBack: function () {
             document.getElementById("action_back").setAttribute("disabled", "true");
           }
         },
+        /*
+         * 
+         */
         enable: {
+          /*
+           * 
+           * @returns {undefined}
+           */
           btBack: function () {
             var btBack = document.getElementById("action_back");
             if (btBack.hasAttributes("disabled")) {
               btBack.removeAttribute("disabled");
             }
           },
+          /*
+           * 
+           * @returns {undefined}
+           */
           btReload: function () {
             var btReload = document.getElementById("action_reload");
             if (btReload.hasAttributes("disabled")) {
@@ -583,6 +725,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     /*
      * Namespace for UI Listeners
+     * manage events listenner function from the UI
      * @type type
      */
     var uiListeners = {
@@ -737,10 +880,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
             } else if (
                 (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") // <- common case 
-                || (a.host.startsWith(document.location.host) && a.protocol === document.location.protocol) // <- happen when a research result redirect to a page (example of search: zsh)
+                || (a.host.startsWith(document.location.host) && a.protocol === document.location.protocol)
+                // <- happen when a research result redirect to a page (example of search: zsh)
                 ) {
               //console.log("wiki link event add : " + a.href);
-              a.addEventListener('click', loadWiki, false);
+              a.addEventListener('click', wiki.load, false);
 
             } else {
               //console.log("external link event add : " + a.href);
@@ -759,7 +903,7 @@ window.addEventListener('DOMContentLoaded', function () {
           var form = document.getElementById("topSearchForm");
 
           if (form) {
-            form.addEventListener('submit', searchWiki, true);
+            form.addEventListener('submit', wiki.search, true);
 
             form.addEventListener('blur', function (e) {
               console.log("hide search bar");
@@ -814,6 +958,10 @@ window.addEventListener('DOMContentLoaded', function () {
           }, false);
 
         },
+        /*
+         * 
+         * @returns {undefined}
+         */
         stoppedLinks: function () {
           var myLinks = document.querySelectorAll('.aw-article a');
 
@@ -829,6 +977,10 @@ window.addEventListener('DOMContentLoaded', function () {
           document.getElementById("aw-article")
               .addEventListener('click', ui.navbar.hide, false);
         },
+        /*
+         * 
+         * @returns {undefined}
+         */
         sidebar: function () {
           document.getElementById("sideQuit")
               .addEventListener('click', function (e) {
@@ -865,22 +1017,37 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
       },
+      /*
+       * 
+       */
       remove: {
+        /*
+         * 
+         * @returns {undefined}
+         */
         awArticle: function () {
           document.getElementById("aw-article")
               .removeEventListener('click', ui.navbar.hide, false);
 
         },
+        /*
+         * 
+         * @returns {undefined}
+         */
         links: function () {
           var myLinks = document.querySelectorAll('.aw-article a');
 
           for (var i = 0; i < myLinks.length; i++) {
             var a = myLinks[i];
-            a.removeEventListener('click', loadWiki, false);
+            a.removeEventListener('click', wiki.load, false);
             a.removeEventListener('click', openInOSBrowser, false);
             a.addEventListener('click', stopprop, false);
           }
         },
+        /*
+         * 
+         * @returns {undefined}
+         */
         stoppedLinks: function () {
           var myLinks = document.querySelectorAll('.aw-article a');
 
@@ -895,50 +1062,59 @@ window.addEventListener('DOMContentLoaded', function () {
      * callback
      * ------------------------------------------*/
 
+    /*
+     * 
+     * @param {type} e
+     * @returns {undefined}
+     */
     function stopprop(e) {
       e.preventDefault();
       e.stopPropagation();
     }
 
-    /*
-     * Callback for Links Events Listener
-     * @param {type} e
-     * @returns {undefined}
-     */
-    function loadWiki(e) {
-      e.preventDefault(); // do not follow click ! 
-      /* load target link*/
-      var href = e.currentTarget.getAttribute('href')
-          || e.currentTarget.parentNode.getAttribute('href'),
-          targetUrl = new MyUrl(href),
-          page = new WikiArticle(targetUrl);
-
-      page.loadArticle(USE_CACHE);
-      currentPage = page;
-      myhistory.push(targetUrl);
-    }
-
 
     /*
-     * Callback for submit search form
-     * @param {type} e
-     * @returns {undefined}
+     * Wiki related callback
+     * @type type
      */
-    function searchWiki(e) {
-      console.log('Searching !');
-      e.preventDefault();
+    var wiki = {
+      /*
+       * Callback for Links Events Listener
+       * @param {type} e
+       * @returns {undefined}
+       */
+      load: function (e) {
+        e.preventDefault(); // do not follow click ! 
+        /* load target link*/
+        var href = e.currentTarget.getAttribute('href')
+            || e.currentTarget.parentNode.getAttribute('href'),
+            targetUrl = new MyUrl(href),
+            page = new WikiArticle(targetUrl);
 
-      var input = document.getElementById("topSearchInput").value || "sorry",
-          url = new MyUrl("https://wiki.archlinux.org/index.php?search=" + input),
-          page = new WikiArticle(url);
+        page.loadArticle(USE_CACHE);
+        currentPage = page;
+        myhistory.push(targetUrl);
+      },
+      /*
+       * Callback for submit search form
+       * @param {type} e
+       * @returns {undefined}
+       */
+      search: function (e) {
+        console.log('Searching !');
+        e.preventDefault();
 
-      //console.log("input :" + input);
+        var input = document.getElementById("topSearchInput").value || "sorry",
+            url = new MyUrl("https://wiki.archlinux.org/index.php?search=" + input),
+            page = new WikiArticle(url);
 
-      page.loadUrl(false);
-      myhistory.push(url);
-      currentPage = page;
-    }
+        //console.log("input :" + input);
 
+        page.loadUrl(false);
+        myhistory.push(url);
+        currentPage = page;
+      }
+    };
 
     /*
      * Callback for external link
@@ -970,10 +1146,10 @@ window.addEventListener('DOMContentLoaded', function () {
     function getCachedArticleList() {
 
       /* retrieve all cached page and make a list*/
-      var objectStore = db.transaction("pages").objectStore("pages"),
+      var pagesStore = getObjectStore("pages"),
           ul = document.createElement("ul");
 
-      objectStore.openCursor().onsuccess = function (event) {
+      pagesStore.openCursor().onsuccess = function (event) {
 
         var cursor = event.target.result;
 
@@ -997,7 +1173,7 @@ window.addEventListener('DOMContentLoaded', function () {
           list.appendChild(ul);
 
           var cachedArticleList = new WikiArticle(new MyUrl(myAppUrl));
-          cachedArticleList.title = new Title("Cached articles");
+          cachedArticleList.setTitle("Cached articles");
           cachedArticleList.setContent(list.innerHTML);
           cachedArticleList.print();
 
@@ -1012,7 +1188,7 @@ window.addEventListener('DOMContentLoaded', function () {
      * ------------------------------------------*/
 
     /*
-     * Open and set database for cached content
+     * Open and set database for cached article and settings pref.
      * @returns {undefined}
      */
     function opendb() {
@@ -1040,8 +1216,7 @@ window.addEventListener('DOMContentLoaded', function () {
         myhistory.push(currentPage.url);
 
         /* Initialise Application Settings*/
-        var objStore = db.transaction(["settings"], "readonly").objectStore("settings");
-
+        var objStore = getObjectStore(["settings"], "readonly");
 
         /* "use cache" setting */
         var reqCacheEnable = objStore.get("use_cache");
@@ -1100,48 +1275,64 @@ window.addEventListener('DOMContentLoaded', function () {
         var objectStore = null;
 
         if (db.objectStoreNames[0] === "pages") {
-          console.log("removing old pages objet store");
-          db.deleteObjectStore("pages");
-          objectStore = db.createObjectStore("pages", {keyPath: "url"});
+//          console.log("removing old pages objet store");
+//          db.deleteObjectStore("pages");
+//
+//          objectStore = db.createObjectStore("pages", {keyPath: "url"});
+//          objectStore.createIndex("title", "title", {unique: false});
+//          objectStore.createIndex("date", "date", {unique: false});
+
         } else {
           objectStore = db.createObjectStore("pages", {keyPath: "url"});
-        }
+          objectStore.createIndex("title", "title", {unique: false});
+          objectStore.createIndex("date", "date", {unique: false});
 
-        objectStore.createIndex("title", "title", {unique: false});
-        objectStore.createIndex("date", "date", {unique: false});
-        // Use transaction oncomplete to make sure the objectStore creation is 
-        // finished before adding data into it.
-        objectStore.transaction.oncomplete = function () {
-          console.log("creating object transaction complete");
-        };
+          // Use transaction oncomplete to make sure the objectStore creation is 
+          // finished before adding data into it.
+          objectStore.transaction.oncomplete = function () {
+            console.log("creating object transaction complete");
+          };
+        }
 
         var objectStore_2 = null;
 
         if (db.objectStoreNames[1] === "settings") {
-          console.log("removing old settings objet store");
-          db.deleteObjectStore("settings");
-          objectStore_2 = db.createObjectStore("settings", {keyPath: "name"});
+//          console.log("removing old settings objet store");
+//          db.deleteObjectStore("settings");
+//          objectStore_2 = db.createObjectStore("settings", {keyPath: "name"});
         } else {
           objectStore_2 = db.createObjectStore("settings", {keyPath: "name"});
+
+          objectStore_2.transaction.oncomplete = function () {
+            console.log("creating object 2 transaction complete");
+            console.log("settings default value");
+            USE_CACHE = "true";
+            updateSettings("use_cache", USE_CACHE);
+
+            REFRESH_CACHE_PERIOD = "2629743830";
+            updateSettings("refresh_cache_period", REFRESH_CACHE_PERIOD);
+          };
         }
 
-        objectStore_2.transaction.oncomplete = function () {
-          console.log("creating object 2 transaction complete");
-          console.log("settings default value");
-          USE_CACHE = "true";
-          updateSettings("use_cache", USE_CACHE);
-
-          REFRESH_CACHE_PERIOD = "2629743830";
-          updateSettings("refresh_cache_period", REFRESH_CACHE_PERIOD);
-        };
       };
     }
 
+    /*
+     * 
+     * @param {type} store_name
+     * @param {type} mode
+     * @returns {unresolved}
+     */
     function getObjectStore(store_name, mode) {
       var tx = db.transaction(store_name, mode);
       return tx.objectStore(store_name);
     }
 
+    /*
+     * 
+     * @param {type} store_name
+     * @returns {undefined}
+     */
     function clearObjectStore(store_name) {
       var store = getObjectStore([store_name], 'readwrite'),
           req = store.clear();
@@ -1154,32 +1345,14 @@ window.addEventListener('DOMContentLoaded', function () {
       };
     }
 
-
-    /* ----------------------------------------
-     * Helper function ()
-     * ------------------------------------------*/
-
     /*
-     * return the main document url at load
-     * @returns {Node.URL|Document.URL|document.URL|String}
+     * update settings in the database
+     * @param {type} name
+     * @param {type} value
+     * @returns {undefined}
      */
-    function appUrl() {
-      /* It is need in devellopment when "reloading" from simulator on page
-       * with anchor */
-      var url = appRoot() + "/index.html";
-      //console.log("appUrl is init to :\n" + url);
-      return url;
-    }
-
-    function appRoot() {
-      /* It is need in devellopment when "reloading" from simulator on page
-       * with anchor */
-      var url = document.location.protocol + "//" + document.location.host;
-      return url;
-    }
-
     function updateSettings(name, value) {
-      var objStore = db.transaction(["settings"], "readwrite").objectStore("settings"),
+      var objStore = getObjectStore(["settings"], "readwrite"),
           request = objStore.get(name);
 
       request.onsuccess = function (e) {
@@ -1215,6 +1388,34 @@ window.addEventListener('DOMContentLoaded', function () {
         console.log("local setting error");
       };
     }
+
+    /* ----------------------------------------
+     * Helper function ()
+     * ------------------------------------------*/
+
+    /*
+     * return the main document url at load
+     * @returns {Node.URL|Document.URL|document.URL|String}
+     */
+    function appUrl() {
+      /* It is need in devellopment when "reloading" from simulator on page
+       * with anchor */
+      var url = appRoot() + "/index.html";
+      //console.log("appUrl is init to :\n" + url);
+      return url;
+    }
+
+    /*
+     * 
+     * @returns {String}
+     */
+    function appRoot() {
+      /* It is need in devellopment when "reloading" from simulator on page
+       * with anchor */
+      var url = document.location.protocol + "//" + document.location.host;
+      return url;
+    }
+
 
     /* ----------------------------------------
      * First add event listener (Initialisation)
