@@ -140,7 +140,7 @@ section {
 }
 
 section#main {
-   z-index: 5;
+    z-index: 5;
 }
 
 /*
@@ -185,19 +185,62 @@ button::-moz-focus-inner {
     color: #222;
 }
 
-.related-articles,
-#related-articles{
+.awv-related {
     overflow: hidden;
     border: thin solid #AAA;
     margin: .5rem .5rem
 }
 
+.awv-related .awv-related-title{
+    background:#333; 
+    color:white; 
+    padding:0.2em; 
+    border-bottom:5px #08c solid; 
+    margin:0; text-align:center; 
+    font-weight:bold;
+}
+
+.awv-related > ul {
+    list-style-type:none; 
+    margin:0; 
+    padding:0.3em;
+}
+
+.awv-related > ul > li{
+    padding:0.4em 0; 
+    line-height:1;
+}
+
+.awv-note{
+    padding: 5px; 
+    margin: 0.50em 0; 
+    background-color: #DDDDFF; 
+    border: thin solid #BBBBDD; 
+    overflow: hidden;
+}
+
+
+.awv-tip{
+    padding: 5px; 
+    margin: 0.50em 0; 
+    background-color: #DDFFDD; 
+    border: thin solid #BBDDBB; 
+    overflow: hidden;
+}
+
+.awv-warning{
+    padding: 5px; 
+    margin: 0.50em 0; 
+    background-color: #FFDDDD; 
+    border: thin solid #DDBBBB; 
+    overflow: hidden;
+}
 
 /*
  * Terms of uses (at the bottom of the index.html start page)
  */
 #divTerms_of_Uses {
-    
+
     border-top: 1px solid #AAA;
     color: #888;
     font-size: 90%;

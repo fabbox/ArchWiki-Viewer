@@ -37,13 +37,144 @@ window.addEventListener('DOMContentLoaded', function () {
     /* ----------------------------------------
      * Global variables
      * ------------------------------------------*/
-    var currentPage = null, // "article" which is diplayed
-        db = null, // indexeddb which store cache, pref... 
-        myAppUrl = appUrl(), // reference url ("app://.../index.html")
-        myhistory = [], // array of "MyUrl" used to manage history
-        USE_CACHE = null, // use cache or not ? 
-        REFRESH_CACHE_PERIOD = null; // 
+    var currentPage = null, // "article" which is diplayed ()
+        myhistory = null; // array of "MyUrl" used to manage history
 
+    /* ----------------------------------------
+     * Settings
+     * ------------------------------------------*/
+
+    var settings = {
+      use_cache: null, // use cache or not ? 
+      refresh_cache_period: null, // do not use the cache after such period, download a new version
+      /*
+       * set default setting
+       * @returns {undefined}
+       */
+      setDefault: function () {
+        console.log("settings default value");
+
+        settings.setUseCache("true");
+        settings.save("use_cache");
+
+        settings.setRefreshCachePeriod("2629743830");
+        settings.save("refresh_cache_period");
+      },
+      /*
+       * Set the "use_cache" settings
+       * @param {type} value
+       * @returns {undefined}
+       */
+      setUseCache: function (value) {
+        settings["use_cache"] = value;
+        console.log('use_cache : ' + settings["use_cache"]);
+      },
+      /*
+       * Set the "refresh_cache_period" settings
+       * @param {type} value
+       * @returns {undefined}
+       */
+      setRefreshCachePeriod: function (value) {
+        settings["refresh_cache_period"] = value;
+        console.log('refresh cache page periode (ms): ' + settings["refresh_cache_period"]);
+      },
+      /*
+       * update settings in the database
+       * @param {type} name
+       * @param {type} value
+       * @returns {undefined}
+       */
+      save: function (name) {
+        var settingsStore = database.getObjectStore(["settings"], "readwrite"),
+            request = settingsStore.get(name);
+
+        request.onsuccess = function (e) {
+          var result = e.target.result;
+          if (result) { // value exist
+            /* update the data */
+            result.value = settings[name];
+
+            /*update the database */
+            var reqUpdate = settingsStore.put(result);
+
+            reqUpdate.onerror = function () {
+              console.log("update settings db error");
+            };
+
+            reqUpdate.onsuccess = function () {
+              console.log("settings db update");
+            };
+          } else { // value does not exist
+            /*write it to the database */
+            var reqNew = settingsStore.add({name: name, value: settings[name]});
+
+            reqNew.onsuccess = function () {
+              console.log("settings db request done");
+            };
+
+            reqNew.onerror = function () {
+              console.log("settings db request error");
+            };
+          }
+        };
+
+        request.onerror = function (e) {
+          console.log("local setting error");
+        };
+      },
+      saveAll: function () {
+        settings.save("use_cache");
+        settings.save("refresh_cache_period");
+      },
+      init: {
+        useCache: function () {
+          /* Initialise Application Settings*/
+          var settingsStore = database.getObjectStore(["settings"], "readonly");
+          /* "use cache" setting */
+          var reqCacheEnable = settingsStore.get("use_cache");
+
+          reqCacheEnable.onsuccess = function (e) {
+            var use_cache = e.target.result;
+            if (use_cache) {
+              settings.setUseCache(use_cache.value);
+              document.getElementById("use_cache").checked = settings["use_cache"];
+            } else {
+              console.error("what is use_cache ?");
+            }
+          };
+
+          reqCacheEnable.onerror = function (e) {
+            console.log("local setting cache init error");
+          };
+        },
+        refreshCache: function () {
+          /* Initialise Application Settings*/
+          var settingsStore = database.getObjectStore(["settings"], "readonly");
+          /* "refresh article period in cache" setting */
+          var reqRefreshCache = settingsStore.get("refresh_cache_period");
+
+          reqRefreshCache.onsuccess = function (e) {
+            var refresh = e.target.result;
+            if (refresh) {
+              settings.setRefreshCachePeriod(refresh.value);
+
+              var selectElt = document.getElementById("refresh_cache_period");
+              selectElt.value = settings["refresh_cache_period"];
+
+              document.getElementById("refresh_label").textContent =
+                  selectElt.options[selectElt.selectedIndex].text;
+            } else {
+              console.error("what is refresh_cache_period ?");
+            }
+          };
+
+          reqRefreshCache.onerror = function (e) {
+            console.log("local setting refresh init error");
+          };
+        }
+      }
+
+    };
 
     /* ----------------------------------------
      * MyHistory
@@ -61,7 +192,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
       uiListeners.disable.navigation();
     }
-
 
     MyHistory.prototype = {
       /*
@@ -109,8 +239,6 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     };
 
-
-
     /* ----------------------------------------
      * MyUrl
      * ------------------------------------------*/
@@ -119,6 +247,8 @@ window.addEventListener('DOMContentLoaded', function () {
      * MyUrl constructor
      * @param {type} str
      * @returns {app_L35.MyUrl}
+     * 
+     * properties are : href, anchor and raw;
      */
     function MyUrl(str) {
       //console.log("new MyUrl Instance");
@@ -127,34 +257,26 @@ window.addEventListener('DOMContentLoaded', function () {
       //console.log("raw url :" + this.raw);
 
       if (str.startsWith("/index.php/")) {
-        str = this.root + str;
+        str = awv.WIKIROOT_URL + str;
       }
 
-      if (str === this.root + "/index.php/Main_page"
-          || str.startsWith(myAppUrl)) {
+      if (str === awv.WIKIROOT_URL + "/index.php/Main_page"
+          || str.startsWith(awv.URL)) {
         /* home link */
         //console.log("this app url detected");
-        this.href = myAppUrl;
+        this.href = awv.URL;
         this.anchor = null;
 
       } else {
 
         /* format str to minimized loaded content */
-        var str2replace = this.root + "/index.php/",
-            str2inject = this.root + "/index.php?action=render&title=";
-
-        if (str.indexOf(str2replace) === 0) {
-          this.href = str.replace(str2replace, str2inject);
-        } else if (str.indexOf(str2inject) === 0) {
-          this.href = str;
-        } else { // search case
-          this.href = encodeURI(str);
-        }
+        this.href = formatter.url.toRender(str);
 
         // use this because use of str.hash can be buggy as it
         // decode the anchor string
         var anchor_idx = str.indexOf("#");
         if (anchor_idx > 0) {
+          //console.log(str);
           this.anchor = str.slice(anchor_idx + 1);
         } else {
           this.anchor = null;
@@ -164,7 +286,200 @@ window.addEventListener('DOMContentLoaded', function () {
 
     }
 
-    MyUrl.prototype.root = "https://wiki.archlinux.org";
+    /* ----------------------------------------
+     * Formatter
+     * ------------------------------------------*/
+    var formatter = {
+      url: {
+        toRender: function (str) {
+          /* format str to minimized loaded content */
+          var str2replace = awv.WIKIROOT_URL + "/index.php/",
+              str2inject = awv.WIKIROOT_URL + "/index.php?action=render&title=";
+
+          if (str.indexOf(str2replace) === 0) {
+            str = str.replace(str2replace, str2inject);
+          } else if (str.indexOf(str2inject) === 0) {
+            // nothing
+          } else { // search case
+            str = encodeURI(str);
+          }
+
+          var anchor_idx = str.indexOf("#");
+          if (anchor_idx > 1) {
+            str = str.slice(0, anchor_idx);
+          }
+          
+          //console.log(str);
+          return str;
+        }
+
+      },
+      title: {
+        fromUrl: function (str) {
+          var title = decodeURI(str),
+              ugly_url_part = awv.WIKIROOT_URL + "/index.php?action=render&title=",
+              ugly_url_part3 = awv.WIKIROOT_URL + "/index.php/",
+              ugly_url_part2 = awv.WIKIROOT_URL + "/index.php?search=";
+
+          // who told I did'nt read "how to loop on an array in JS"?!
+          if (title.startsWith(awv.URL)) {
+            title = "ArchWiki Viewer";
+          } else if (title.indexOf(ugly_url_part) >= 0) {
+            title = decodeURI(title.replace(ugly_url_part, ""));
+
+          } else if (title.indexOf(ugly_url_part2) >= 0) {
+            title = decodeURI(title.replace(ugly_url_part2, ""));
+
+          } else if (title.indexOf(ugly_url_part3) >= 0) {
+            title = decodeURI(title.replace(ugly_url_part3, ""));
+
+          }
+          return title;
+        },
+        commonFilter: function (title) {
+          if (title.startsWith('Search results')) {
+            title = "Search results";
+          }
+
+          if (title.indexOf("#") >= 0) {
+            var str2rm = title.slice(title.indexOf("#"));
+            title = title.replace(str2rm, "");
+          }
+
+          if (title.indexOf('_') >= 0) {
+            title = title.replace(/_/g, " ");
+          }
+
+          if (title.indexOf(' - ArchWiki') >= 0) {
+            title = title.replace(' - ArchWiki', "");
+          }
+          return title;
+        },
+        displayFilter: function (title) {
+          if (title.startsWith("Category:")) {
+            title = title.replace("Category:", "");
+          }
+          return title;
+        }
+
+      },
+      page: {
+        /* 
+         * reformat "related articles" part (if any
+         * @param {type} mainDiv
+         * @returns {unresolved}
+         */
+        relatedArticle: function (mainDiv) {
+
+          var fec = mainDiv.firstElementChild,
+              relatedStyle = "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;";
+
+          do {
+            if (fec
+                && fec.tagName === "DIV"
+                && fec.hasAttributes()
+                && fec.attributes[0].name === "style"
+                && fec.attributes[0].value === relatedStyle) {
+
+              //console.log("format 'related articles'");
+              fec.className = "awv-related";
+              fec.removeAttribute("style");
+
+              /*the <p> where "related articles" is written*/
+              var title = fec.firstElementChild;
+              title.className = "awv-related-title";
+              title.removeAttribute("style");
+
+              /* ul */
+              var ul = mainDiv.getElementsByTagName("ul");
+              for (var i = ul.length - 1; i >= 0; i--) {
+                if (ul[i].hasAttributes() && ul[i].attributes[0].name === "style") {
+                  //console.log("clean ul");
+                  ul[i].removeAttribute("style");
+                }
+              }
+
+              /* li*/
+              var li = mainDiv.getElementsByTagName("li");
+              for (var i = li.length - 1; i >= 0; i--) {
+                if (li[i].hasAttributes() && li[i].attributes[0].name === "style") {
+                  //console.log("clean li");
+                  li[i].removeAttribute("style");
+                }
+              }
+
+              fec = null;
+
+            } else {
+              fec = fec.nextElementSibling;
+            }
+          } while (fec);
+          return mainDiv;
+        },
+        /*
+         * replace string style of note, tip and warning inset by css class
+         * @param {type} mainDiv
+         * @returns {unresolved}
+         */
+        inset: function (mainDiv) {
+          var divs = mainDiv.getElementsByTagName("div"),
+              note = "padding: 5px; margin: 0.50em 0; background-color: #DDDDFF; border: thin solid #BBBBDD; overflow: hidden;",
+              tip = "padding: 5px; margin: 0.50em 0; background-color: #DDFFDD; border: thin solid #BBDDBB; overflow: hidden;",
+              warning = "padding: 5px; margin: 0.50em 0; background-color: #FFDDDD; border: thin solid #DDBBBB; overflow: hidden;";
+
+          for (var i = divs.length - 1; i >= 0; i--) {
+            if (divs[i].hasAttributes() && divs[i].attributes[0].name === "style") {
+              if (divs[i].attributes[0].value === note) {
+                //console.log("format 'note'");
+                divs[i].className = "awv-note";
+                divs[i].removeAttribute("style");
+              } else if (divs[i].attributes[0].value === tip) {
+                //console.log("format 'tip'");
+                divs[i].className = "awv-tip";
+                divs[i].removeAttribute("style");
+              } else if (divs[i].attributes[0].value === warning) {
+                //console.log("format 'warning'");
+                divs[i].className = "awv-warning";
+                divs[i].removeAttribute("style");
+              }
+            }
+          }
+          return mainDiv;
+        },
+        /* 
+         * find img  and update src point to archlinux when it's "necessary"
+         * 
+         * @param {type} mainDiv
+         * @returns {unresolved}
+         */
+        imageSrc: function (mainDiv) {
+          /* the collection of tango icon provide in the 
+           * arch-wiki-doc package is use locally to do not 
+           * downloading common icon
+           */
+          var img = mainDiv.querySelectorAll("img");
+          if (img) {
+            var imgRoot = awv.ROOT;
+
+            for (var i = 0; i < img.length; i++) {
+              if (img[i].src.startsWith(imgRoot + "/images/")) {
+                var src = img[i].src;
+                //console.log(src);
+                console.log("update image src");
+                if (src.indexOf("Tango-") >= 0) {
+                  img[i].src = src.replace(/.*Tango-/g, imgRoot + "/images/tango/File:Tango-");
+                } else {
+                  img[i].src = img[i].src.replace(imgRoot, "https://wiki.archlinux.org");
+                }
+                //console.log(img[i].src);
+              }
+            }
+          }
+          return mainDiv;
+        }
+
+      }
+    };
 
 
     /* ----------------------------------------
@@ -178,51 +493,10 @@ window.addEventListener('DOMContentLoaded', function () {
      */
     function Title(title, myUrl) {
       //console.log("new Title instance");
-      if (typeof myUrl !== 'undefined') {
-        var ugly_url_part = myUrl.root + "/index.php?action=render&title=",
-            ugly_url_part3 = myUrl.root + "/index.php/",
-            ugly_url_part2 = myUrl.root + "/index.php?search=";
-
-        if (!title) {
-          title = decodeURI(myUrl.href);
-        }
-
-        // who told I did'nt read "how to loop on an array in JS"?!
-        if (title.startsWith(myAppUrl)) {
-          title = "ArchWiki Viewer";
-        } else if (title.indexOf(ugly_url_part) >= 0) {
-          title = decodeURI(title.replace(ugly_url_part, ""));
-
-        } else if (title.indexOf(ugly_url_part2) >= 0) {
-          title = decodeURI(title.replace(ugly_url_part2, ""));
-
-        } else if (title.indexOf(ugly_url_part3) >= 0) {
-          title = decodeURI(title.replace(ugly_url_part3, ""));
-
-        }
+      if (typeof myUrl !== 'undefined' && !title) {
+        title = formatter.title.fromUrl(myUrl.href);
       }
-
-      if (title.startsWith('Search results')) {
-        title = "Search results";
-      }
-
-      if (title.startsWith('Category:')) {
-        title = title.replace("Category:", "");
-      }
-
-      if (title.indexOf("#") >= 0) {
-        var str2rm = title.slice(title.indexOf("#"));
-        title = title.replace(str2rm, "");
-      }
-
-      if (title.indexOf('_') >= 0) {
-        title = title.replace(/_/g, " ");
-      }
-
-      if (title.indexOf(' - ArchWiki') >= 0) {
-        title = title.replace(' - ArchWiki', "");
-      }
-
+      title = formatter.title.commonFilter(title);
       this.str = title;
     }
 
@@ -232,19 +506,8 @@ window.addEventListener('DOMContentLoaded', function () {
        * @returns {undefined}
        */
       print: function () {
-        //  XXX: Why it is still there ? it return a string to who ? o_O
-        ///* parse tilte string */
-        //if (!this.str || this.str.startsWith("app://")) {
-        //  return "ArchWiki Viewer";
-        //}
-
-        /* set page title */
-//      var strTitle = document.createTextNode(this.str),
-//          titleElt = document.getElementById("awPageTitle");
-//      titleElt.removeChild(titleElt.firstChild);
-//      titleElt.appendChild(strTitle);
-
-        document.getElementById("awPageTitle").textContent = this.str;
+        var title = formatter.title.displayFilter(this.str);
+        document.getElementById("awPageTitle").textContent = title;
       }
     };
 
@@ -258,12 +521,32 @@ window.addEventListener('DOMContentLoaded', function () {
      * @param {type} content
      * @returns {app_L12.Content}
      */
-    function Content(content) {
+    function Content(content, reformat) {
       //console.log("new Content instance");
+
+      if (typeof reformat === 'undefined') {
+        reformat = true;
+      }
+
       this.body = content;
+
+      if (reformat) {
+        this.reformat();
+      }
     }
 
     Content.prototype = {
+      reformat: function () {
+        /* create a div node */
+        var mainDiv = document.createElement("div");
+        mainDiv.innerHTML = this.body;
+
+        mainDiv = formatter.page.relatedArticle(mainDiv);
+        mainDiv = formatter.page.inset(mainDiv);
+        mainDiv = formatter.page.imageSrc(mainDiv);
+
+        this.body = mainDiv.innerHTML;
+      },
       /*
        * Display content in a new article in the document
        * it delete the old article. 
@@ -279,8 +562,8 @@ window.addEventListener('DOMContentLoaded', function () {
         awart_content_old.id = "aw-article-body_old";
 
         /* create new article element */
-        var awart = document.createElement("article");
-        var awart_content = document.createElement("div");
+        var awart = document.createElement("article"),
+            awart_content = document.createElement("div");
 
         awart.id = "aw-article";
         awart.className = "aw-article fade-out";
@@ -288,54 +571,6 @@ window.addEventListener('DOMContentLoaded', function () {
         awart_content.id = "aw-article-body";
         awart_content.className = "aw-article-body";
         awart_content.innerHTML = this.body;
-
-        /* reformat "related articles" part (if any)*/
-        var fec = awart_content.firstElementChild;
-        do {
-          if (fec
-              && fec.tagName === "DIV"
-              && fec.hasAttributes()
-              && fec.attributes[0].name === "style"
-              && fec.attributes[0].value === "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;") {
-
-            //console.log("format 'related articles'");
-            fec.id = "related-articles";
-            fec.removeAttribute("style");
-            fec = null;
-
-          } else {
-            fec = fec.nextElementSibling;
-          }
-        } while (fec);
-
-        /* find img to update link to point to archlinux */
-        /*
-         * the collection of tango icon provide in the 
-         * arch-wiki-doc package is use locally to do not 
-         * downloading common icon
-         */
-        var img = awart_content.querySelectorAll("img");
-        if (img) {
-          var imgRoot = appRoot();
-
-          for (var i = 0; i < img.length; i++) {
-
-            if (img[i].src.startsWith(imgRoot + "/images/")) {
-              var src = img[i].src;
-              console.log(src);
-
-              if (src.indexOf("Tango-") >= 0) {
-                img[i].src = src.replace(/.*Tango-/g, imgRoot + "/images/tango/File:Tango-");
-              } else {
-                console.log("update image src");
-                img[i].src = img[i].src.replace(imgRoot, "https://wiki.archlinux.org");
-              }
-              
-              console.log(img[i].src);
-            }
-
-          }
-        }
 
         /* set article content*/
         awart.appendChild(awart_content);
@@ -388,7 +623,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (useCache) {
           this.loadCache();
-        } else if (this.url.href === myAppUrl) {
+        } else if (this.url.href === awv.URL) {
           this.loadCache();
         } else {
           this.loadUrl(false);
@@ -400,10 +635,10 @@ window.addEventListener('DOMContentLoaded', function () {
        * @returns {undefined}
        */
       loadCache: function () {
-        document.getElementById("progressBar").style.display = "block";
+        ui.progressbar.show();
 
         var self = this,
-            request = db.transaction("pages").objectStore("pages").get(self.url.href);
+            request = database.getObjectStore("pages").get(self.url.href);
 
         request.onsuccess = function (e) {
           var cache = e.target.result;
@@ -411,12 +646,12 @@ window.addEventListener('DOMContentLoaded', function () {
           if (cache) {
             console.log("I know that url " + cache.url);
 
-            if (self.date - cache.date < REFRESH_CACHE_PERIOD) {
+            if (self.date - cache.date < settings["refresh_cache_period"]) {
 
-              self.title = new Title(cache.title);
-              self.setContent(cache.body);
+              self.setTitle(cache.title);
+              self.setContent(cache.body, false);
               self.print();
-              document.getElementById("progressBar").style.display = "";
+              ui.progressbar.hide();
 
             } else {
               console.log("updating cache");
@@ -446,7 +681,7 @@ window.addEventListener('DOMContentLoaded', function () {
        */
       loadUrl: function (save2db) {
         /*get the page from the website*/
-        document.getElementById("progressBar").style.display = "block";
+        ui.progressbar.show();
 
         var self = this;
 
@@ -491,12 +726,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
         xhr.onloadend = function () {
           console.log("load end");
-          document.getElementById("progressBar").style.display = "";
+          ui.progressbar.hide();
         };
 
         xhr.onload = function () {
           console.log("load success");
-          self.title = new Title(xhr.responseXML.title, self.url);
+          self.setTitle(xhr.responseXML.title, self.url);
 
           var resp = xhr.responseXML.getElementById("mw-content-text") || xhr.responseXML.body;
 
@@ -505,7 +740,7 @@ window.addEventListener('DOMContentLoaded', function () {
             return;
           }
 
-          self.setContent(resp.innerHTML);
+          self.setContent(resp.innerHTML, true);
           self.print();
 
           if (save2db) {
@@ -520,8 +755,8 @@ window.addEventListener('DOMContentLoaded', function () {
        * @param {type} str 
        * @returns {undefined}
        */
-      setContent: function (str) {
-        this.content = new Content(str);
+      setContent: function (str, reformat) {
+        this.content = new Content(str, reformat);
       },
       /*
        * set the title properties
@@ -556,8 +791,8 @@ window.addEventListener('DOMContentLoaded', function () {
         };
 
         /* check if page exist*/
-        var objStore = db.transaction(["pages"], "readwrite").objectStore("pages");
-        var localCache = objStore.get(this.url.href);
+        var pagesStore = database.getObjectStore(["pages"], "readwrite");
+        var localCache = pagesStore.get(this.url.href);
 
         localCache.onsuccess = function (e) {
           var cachedPage = e.target.result;
@@ -568,7 +803,7 @@ window.addEventListener('DOMContentLoaded', function () {
             cachedPage.date = data.date;
 
             /*update the database */
-            var reqUpdate = objStore.put(cachedPage);
+            var reqUpdate = pagesStore.put(cachedPage);
 
             reqUpdate.onerror = function () {
               console.log("update cached page error");
@@ -579,7 +814,7 @@ window.addEventListener('DOMContentLoaded', function () {
             };
           } else { // page does not exist
             /*write it to the database */
-            var req = objStore.add(data);
+            var req = pagesStore.add(data);
 
             req.onsuccess = function () {
               console.log("new page cached");
@@ -720,6 +955,17 @@ window.addEventListener('DOMContentLoaded', function () {
             }
           }
         }
+      },
+      /*
+       * 
+       */
+      progressbar: {
+        hide: function () {
+          document.getElementById("progressBar").style.display = "";
+        },
+        show: function () {
+          document.getElementById("progressBar").style.display = "block";
+        }
       }
     };
 
@@ -803,7 +1049,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btHome.addEventListener('click', function () {
             /* go home */
-            var page = new WikiArticle(new MyUrl(myAppUrl));
+            var page = new WikiArticle(new MyUrl(awv.URL));
             page.loadCache();
             myhistory.push(page.url);
             currentPage = page;
@@ -874,7 +1120,7 @@ window.addEventListener('DOMContentLoaded', function () {
                   }
               , false);
 
-            } else if (a.href.startsWith(myAppUrl + '#')) {
+            } else if (a.href.startsWith(awv.URL + '#')) {
               // let's local anchor manage by the html engine
               continue;
 
@@ -941,7 +1187,7 @@ window.addEventListener('DOMContentLoaded', function () {
               // console.log("history length : " + myhistory.length);
               var page = new WikiArticle(myhistory.popget());
 
-              page.loadArticle(USE_CACHE);
+              page.loadArticle(settings["use_cache"]);
               currentPage = page;
             }
           }, false);
@@ -953,7 +1199,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btStar.addEventListener('click', function () {
             console.log("star");
-            getCachedArticleList();
+            wiki.printCachedArticleList();
             ui.navbar.disable.btReload();
           }, false);
 
@@ -990,9 +1236,9 @@ window.addEventListener('DOMContentLoaded', function () {
               }, false);
 
           document.getElementById("use_cache").addEventListener('click', function (e) {
-            USE_CACHE = e.target.checked;
-            console.log('use_cache : ' + USE_CACHE);
-            updateSettings("use_cache", USE_CACHE);
+            settings.setUseCache(e.target.checked);
+
+            settings.save("use_cache");
           }, false);
 
 
@@ -1002,20 +1248,17 @@ window.addEventListener('DOMContentLoaded', function () {
           }, false);
 
           document.getElementById("cleardb_ok").addEventListener('click', function (e) {
-            clearObjectStore("pages");
+            database.clearObjectStore("pages");
           }, false);
 
 
           /* Change refresh cache */
           document.getElementById("refresh_cache_period").addEventListener('change', function () {
-            REFRESH_CACHE_PERIOD = this.value;
-            console.log('refresh cache page periode (ms): ' + REFRESH_CACHE_PERIOD);
-            updateSettings("refresh_cache_period", REFRESH_CACHE_PERIOD);
+            settings.setRefreshCachePeriod(this.value);
+            settings.save("refresh_cache_period");
             document.getElementById("refresh_label").textContent = this.options[this.selectedIndex].text;
           });
         }
-
-
       },
       /*
        * 
@@ -1063,17 +1306,6 @@ window.addEventListener('DOMContentLoaded', function () {
      * ------------------------------------------*/
 
     /*
-     * 
-     * @param {type} e
-     * @returns {undefined}
-     */
-    function stopprop(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-
-    /*
      * Wiki related callback
      * @type type
      */
@@ -1091,7 +1323,7 @@ window.addEventListener('DOMContentLoaded', function () {
             targetUrl = new MyUrl(href),
             page = new WikiArticle(targetUrl);
 
-        page.loadArticle(USE_CACHE);
+        page.loadArticle(settings["use_cache"]);
         currentPage = page;
         myhistory.push(targetUrl);
       },
@@ -1113,40 +1345,15 @@ window.addEventListener('DOMContentLoaded', function () {
         page.loadUrl(false);
         myhistory.push(url);
         currentPage = page;
-      }
-    };
-
-    /*
-     * Callback for external link
-     * @param {type} e
-     * @returns {undefined}
-     */
-    function openInOSBrowser(e) {
-      e.preventDefault();
-
-      console.log('open url in browser: ' + e.currentTarget.href);
-      // Open url in browser
-      var activity = new MozActivity({
-        name: "view",
-        data: {
-          type: "url",
-          url: e.currentTarget.href
-        }
-      });
-
-      activity.onerror = function () {
-        console.log("I can't open this link in OS Browser : " + this.error);
-      };
-    }
-
-    /*
+      },
+         /*
      * Callback for action_star (saved articles in the database)
      * @returns {undefined}
      */
-    function getCachedArticleList() {
+    printCachedArticleList: function () {
 
-      /* retrieve all cached page and make a list*/
-      var pagesStore = getObjectStore("pages"),
+      /* retrieve each cached page and make a list*/
+      var pagesStore = database.getObjectStore("pages"),
           ul = document.createElement("ul");
 
       pagesStore.openCursor().onsuccess = function (event) {
@@ -1172,9 +1379,9 @@ window.addEventListener('DOMContentLoaded', function () {
           var list = document.createElement("body");
           list.appendChild(ul);
 
-          var cachedArticleList = new WikiArticle(new MyUrl(myAppUrl));
+          var cachedArticleList = new WikiArticle(new MyUrl(awv.URL));
           cachedArticleList.setTitle("Cached articles");
-          cachedArticleList.setContent(list.innerHTML);
+          cachedArticleList.setContent(list.innerHTML, false);
           cachedArticleList.print();
 
           ui.navbar.hide();
@@ -1182,239 +1389,151 @@ window.addEventListener('DOMContentLoaded', function () {
       };
     }
 
+    };
+
+    /*
+     * Callback for external link
+     * @param {type} e
+     * @returns {undefined}
+     */
+    function openInOSBrowser(e) {
+      e.preventDefault();
+
+      console.log('open url in browser: ' + e.currentTarget.href);
+      // Open url in browser
+      var activity = new MozActivity({name: "view", data: {type: "url", url: e.currentTarget.href}});
+
+      activity.onerror = function () {
+        console.log("I can't open this link in OS Browser : " + this.error);
+      };
+    }
+
+    /*
+     * 
+     * @param {type} e
+     * @returns {undefined}
+     */
+    function stopprop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+ 
 
     /* ----------------------------------------
      * Database (indexedDB)
      * ------------------------------------------*/
 
-    /*
-     * Open and set database for cached article and settings pref.
-     * @returns {undefined}
-     */
-    function opendb() {
-      /* openning database */
-      var request = indexedDB.open("awv", 3);
-      /* XXX : checked if db is already opened ? */
-      request.onerror = function () {
-        console.log("Why didn't you allow my web app to use IndexedDB?!");
-      };
-
-      request.onsuccess = function () {
-        console.log("indexeddb is opened!");
-        db = this.result;
-
-        db.onerror = function (e) {
-          console.log("Database error: " + e.target.errorCode);
+    var database = {
+      db: null,
+      NAME: "awv",
+      VERSION: 3,
+      /*
+       * Open and set database for cached article and settings pref.
+       * @returns {undefined}
+       */
+      init: function () {
+        /* openning database */
+        var request = indexedDB.open(this.NAME, this.VERSION);
+        /* XXX : checked if db is already opened ? */
+        request.onerror = function () {
+          console.log("Why didn't you allow my web app to use IndexedDB?!");
         };
 
-        /* start by (updating) caching the home page*/
-        currentPage = new WikiArticle(new MyUrl(myAppUrl));
-        currentPage.setContent(document.getElementById("aw-article-body").innerHTML);
-        currentPage.toDb();
+        request.onsuccess = function () {
+          console.log("indexeddb is opened!");
+          database.db = this.result;
 
-        myhistory = new MyHistory();
-        myhistory.push(currentPage.url);
+          database.db.onerror = function (e) {
+            console.log("Database error: " + e.target.errorCode);
+          };
 
-        /* Initialise Application Settings*/
-        var objStore = getObjectStore(["settings"], "readonly");
+          /* start by (updating) caching the home page*/
+          currentPage = new WikiArticle(new MyUrl(awv.URL));
+          currentPage.setContent(document.getElementById("aw-article-body").innerHTML, false);
+          currentPage.toDb();
 
-        /* "use cache" setting */
-        var reqCacheEnable = objStore.get("use_cache");
+          myhistory = new MyHistory();
+          myhistory.push(currentPage.url);
 
-        reqCacheEnable.onsuccess = function (e) {
-          var use_cache = e.target.result;
-          if (use_cache) {
-            USE_CACHE = use_cache.value;
-            document.getElementById("use_cache").checked = USE_CACHE;
-            console.log("use_cache is " + USE_CACHE);
+          /* Initialise Application Settings*/
+          settings.init.useCache();
+          settings.init.refreshCache();
+        };
+
+        request.onupgradeneeded = function (e) {
+          var db = e.currentTarget.result;
+
+          console.log("database update to version " + db.version);
+          //console.log(db.objectStoreNames);
+
+          console.log("creating new database");
+
+          if (db.objectStoreNames[0] === "pages") {
+            // nothing there right now
           } else {
-            console.error("what is use_cache ?");
+            var pageStore = db.createObjectStore("pages", {keyPath: "url"});
+            pageStore.createIndex("title", "title", {unique: false});
+            pageStore.createIndex("date", "date", {unique: false});
+
+            // Use transaction oncomplete to make sure the pageStore creation is 
+            // finished before adding data into it.
+            pageStore.transaction.oncomplete = function () {
+              console.log("creating object transaction complete");
+            };
+          }
+
+          if (db.objectStoreNames[1] === "settings") {
+            // nothing there right now
+          } else {
+            var settingsStore = db.createObjectStore("settings", {keyPath: "name"});
+
+            settingsStore.transaction.oncomplete = function () {
+              console.log("creating object 2 transaction complete");
+              settings.setDefault();
+            };
           }
         };
-
-        reqCacheEnable.onerror = function (e) {
-          console.log("local setting cache init error");
+      },
+      /*
+       * 
+       * @param {type} store_name
+       * @param {type} mode
+       * @returns {unresolved}
+       */
+      getObjectStore: function (store_name, mode) {
+        var tx = database.db.transaction(store_name, mode);
+        return tx.objectStore(store_name);
+      },
+      /*
+       * 
+       * @param {type} store_name
+       * @returns {undefined}
+       */
+      clearObjectStore: function (store_name) {
+        var store = database.getObjectStore([store_name], 'readwrite'),
+            req = store.clear();
+        req.onsuccess = function () {
+          console.log("Store '" + store_name + "' cleared");
+          document.location.href = awv.RELATIVE_ROOT;
         };
-
-        /* "refresh article period in cache" setting */
-        var reqRefreshCache = objStore.get("refresh_cache_period");
-
-        reqRefreshCache.onsuccess = function (e) {
-          var refresh = e.target.result;
-          if (refresh) {
-            REFRESH_CACHE_PERIOD = refresh.value;
-
-            var selectElt = document.getElementById("refresh_cache_period");
-
-            selectElt.value = REFRESH_CACHE_PERIOD;
-
-            document.getElementById("refresh_label").textContent =
-                selectElt.options[selectElt.selectedIndex].text;
-
-            console.log("refresh_cache_period is " + REFRESH_CACHE_PERIOD);
-
-          } else {
-            console.error("what is refresh_cache_period ?");
-          }
+        req.onerror = function (evt) {
+          console.error("clearObjectStore:", evt.target.errorCode);
         };
+      }
+    };
 
-        reqRefreshCache.onerror = function (e) {
-          console.log("local setting refresh init error");
-        };
-
-      };
-
-      request.onupgradeneeded = function (e) {
-        // Create an objectStore to hold information about our visited pages
-        db = e.currentTarget.result;
-
-        console.log(db.version);
-        //console.log(db.objectStoreNames);
-
-        console.log("creating new database");
-        var objectStore = null;
-
-        if (db.objectStoreNames[0] === "pages") {
-//          console.log("removing old pages objet store");
-//          db.deleteObjectStore("pages");
-//
-//          objectStore = db.createObjectStore("pages", {keyPath: "url"});
-//          objectStore.createIndex("title", "title", {unique: false});
-//          objectStore.createIndex("date", "date", {unique: false});
-
-        } else {
-          objectStore = db.createObjectStore("pages", {keyPath: "url"});
-          objectStore.createIndex("title", "title", {unique: false});
-          objectStore.createIndex("date", "date", {unique: false});
-
-          // Use transaction oncomplete to make sure the objectStore creation is 
-          // finished before adding data into it.
-          objectStore.transaction.oncomplete = function () {
-            console.log("creating object transaction complete");
-          };
-        }
-
-        var objectStore_2 = null;
-
-        if (db.objectStoreNames[1] === "settings") {
-//          console.log("removing old settings objet store");
-//          db.deleteObjectStore("settings");
-//          objectStore_2 = db.createObjectStore("settings", {keyPath: "name"});
-        } else {
-          objectStore_2 = db.createObjectStore("settings", {keyPath: "name"});
-
-          objectStore_2.transaction.oncomplete = function () {
-            console.log("creating object 2 transaction complete");
-            console.log("settings default value");
-            USE_CACHE = "true";
-            updateSettings("use_cache", USE_CACHE);
-
-            REFRESH_CACHE_PERIOD = "2629743830";
-            updateSettings("refresh_cache_period", REFRESH_CACHE_PERIOD);
-          };
-        }
-
-      };
-    }
-
-    /*
-     * 
-     * @param {type} store_name
-     * @param {type} mode
-     * @returns {unresolved}
-     */
-    function getObjectStore(store_name, mode) {
-      var tx = db.transaction(store_name, mode);
-      return tx.objectStore(store_name);
-    }
-
-    /*
-     * 
-     * @param {type} store_name
-     * @returns {undefined}
-     */
-    function clearObjectStore(store_name) {
-      var store = getObjectStore([store_name], 'readwrite'),
-          req = store.clear();
-      req.onsuccess = function () {
-        console.log("Store '" + store_name + "' cleared");
-        document.location.href = "./index.html";
-      };
-      req.onerror = function (evt) {
-        console.error("clearObjectStore:", evt.target.errorCode);
-      };
-    }
-
-    /*
-     * update settings in the database
-     * @param {type} name
-     * @param {type} value
-     * @returns {undefined}
-     */
-    function updateSettings(name, value) {
-      var objStore = getObjectStore(["settings"], "readwrite"),
-          request = objStore.get(name);
-
-      request.onsuccess = function (e) {
-        var result = e.target.result;
-        if (result) { // value exist
-          /* update the data */
-          result.value = value;
-
-          /*update the database */
-          var reqUpdate = objStore.put(result);
-
-          reqUpdate.onerror = function () {
-            console.log("update settings db error");
-          };
-
-          reqUpdate.onsuccess = function () {
-            console.log("settings db update");
-          };
-        } else { // value does not exist
-          /*write it to the database */
-          var reqNew = objStore.add({name: name, value: value});
-          reqNew.onsuccess = function () {
-            console.log("settings db request done");
-          };
-
-          reqNew.onerror = function () {
-            console.log("settings db request error");
-          };
-        }
-      };
-
-      request.onerror = function (e) {
-        console.log("local setting error");
-      };
-    }
 
     /* ----------------------------------------
      * Helper function ()
      * ------------------------------------------*/
 
-    /*
-     * return the main document url at load
-     * @returns {Node.URL|Document.URL|document.URL|String}
-     */
-    function appUrl() {
-      /* It is need in devellopment when "reloading" from simulator on page
-       * with anchor */
-      var url = appRoot() + "/index.html";
-      //console.log("appUrl is init to :\n" + url);
-      return url;
-    }
-
-    /*
-     * 
-     * @returns {String}
-     */
-    function appRoot() {
-      /* It is need in devellopment when "reloading" from simulator on page
-       * with anchor */
-      var url = document.location.protocol + "//" + document.location.host;
-      return url;
-    }
+    var awv = {
+      ROOT: document.location.protocol + "//" + document.location.host,
+      URL: document.location.protocol + "//" + document.location.host + "/index.html",
+      RELATIVE_ROOT: "./index.html",
+      WIKIROOT_URL: "https://wiki.archlinux.org"
+    };
 
 
     /* ----------------------------------------
@@ -1423,7 +1542,7 @@ window.addEventListener('DOMContentLoaded', function () {
     console.log("initialisation script start");
 
     uiListeners.init();
-    opendb();
+    database.init();
 
     console.log("initialisation script end (some steps may not have been completed yet)");
   })();

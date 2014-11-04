@@ -57,7 +57,7 @@ div{
 
 .fade-left {
     opacity: 0.3;
-    transform: translateX(-60%);
+    transform: translateX(-80%);
     transition: all 0.3s ease;
 }
 
