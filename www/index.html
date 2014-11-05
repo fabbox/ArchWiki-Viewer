@@ -27,17 +27,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <meta name="description" content="ArchWiki Viewer Main Page">
         <meta name="viewport" content="width=device-width">
 
-
         <link rel="stylesheet" href="css/main.css">   
 
+        <link rel="stylesheet" href="css/archwiki.css">
+        <link rel="stylesheet" href="css/archwiki_hacked.css">
+        
+        <link rel="stylesheet" href="css/activities.css">
         <link rel="stylesheet" href="css/confirm.css">
         <link rel="stylesheet" href="css/dbsettings.css">
-        <link rel="stylesheet" href="css/toolbar.css">
-        <link rel="stylesheet" href="css/topbars.css">
+        <link rel="stylesheet" href="css/header.css">
+        <link rel="stylesheet" href="css/navigation.css">       
+        <link rel="stylesheet" href="css/searchform.css">
         <link rel="stylesheet" href="css/sidebar.css">
-
-        <link rel="stylesheet" href="css/archwikistyle.css">
-        <link rel="stylesheet" href="css/hackedarchwikistyle.css">        
         <link rel="stylesheet" href="css/transitions.css">
 
         <script type="text/javascript" src="js/uiListeners.js" defer="defer"></script>
@@ -47,6 +48,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     <body role="application">
 
+        <!--
+        Settings left panel 
+        -->
         <section data-type="sidebar">
             <header  class="archmainbar">
                 <h1>Settings</h1>
@@ -59,19 +63,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 </ul>
             </nav>
         </section>        
-
-        <section id="cleardb_confirm" role="dialog" data-type="confirm" class="hidden">
-            <form id="cleardb_confirm_form" role="dialog" data-type="confirm" >
-                <section>
-                    <h1>Confirmation</h1>
-                    <p>Are you sure you want to delete the cached pages ?</p>
-                </section>
-                <menu>
-                    <button id="cleardb_cancel">Cancel</button>
-                    <button id="cleardb_ok" class="danger">Delete</button>
-                </menu>
-            </form>
-        </section>      
 
         <!--
         database settings
@@ -112,6 +103,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         </section>
 
+        <!--
+        Confirmation (to clear database) huge dialog Box
+        -->
+        <section id="cleardb_confirm" role="dialog" data-type="confirm" class="hidden">
+            <form id="cleardb_confirm_form" role="dialog" data-type="confirm" >
+                <section>
+                    <h1>Confirmation</h1>
+                    <p>Are you sure you want to delete the cached pages ?</p>
+                </section>
+                <menu>
+                    <button id="cleardb_cancel">Cancel</button>
+                    <button id="cleardb_ok" class="danger">Delete</button>
+                </menu>
+            </form>
+        </section>      
+
+        <!--
+        Main section (called drawer in some apps)
+        -->        
         <section id="main" role="region">
             <!-- 
             # Main Bar 

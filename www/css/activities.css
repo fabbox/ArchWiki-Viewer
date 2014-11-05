@@ -1,0 +1,52 @@
+/*
+Copyright (C) 2014 fbox
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : 5 nov. 2014, 07:16:59
+    Author     : fbox
+*/
+
+
+/* ----------------------------------
+ * Progress + activities
+ * ---------------------------------- */
+
+/* Progress bar (activities) */
+progress.loadPage {
+    position: fixed;
+    top: 4rem;
+
+    width: 100%;
+    background: #333;
+    border: none;
+    border-radius: .3rem;
+    height: .3rem;
+    /*display: block;*/  
+    display: none;  
+
+    background-image: url(../icons/main/activity.png);
+    background-repeat: repeat;
+    background-size: 1rem auto;
+    animation: .5s move infinite ease; 
+    /*steps(15)*/
+
+    z-index:6
+}
+
+@keyframes move {
+    from { background-position: 0 0; }
+    to   { background-position: 1rem 0; }
+}
