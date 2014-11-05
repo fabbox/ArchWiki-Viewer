@@ -85,15 +85,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <li class="inactive">
                         <select id="refresh_cache_period" >
-                            <option value="86400000">1 Day</option>
-                            <option value="604800000">1 Week</option>
-                            <option value="2629743830">1 Month</option>
-                            <option value="7889231490">3 Months</option>
+                            <option value="0">Always</option>
+                            <option value="86400000">After 1 Day</option>
+                            <option value="604800000">After 1 Week</option>
+                            <option value="2629743830">After 1 Month</option>
+                            <option value="7889231490">After 3 Months</option>
                             <option value="Infinity">Manually</option>
                         </select>
                         <label class="settings_label" id="refresh_label">XXX</label>
                         <a>
-                            <span>refresh article period</span>
+                            <span>Check for Articles Updates</span>
                         </a>
                     </li>
 

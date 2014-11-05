@@ -22,14 +22,14 @@
 // Be strict, do not try to understand my mistake and make error !
 'use strict';
 
-window.addEventListener("load", function () {
-  console.log("Hello Wiki!");
-});
+//window.addEventListener("load", function () {
+//  console.log("Hello Wiki!");
+//});
 
 // DOMContentLoaded is fired once the document has been loaded and parsed,
 // but without waiting for other external resources to load (css/images/etc)
 // That makes the app more responsive and perceived as faster.
-// https://developer.mozilla.org/Web/Reference/Events/DOMContentLoaded
+// https://developer.mozilla.org/en-US/Web/Reference/Events/DOMContentLoaded
 window.addEventListener('DOMContentLoaded', function () {
   console.log('dom content loaded');
   (function () { // avoid global var and function
@@ -40,254 +40,15 @@ window.addEventListener('DOMContentLoaded', function () {
     var currentPage = null, // "article" which is diplayed ()
         myhistory = null; // array of "MyUrl" used to manage history
 
-    /* ----------------------------------------
-     * Settings
-     * ------------------------------------------*/
-
-    var settings = {
-      use_cache: null, // use cache or not ? 
-      refresh_cache_period: null, // do not use the cache after such period, download a new version
-      /*
-       * set default setting
-       * @returns {undefined}
-       */
-      setDefault: function () {
-        console.log("settings default value");
-
-        settings.setUseCache("true");
-        settings.save("use_cache");
-
-        settings.setRefreshCachePeriod("2629743830");
-        settings.save("refresh_cache_period");
-      },
-      /*
-       * Set the "use_cache" settings
-       * @param {type} value
-       * @returns {undefined}
-       */
-      setUseCache: function (value) {
-        settings["use_cache"] = value;
-        console.log('use_cache : ' + settings["use_cache"]);
-      },
-      /*
-       * Set the "refresh_cache_period" settings
-       * @param {type} value
-       * @returns {undefined}
-       */
-      setRefreshCachePeriod: function (value) {
-        settings["refresh_cache_period"] = value;
-        console.log('refresh cache page periode (ms): ' + settings["refresh_cache_period"]);
-      },
-      /*
-       * update settings in the database
-       * @param {type} name
-       * @param {type} value
-       * @returns {undefined}
-       */
-      save: function (name) {
-        var settingsStore = database.getObjectStore(["settings"], "readwrite"),
-            request = settingsStore.get(name);
-
-        request.onsuccess = function (e) {
-          var result = e.target.result;
-          if (result) { // value exist
-            /* update the data */
-            result.value = settings[name];
-
-            /*update the database */
-            var reqUpdate = settingsStore.put(result);
-
-            reqUpdate.onerror = function () {
-              console.log("update settings db error");
-            };
-
-            reqUpdate.onsuccess = function () {
-              console.log("settings db update");
-            };
-          } else { // value does not exist
-            /*write it to the database */
-            var reqNew = settingsStore.add({name: name, value: settings[name]});
-
-            reqNew.onsuccess = function () {
-              console.log("settings db request done");
-            };
-
-            reqNew.onerror = function () {
-              console.log("settings db request error");
-            };
-          }
-        };
-
-        request.onerror = function (e) {
-          console.log("local setting error");
-        };
-      },
-      saveAll: function () {
-        settings.save("use_cache");
-        settings.save("refresh_cache_period");
-      },
-      init: {
-        useCache: function () {
-          /* Initialise Application Settings*/
-          var settingsStore = database.getObjectStore(["settings"], "readonly");
-          /* "use cache" setting */
-          var reqCacheEnable = settingsStore.get("use_cache");
-
-          reqCacheEnable.onsuccess = function (e) {
-            var use_cache = e.target.result;
-            if (use_cache) {
-              settings.setUseCache(use_cache.value);
-              document.getElementById("use_cache").checked = settings["use_cache"];
-            } else {
-              console.error("what is use_cache ?");
-            }
-          };
-
-          reqCacheEnable.onerror = function (e) {
-            console.log("local setting cache init error");
-          };
-        },
-        refreshCache: function () {
-          /* Initialise Application Settings*/
-          var settingsStore = database.getObjectStore(["settings"], "readonly");
-          /* "refresh article period in cache" setting */
-          var reqRefreshCache = settingsStore.get("refresh_cache_period");
-
-          reqRefreshCache.onsuccess = function (e) {
-            var refresh = e.target.result;
-            if (refresh) {
-              settings.setRefreshCachePeriod(refresh.value);
-
-              var selectElt = document.getElementById("refresh_cache_period");
-              selectElt.value = settings["refresh_cache_period"];
-
-              document.getElementById("refresh_label").textContent =
-                  selectElt.options[selectElt.selectedIndex].text;
-            } else {
-              console.error("what is refresh_cache_period ?");
-            }
-          };
-
-          reqRefreshCache.onerror = function (e) {
-            console.log("local setting refresh init error");
-          };
-        }
-      }
-
+    var awv = {
+      ROOT: document.location.protocol + "//" + document.location.host,
+      URL: document.location.protocol + "//" + document.location.host + "/index.html",
+      RELATIVE_ROOT: "./index.html",
+      WIKIROOT_URL: "https://wiki.archlinux.org"
     };
 
     /* ----------------------------------------
-     * MyHistory
-     * ------------------------------------------*/
-
-    /*
-     * MyHistory constructor ()
-     * @returns {app_L35.MyHistory}
-     */
-    function MyHistory() {
-      //console.log("new MyHistory instance");
-
-      this._array = [];
-      this.length = this._array;
-
-      uiListeners.disable.navigation();
-    }
-
-    MyHistory.prototype = {
-      /*
-       * push url object in myhistory
-       * @param {type} url
-       * @returns {undefined}
-       */
-      push: function (url) {
-        if (!(url instanceof MyUrl)) {
-          console.error("Who try to corrupt my history ?");
-          return false;
-        }
-        this._array.push(url);
-        this.length = this._array.length;
-        if (this.length > 1) {
-          uiListeners.enable.navigation();
-        }
-      },
-      /*
-       * pop url object in myhistory
-       * @returns {app_L35.MyHistory@pro;_array@call;pop}
-       */
-      pop: function () {
-
-        var popval = this._array.pop();
-        this.length = this._array.length;
-
-        if (this.length <= 1) {
-          uiListeners.disable.navigation();
-          //document.getElementById("navbar").hidden = true;
-          ui.navbar.hide();
-        }
-
-        return popval;
-      },
-      /*
-       * delete the last element of myhistory and 
-       * return the value of the new last element.
-       * @returns {Array}
-       */
-      popget: function () {
-        this.pop();
-        // console.log("history length : " + myhistory.length);
-        return this._array[this.length - 1];
-      }
-    };
-
-    /* ----------------------------------------
-     * MyUrl
-     * ------------------------------------------*/
-
-    /*
-     * MyUrl constructor
-     * @param {type} str
-     * @returns {app_L35.MyUrl}
-     * 
-     * properties are : href, anchor and raw;
-     */
-    function MyUrl(str) {
-      //console.log("new MyUrl Instance");
-
-      this.raw = str;
-      //console.log("raw url :" + this.raw);
-
-      if (str.startsWith("/index.php/")) {
-        str = awv.WIKIROOT_URL + str;
-      }
-
-      if (str === awv.WIKIROOT_URL + "/index.php/Main_page"
-          || str.startsWith(awv.URL)) {
-        /* home link */
-        //console.log("this app url detected");
-        this.href = awv.URL;
-        this.anchor = null;
-
-      } else {
-
-        /* format str to minimized loaded content */
-        this.href = formatter.url.toRender(str);
-
-        // use this because use of str.hash can be buggy as it
-        // decode the anchor string
-        var anchor_idx = str.indexOf("#");
-        if (anchor_idx > 0) {
-          //console.log(str);
-          this.anchor = str.slice(anchor_idx + 1);
-        } else {
-          this.anchor = null;
-        }
-
-      }
-
-    }
-
-    /* ----------------------------------------
-     * Formatter
+     * Formatter (Ugly string manipulation function)
      * ------------------------------------------*/
     var formatter = {
       url: {
@@ -308,9 +69,19 @@ window.addEventListener('DOMContentLoaded', function () {
           if (anchor_idx > 1) {
             str = str.slice(0, anchor_idx);
           }
-          
+
           //console.log(str);
           return str;
+        },
+        extractTitle: function (str) {
+          var base = awv.WIKIROOT_URL + "/index.php?action=render&title=";
+
+          if (str.indexOf(base) >= 0) {
+            return str.replace(base, "");
+          } else {
+            return null;
+          }
+
         }
 
       },
@@ -481,9 +252,370 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     };
 
+    /* ----------------------------------------
+     * Settings
+     * ------------------------------------------*/
+    var settings = {
+      use_cache: "true", // use cache or not ? 
+      refresh_cache_period: "2629743830", // do not use the cache after such period, download a new version
+      /*
+       * set default setting
+       * @returns {undefined}
+       */
+      setDefault: function () {
+        console.log("settings default value");
+
+        settings.setUseCache("true");
+        settings.save("use_cache");
+
+        settings.setRefreshCachePeriod("2629743830");
+        settings.save("refresh_cache_period");
+      },
+      /*
+       * Set the "use_cache" settings
+       * @param {type} value
+       * @returns {undefined}
+       */
+      setUseCache: function (value) {
+        settings["use_cache"] = value;
+        console.log('use_cache : ' + settings["use_cache"]);
+      },
+      /*
+       * Set the "refresh_cache_period" settings
+       * @param {type} value
+       * @returns {undefined}
+       */
+      setRefreshCachePeriod: function (value) {
+        settings["refresh_cache_period"] = value;
+        console.log('refresh cache page period (ms): ' + settings["refresh_cache_period"]);
+      },
+      /*
+       * update settings in the database
+       * @param {type} name
+       * @param {type} value
+       * @returns {undefined}
+       */
+      save: function (name) {
+        var settingsStore = database.getObjectStore(["settings"], "readwrite"),
+            request = settingsStore.get(name);
+
+        request.onsuccess = function (e) {
+          var result = e.target.result;
+          if (result) { // value exist
+            /* update the data */
+            result.value = settings[name];
+
+            /*update the database */
+            var reqUpdate = settingsStore.put(result);
+
+            reqUpdate.onerror = function () {
+              console.log("update settings db error");
+            };
+
+            reqUpdate.onsuccess = function () {
+              console.log("settings db update");
+            };
+          } else { // value does not exist
+            /*write it to the database */
+            var reqNew = settingsStore.add({name: name, value: settings[name]});
+
+            reqNew.onsuccess = function () {
+              console.log("settings db request done");
+            };
+
+            reqNew.onerror = function () {
+              console.log("settings db request error");
+            };
+          }
+        };
+
+        request.onerror = function (e) {
+          console.log("local setting error");
+        };
+      },
+      saveAll: function () {
+        settings.save("use_cache");
+        settings.save("refresh_cache_period");
+      },
+      init: {
+        useCache: function () {
+          /* Initialise Application Settings*/
+          var settingsStore = database.getObjectStore(["settings"], "readonly");
+          /* "use cache" setting */
+          var reqCacheEnable = settingsStore.get("use_cache");
+
+          reqCacheEnable.onsuccess = function (e) {
+            var use_cache = e.target.result;
+            if (use_cache) {
+              settings.setUseCache(use_cache.value);
+              document.getElementById("use_cache").checked = settings["use_cache"];
+            } else {
+              console.error("what is use_cache ?");
+            }
+          };
+
+          reqCacheEnable.onerror = function (e) {
+            console.log("local setting cache init error");
+          };
+        },
+        refreshCache: function () {
+          /* Initialise Application Settings*/
+          var settingsStore = database.getObjectStore(["settings"], "readonly");
+          /* "refresh article period in cache" setting */
+          var reqRefreshCache = settingsStore.get("refresh_cache_period");
+
+          reqRefreshCache.onsuccess = function (e) {
+            var refresh = e.target.result;
+            if (refresh) {
+              settings.setRefreshCachePeriod(refresh.value);
+
+              var selectElt = document.getElementById("refresh_cache_period");
+              selectElt.value = settings["refresh_cache_period"];
+
+              document.getElementById("refresh_label").textContent =
+                  selectElt.options[selectElt.selectedIndex].text;
+            } else {
+              console.error("what is refresh_cache_period ?");
+            }
+          };
+
+          reqRefreshCache.onerror = function (e) {
+            console.log("local setting refresh init error");
+          };
+        }
+      }
+
+    };
 
     /* ----------------------------------------
-     * Title
+     * Database (indexedDB)
+     * ------------------------------------------*/
+    var database = {
+      db: null,
+      NAME: "awv",
+      VERSION: 3,
+      /*
+       * Open and set database for cached article and settings pref.
+       * @returns {undefined}
+       */
+      init: function () {
+        /* openning database */
+        var request = indexedDB.open(this.NAME, this.VERSION);
+        /* XXX : checked if db is already opened ? */
+        request.onerror = function () {
+          console.log("Why didn't you allow my web app to use IndexedDB?!");
+        };
+
+        request.onsuccess = function () {
+          console.log("indexeddb is opened!");
+          database.db = this.result;
+
+          database.db.onerror = function (e) {
+            console.log("Database error: " + e.target.errorCode);
+          };
+
+          /* start by (updating) caching the home page*/
+          currentPage = new WikiArticle(new MyUrl(awv.URL, false));
+          currentPage.setContent(document.getElementById("aw-article-body").innerHTML, false);
+          currentPage.lastmodified = 0;
+          currentPage.toDb();
+
+          myhistory = new MyHistory();
+          myhistory.push(currentPage.url);
+
+          /* Initialise Application Settings*/
+          settings.init.useCache();
+          settings.init.refreshCache();
+        };
+
+        request.onupgradeneeded = function (e) {
+          var db = e.currentTarget.result;
+
+          console.log("database update to version " + db.version);
+          //console.log(db.objectStoreNames);
+
+          console.log("creating new database");
+
+          if (db.objectStoreNames[0] === "pages") {
+            // nothing there right now
+          } else {
+            var pageStore = db.createObjectStore("pages", {keyPath: "url"});
+            pageStore.createIndex("title", "title", {unique: false});
+            pageStore.createIndex("date", "date", {unique: false});
+
+            // Use transaction oncomplete to make sure the pageStore creation is 
+            // finished before adding data into it.
+            pageStore.transaction.oncomplete = function () {
+              console.log("creating 'pages' complete");
+            };
+          }
+
+          if (db.objectStoreNames[1] === "settings") {
+            // nothing there right now
+          } else {
+            var settingsStore = db.createObjectStore("settings", {keyPath: "name"});
+
+            settingsStore.transaction.oncomplete = function () {
+              console.log("creating  'settings' complete");
+              /*we need a database to use settings.setDefault()*/
+              database.db = db;
+              settings.setDefault();
+              database.db = "";
+            };
+          }
+        };
+      },
+      /*
+       * 
+       * @param {type} store_name
+       * @param {type} mode
+       * @returns {unresolved}
+       */
+      getObjectStore: function (store_name, mode) {
+        var tx = database.db.transaction(store_name, mode);
+        return tx.objectStore(store_name);
+      },
+      /*
+       * 
+       * @param {type} store_name
+       * @returns {undefined}
+       */
+      clearObjectStore: function (store_name) {
+        var store = database.getObjectStore([store_name], 'readwrite'),
+            req = store.clear();
+        req.onsuccess = function () {
+          console.log("Store '" + store_name + "' cleared");
+          document.location.href = awv.RELATIVE_ROOT;
+        };
+        req.onerror = function (evt) {
+          console.error("clearObjectStore:", evt.target.errorCode);
+        };
+      }
+    };
+
+
+    /* ----------------------------------------
+     * MyHistory Class
+     * ------------------------------------------*/
+
+    /*
+     * MyHistory constructor ()
+     * @returns {app_L35.MyHistory}
+     */
+    function MyHistory() {
+      //console.log("new MyHistory instance");
+
+      this._array = [];
+      this.length = this._array;
+
+      uiListeners.disable.navigation();
+    }
+
+    MyHistory.prototype = {
+      /*
+       * push url object in myhistory
+       * @param {type} url
+       * @returns {undefined}
+       */
+      push: function (url) {
+        if (!(url instanceof MyUrl)) {
+          console.error("Who try to corrupt my history ?");
+          return false;
+        }
+        this._array.push(url);
+        this.length = this._array.length;
+        if (this.length > 1) {
+          uiListeners.enable.navigation();
+        }
+      },
+      /*
+       * pop url object in myhistory
+       * @returns {app_L35.MyHistory@pro;_array@call;pop}
+       */
+      pop: function () {
+
+        var popval = this._array.pop();
+        this.length = this._array.length;
+
+        if (this.length <= 1) {
+          uiListeners.disable.navigation();
+          //document.getElementById("navbar").hidden = true;
+          ui.navbar.hide();
+        }
+
+        return popval;
+      },
+      /*
+       * delete the last element of myhistory and 
+       * return the value of the new last element.
+       * @returns {Array}
+       */
+      popget: function () {
+        this.pop();
+        // console.log("history length : " + myhistory.length);
+        return this._array[this.length - 1];
+      }
+    };
+
+    /* ----------------------------------------
+     * MyUrl Class
+     * ------------------------------------------*/
+
+    /*
+     * MyUrl constructor
+     * @param {type} str
+     * @returns {app_L35.MyUrl}
+     * 
+     * properties are : href, anchor and raw;
+     */
+    function MyUrl(str, reformat) {
+      //console.log("new MyUrl Instance");
+
+      if (typeof reformat === 'undefined') {
+        reformat = true;
+      }
+
+      this.raw = str;
+      //console.log("raw url :" + this.raw);
+
+      if (str.startsWith("/index.php/")) {
+        str = awv.WIKIROOT_URL + str;
+      }
+
+      if (str === awv.WIKIROOT_URL + "/index.php/Main_page"
+          || str.startsWith(awv.URL)) {
+        /* home link */
+        //console.log("this app url detected");
+        this.href = awv.URL;
+        this.anchor = null;
+
+      } else {
+
+        if (reformat) {
+          /* format str to minimized loaded content */
+          this.href = formatter.url.toRender(str);
+          //this.title = formatter.url.extractTitle(this.href);
+        } else {
+          this.href = str;
+        }
+
+        // use this because use of str.hash can be buggy as it
+        // decode the anchor string
+        var anchor_idx = str.indexOf("#");
+        if (anchor_idx > 0) {
+          //console.log(str);
+          this.anchor = str.slice(anchor_idx + 1);
+        } else {
+          this.anchor = null;
+        }
+
+      }
+
+    }
+
+
+    /* ----------------------------------------
+     * Title Class
      * ------------------------------------------*/
 
     /*
@@ -513,7 +645,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
     /* ----------------------------------------
-     * Content 
+     * Content Class
      * ------------------------------------------*/
 
     /*
@@ -594,7 +726,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
     /* ----------------------------------------
-     * WikiArticle 
+     * WikiArticle Class
      * ------------------------------------------*/
 
     /*
@@ -608,8 +740,8 @@ window.addEventListener('DOMContentLoaded', function () {
       this.url = url;
       this.anchor = url.anchor;
       this.content = null;
-
       this.date = Date.now();
+      this.lastmodified = 0; // is update in loadUrl
     }
 
     WikiArticle.prototype = {
@@ -630,6 +762,50 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
+       * 
+       * @returns {undefined}
+       */
+      update: function () {
+        console.log("check update cache");
+
+        ui.progressbar.show();
+        var self = this;
+
+        var updateReq = new XMLHttpRequest({mozSystem: true});
+
+        updateReq.open("HEAD", self.url.href, true);
+
+        updateReq.onerror = function () {
+          console.log("error in update, loading cache version");
+          self.print();
+          ui.progressbar.hide();
+        };
+
+        updateReq.onload = function () {
+          var lm = Date.parse(updateReq.getResponseHeader("Last-Modified"));
+
+          //console.log('last modified local:' + self.lastmodified);
+          //console.log('last modified dist.:' + lm);
+
+          if (lm > self.lastmodified) {
+            console.log("getting new version of this article ...");
+            self.loadUrl(settings.use_cache);
+          } else {
+            console.log("article is up to date !");
+            self.print();
+            ui.progressbar.hide();
+            /*****************************/
+            /**      for test only      **/
+            //console.log("fake date include");
+            //self.lastmodified = 0; 
+            //self.toDb();
+            /*****************************/
+          }
+        };
+
+        updateReq.send(null);
+      },
+      /*
        * load (and print article) : It try to load the cache page, if there is no such
        * page it download it.
        * @returns {undefined}
@@ -638,36 +814,37 @@ window.addEventListener('DOMContentLoaded', function () {
         ui.progressbar.show();
 
         var self = this,
-            request = database.getObjectStore("pages").get(self.url.href);
+            cacheRequest = database.getObjectStore("pages").get(self.url.href);
 
-        request.onsuccess = function (e) {
+        cacheRequest.onsuccess = function (e) {
           var cache = e.target.result;
 
           if (cache) {
-            console.log("I know that url " + cache.url);
+            console.log("I know that url : \n\t" + cache.url);
+
+            self.lastmodified = cache.lastmodified;
+            self.setTitle(cache.title);
+            self.setContent(cache.body, false);
 
             if (self.date - cache.date < settings["refresh_cache_period"]) {
-
-              self.setTitle(cache.title);
-              self.setContent(cache.body, false);
+              //if (false) { // <- test/debug purpose (comment the line above when uncomment this one)
               self.print();
               ui.progressbar.hide();
 
             } else {
-              console.log("updating cache");
 
-              self.loadUrl(true);
+              self.update();
             }
 
           } else {
 
-            console.log("I do not know that url yet : " + self.url.href);
+            console.log("I do not know that url yet : \n\t" + self.url.href);
             self.loadUrl(true);
 
           }
         };
 
-        request.onerror = function () {
+        cacheRequest.onerror = function () {
           console.log("problem with getting url in db");
         };
 
@@ -685,14 +862,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
         var self = this;
 
-        console.log("http request url : " + self.url.href);
+        console.log("http request url : \n\t" + self.url.href);
 
         if (typeof save2db === 'undefined') {
           save2db = true;
         }
 
-        var self = this,
-            xhr = new XMLHttpRequest({mozSystem: true});
+        var xhr = new XMLHttpRequest({mozSystem: true});
 
         //* Initialize Cross XMLHttprequest 
         //* and open a http request with "document" responseType.
@@ -725,13 +901,14 @@ window.addEventListener('DOMContentLoaded', function () {
         };
 
         xhr.onloadend = function () {
-          console.log("load end");
+          //console.log("load end");
           ui.progressbar.hide();
         };
 
         xhr.onload = function () {
           console.log("load success");
           self.setTitle(xhr.responseXML.title, self.url);
+          self.lastmodified = Date.parse(xhr.getResponseHeader("Last-Modified"));
 
           var resp = xhr.responseXML.getElementById("mw-content-text") || xhr.responseXML.body;
 
@@ -787,8 +964,14 @@ window.addEventListener('DOMContentLoaded', function () {
           url: this.url.href,
           title: this.title.str,
           body: this.content.body,
-          date: this.date
+          date: this.date,
+          lastmodified: this.lastmodified
         };
+
+        /* fix index.html (home) date issue */
+        if (this.url.href.startsWith(awv.ROOT)) {
+          data.date = Number.MAX_VALUE;
+        }
 
         /* check if page exist*/
         var pagesStore = database.getObjectStore(["pages"], "readwrite");
@@ -801,26 +984,27 @@ window.addEventListener('DOMContentLoaded', function () {
             cachedPage.body = data.body; // dom cannot be clone so we stock innerhtml
             cachedPage.title = data.title;
             cachedPage.date = data.date;
+            cachedPage.lastmodified = data.lastmodified;
 
             /*update the database */
-            var reqUpdate = pagesStore.put(cachedPage);
+            var updateCacheRequest = pagesStore.put(cachedPage);
 
-            reqUpdate.onerror = function () {
+            updateCacheRequest.onerror = function () {
               console.log("update cached page error");
             };
 
-            reqUpdate.onsuccess = function () {
+            updateCacheRequest.onsuccess = function () {
               console.log("page cached update");
             };
           } else { // page does not exist
             /*write it to the database */
-            var req = pagesStore.add(data);
+            var addCacheRequest = pagesStore.add(data);
 
-            req.onsuccess = function () {
+            addCacheRequest.onsuccess = function () {
               console.log("new page cached");
             };
 
-            req.onerror = function () {
+            addCacheRequest.onerror = function () {
               console.log("caching page request error");
             };
           }
@@ -856,11 +1040,11 @@ window.addEventListener('DOMContentLoaded', function () {
     };
 
     /* ----------------------------------------
-     * namespace related to the User Interface (UI)
+     * namespaces related to the User Interface (UI)
      * ------------------------------------------*/
 
     /*
-     * 
+     * Namespace for ui (hide button, navigation bar...)
      * @type type
      */
     var ui = {
@@ -970,7 +1154,8 @@ window.addEventListener('DOMContentLoaded', function () {
     };
 
     /*
-     * Namespace for UI Listeners
+     * Namespace for UI Listeners 
+     * (disable or enable listener)
      * manage events listenner function from the UI
      * @type type
      */
@@ -1049,7 +1234,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btHome.addEventListener('click', function () {
             /* go home */
-            var page = new WikiArticle(new MyUrl(awv.URL));
+            var page = new WikiArticle(new MyUrl(awv.URL, false));
             page.loadCache();
             myhistory.push(page.url);
             currentPage = page;
@@ -1130,11 +1315,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 // <- happen when a research result redirect to a page (example of search: zsh)
                 ) {
               //console.log("wiki link event add : " + a.href);
-              a.addEventListener('click', wiki.load, false);
+              a.addEventListener('click', callback.load, false);
 
             } else {
               //console.log("external link event add : " + a.href);
-              a.addEventListener('click', openInOSBrowser, false);
+              a.addEventListener('click', callback.openInOSBrowser, false);
 
             }
           }
@@ -1149,7 +1334,7 @@ window.addEventListener('DOMContentLoaded', function () {
           var form = document.getElementById("topSearchForm");
 
           if (form) {
-            form.addEventListener('submit', wiki.search, true);
+            form.addEventListener('submit', callback.search, true);
 
             form.addEventListener('blur', function (e) {
               console.log("hide search bar");
@@ -1199,7 +1384,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btStar.addEventListener('click', function () {
             console.log("star");
-            wiki.printCachedArticleList();
+            callback.printCachedArticleList();
             ui.navbar.disable.btReload();
           }, false);
 
@@ -1212,7 +1397,7 @@ window.addEventListener('DOMContentLoaded', function () {
           var myLinks = document.querySelectorAll('.aw-article a');
 
           for (var i = 0; i < myLinks.length; i++) {
-            myLinks[i].addEventListener('click', stopprop, false);
+            myLinks[i].addEventListener('click', callback.stopprop, false);
           }
         },
         /*
@@ -1282,9 +1467,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
           for (var i = 0; i < myLinks.length; i++) {
             var a = myLinks[i];
-            a.removeEventListener('click', wiki.load, false);
-            a.removeEventListener('click', openInOSBrowser, false);
-            a.addEventListener('click', stopprop, false);
+            a.removeEventListener('click', callback.load, false);
+            a.removeEventListener('click', callback.openInOSBrowser, false);
+            a.addEventListener('click', callback.stopprop, false);
           }
         },
         /*
@@ -1295,21 +1480,17 @@ window.addEventListener('DOMContentLoaded', function () {
           var myLinks = document.querySelectorAll('.aw-article a');
 
           for (var i = 0; i < myLinks.length; i++) {
-            myLinks[i].removeEventListener('click', stopprop, false);
+            myLinks[i].removeEventListener('click', callback.stopprop, false);
           }
         }
       }
     };
 
-    /* ----------------------------------------
-     * callback
-     * ------------------------------------------*/
-
     /*
-     * Wiki related callback
+     * callback functions (for the uiListeners)
      * @type type
      */
-    var wiki = {
+    var callback = {
       /*
        * Callback for Links Events Listener
        * @param {type} e
@@ -1320,7 +1501,7 @@ window.addEventListener('DOMContentLoaded', function () {
         /* load target link*/
         var href = e.currentTarget.getAttribute('href')
             || e.currentTarget.parentNode.getAttribute('href'),
-            targetUrl = new MyUrl(href),
+            targetUrl = new MyUrl(href, true),
             page = new WikiArticle(targetUrl);
 
         page.loadArticle(settings["use_cache"]);
@@ -1337,7 +1518,7 @@ window.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
 
         var input = document.getElementById("topSearchInput").value || "sorry",
-            url = new MyUrl("https://wiki.archlinux.org/index.php?search=" + input),
+            url = new MyUrl(awv.WIKIROOT_URL + "/index.php?search=" + input, false),
             page = new WikiArticle(url);
 
         //console.log("input :" + input);
@@ -1346,195 +1527,80 @@ window.addEventListener('DOMContentLoaded', function () {
         myhistory.push(url);
         currentPage = page;
       },
-         /*
-     * Callback for action_star (saved articles in the database)
-     * @returns {undefined}
-     */
-    printCachedArticleList: function () {
-
-      /* retrieve each cached page and make a list*/
-      var pagesStore = database.getObjectStore("pages"),
-          ul = document.createElement("ul");
-
-      pagesStore.openCursor().onsuccess = function (event) {
-
-        var cursor = event.target.result;
-
-        if (cursor) {
-
-          var li = document.createElement("li"),
-              a = document.createElement("a");
-          a.href = cursor.key;
-          a.textContent = cursor.value.title;
-
-          li.appendChild(a);
-          ul.appendChild(li);
-          //console.log(" the URL " + cursor.key + " is entitle " + cursor.value.title);
-
-          cursor.continue();
-
-        } else {
-
-          console.log("printing star page");
-          var list = document.createElement("body");
-          list.appendChild(ul);
-
-          var cachedArticleList = new WikiArticle(new MyUrl(awv.URL));
-          cachedArticleList.setTitle("Cached articles");
-          cachedArticleList.setContent(list.innerHTML, false);
-          cachedArticleList.print();
-
-          ui.navbar.hide();
-        }
-      };
-    }
-
-    };
-
-    /*
-     * Callback for external link
-     * @param {type} e
-     * @returns {undefined}
-     */
-    function openInOSBrowser(e) {
-      e.preventDefault();
-
-      console.log('open url in browser: ' + e.currentTarget.href);
-      // Open url in browser
-      var activity = new MozActivity({name: "view", data: {type: "url", url: e.currentTarget.href}});
-
-      activity.onerror = function () {
-        console.log("I can't open this link in OS Browser : " + this.error);
-      };
-    }
-
-    /*
-     * 
-     * @param {type} e
-     * @returns {undefined}
-     */
-    function stopprop(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
- 
-
-    /* ----------------------------------------
-     * Database (indexedDB)
-     * ------------------------------------------*/
-
-    var database = {
-      db: null,
-      NAME: "awv",
-      VERSION: 3,
       /*
-       * Open and set database for cached article and settings pref.
+       * Callback for action_star (saved articles in the database)
        * @returns {undefined}
        */
-      init: function () {
-        /* openning database */
-        var request = indexedDB.open(this.NAME, this.VERSION);
-        /* XXX : checked if db is already opened ? */
-        request.onerror = function () {
-          console.log("Why didn't you allow my web app to use IndexedDB?!");
-        };
+      printCachedArticleList: function () {
 
-        request.onsuccess = function () {
-          console.log("indexeddb is opened!");
-          database.db = this.result;
+        /* retrieve each cached page and make a list*/
+        var pagesStore = database.getObjectStore("pages"),
+            ul = document.createElement("ul");
 
-          database.db.onerror = function (e) {
-            console.log("Database error: " + e.target.errorCode);
-          };
+        pagesStore.openCursor().onsuccess = function (event) {
 
-          /* start by (updating) caching the home page*/
-          currentPage = new WikiArticle(new MyUrl(awv.URL));
-          currentPage.setContent(document.getElementById("aw-article-body").innerHTML, false);
-          currentPage.toDb();
+          var cursor = event.target.result;
 
-          myhistory = new MyHistory();
-          myhistory.push(currentPage.url);
+          if (cursor) {
 
-          /* Initialise Application Settings*/
-          settings.init.useCache();
-          settings.init.refreshCache();
-        };
+            var li = document.createElement("li"),
+                a = document.createElement("a");
+            a.href = cursor.key;
+            a.textContent = cursor.value.title;
 
-        request.onupgradeneeded = function (e) {
-          var db = e.currentTarget.result;
+            li.appendChild(a);
+            ul.appendChild(li);
+            //console.log(" the URL " + cursor.key + " is entitle " + cursor.value.title);
 
-          console.log("database update to version " + db.version);
-          //console.log(db.objectStoreNames);
+            cursor.continue();
 
-          console.log("creating new database");
-
-          if (db.objectStoreNames[0] === "pages") {
-            // nothing there right now
           } else {
-            var pageStore = db.createObjectStore("pages", {keyPath: "url"});
-            pageStore.createIndex("title", "title", {unique: false});
-            pageStore.createIndex("date", "date", {unique: false});
 
-            // Use transaction oncomplete to make sure the pageStore creation is 
-            // finished before adding data into it.
-            pageStore.transaction.oncomplete = function () {
-              console.log("creating object transaction complete");
-            };
-          }
+            console.log("printing star page");
+            var list = document.createElement("body");
+            list.appendChild(ul);
 
-          if (db.objectStoreNames[1] === "settings") {
-            // nothing there right now
-          } else {
-            var settingsStore = db.createObjectStore("settings", {keyPath: "name"});
+            var cachedArticleList = new WikiArticle(new MyUrl(awv.URL, false));
+            cachedArticleList.setTitle("Cached articles");
+            cachedArticleList.setContent(list.innerHTML, false);
+            cachedArticleList.print();
 
-            settingsStore.transaction.oncomplete = function () {
-              console.log("creating object 2 transaction complete");
-              settings.setDefault();
-            };
+            ui.navbar.hide();
           }
         };
       },
       /*
-       * 
-       * @param {type} store_name
-       * @param {type} mode
-       * @returns {unresolved}
-       */
-      getObjectStore: function (store_name, mode) {
-        var tx = database.db.transaction(store_name, mode);
-        return tx.objectStore(store_name);
-      },
-      /*
-       * 
-       * @param {type} store_name
+       * Callback for external link
+       * @param {type} e
        * @returns {undefined}
        */
-      clearObjectStore: function (store_name) {
-        var store = database.getObjectStore([store_name], 'readwrite'),
-            req = store.clear();
-        req.onsuccess = function () {
-          console.log("Store '" + store_name + "' cleared");
-          document.location.href = awv.RELATIVE_ROOT;
+      openInOSBrowser: function (e) {
+        e.preventDefault();
+
+        console.log('open url in browser: ' + e.currentTarget.href);
+        // Open url in browser
+        var activity = new MozActivity({name: "view", data: {type: "url", url: e.currentTarget.href}});
+
+        activity.onerror = function () {
+          console.log("I can't open this link in OS Browser : " + this.error);
         };
-        req.onerror = function (evt) {
-          console.error("clearObjectStore:", evt.target.errorCode);
-        };
+      },
+      /*
+       * Callback for link to prevent default behaviour and stop propagation
+       * @param {type} e
+       * @returns {undefined}
+       */
+      stopprop: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
       }
     };
-
 
     /* ----------------------------------------
      * Helper function ()
      * ------------------------------------------*/
-
-    var awv = {
-      ROOT: document.location.protocol + "//" + document.location.host,
-      URL: document.location.protocol + "//" + document.location.host + "/index.html",
-      RELATIVE_ROOT: "./index.html",
-      WIKIROOT_URL: "https://wiki.archlinux.org"
-    };
-
+    
+    // nothing here right now
 
     /* ----------------------------------------
      * First add event listener (Initialisation)
