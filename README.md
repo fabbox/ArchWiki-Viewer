@@ -10,8 +10,8 @@ OS](https://developer.mozilla.org/en-US/Firefox_OS).  (clone of [ArchWiki
 Viewer](https://github.com/jtmcn/archwiki-viewer) for Android).
 
 Viewed content is cached (by default) to enable offline reading. Options are
-provide to see all the cached page and periodically check if an update version
-of the article is available. User can disable this feature.
+provide to see all the cached pages and to periodically check if an update version
+of the current article is available. User can disable these features.
 
 Permissions
 -----------
@@ -70,7 +70,8 @@ Please report bug to fbox.dev@gmail.com.
 Disclaimer
 ----------
 
-This project isn't approved, sponsored, or affiliated with Arch Linux(TM) or its related project.
+This project isn't approved, sponsored, or affiliated with Arch Linux(tm) or
+its related project.
 
 
 Licenses
@@ -92,13 +93,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
 
 ### Icons
-Icons, with the exception of the logo, are based on [gaia-icons](https://github.com/gaia-components/gaia-icons) (which is probably under Apache2 ?).
+Icons, with the exception of the logo, are based on
+[gaia-icons](https://github.com/gaia-components/gaia-icons) (which is probably
+under Apache2 ?).
 
-The logo of this application use the ArchLinux logo with the permission of Arch Linux Project Lead.
+The logo of this application use the ArchLinux logo with the permission of Arch
+Linux Project Lead.
 
 ### Archlinux
 
-The Arch Linux name and logo are recognized [trademarks](https://wiki.archlinux.org/index.php/DeveloperWiki:TrademarkPolicy")
+The Arch Linux name and logo are recognized
+[trademarks](https://wiki.archlinux.org/index.php/DeveloperWiki:TrademarkPolicy")
  owned by Aaron Griffin (hereinafter the "Arch Linux Project Lead") and Judd Vinet.
 Some rights reserved.
 

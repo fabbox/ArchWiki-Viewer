@@ -72,3 +72,20 @@ li.toclevel-2 {
 li.toclevel-3 {
     display: none
 }
+
+
+/* search results infos*/
+.mw-search-result-data {
+    color: #008000;
+    font-size: 90%;
+    display: none !important;
+}
+
+.mw-search-results  .searchresult{
+    font-size: 95%;
+    text-align: left;
+}
+
+ul.mw-search-results {
+    margin-left: 1.6em;
+}

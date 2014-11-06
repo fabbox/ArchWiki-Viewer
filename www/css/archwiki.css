@@ -746,22 +746,3 @@ pre {
     border: 1px solid #bcd;
     overflow: auto
 }
-
-
-/* search results infos*/
-.mw-search-result-data {
-    color: #008000;
-    font-size: 90%;
-}
-.mw-search-results li {
-    /*list-style: outside none none;*/
-}
-
-.mw-search-results  .searchresult{
-    font-size: 95%;
-    text-align: left;
-}
-
-ul.mw-search-results {
-    margin-left: 1.6em;
-}
