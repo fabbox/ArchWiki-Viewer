@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .mw-search-pager-bottom,
 .mw-search-createlink,
 div.mw-search-formheader,
-div.mw-search-result-data,
+/*div.mw-search-result-data,*/
 div.printfooter {
     display: none !important
 }

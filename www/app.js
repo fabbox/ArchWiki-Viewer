@@ -62,7 +62,7 @@ window.addEventListener('DOMContentLoaded', function () {
           } else if (str.indexOf(str2inject) === 0) {
             // nothing
           } else { // search case
-            str = encodeURI(str);
+            //str = encodeURI(str);
           }
 
           var anchor_idx = str.indexOf("#");
@@ -90,7 +90,8 @@ window.addEventListener('DOMContentLoaded', function () {
           var title = decodeURI(str),
               ugly_url_part = awv.WIKIROOT_URL + "/index.php?action=render&title=",
               ugly_url_part3 = awv.WIKIROOT_URL + "/index.php/",
-              ugly_url_part2 = awv.WIKIROOT_URL + "/index.php?search=";
+              ugly_url_part2 = awv.WIKIROOT_URL + "/index.php?search=",
+              ugly_url_part4 = awv.WIKIROOT_URL + "/index.php?title=Special:Search&search=";
 
           // who told I did'nt read "how to loop on an array in JS"?!
           if (title.startsWith(awv.URL)) {
@@ -104,6 +105,10 @@ window.addEventListener('DOMContentLoaded', function () {
           } else if (title.indexOf(ugly_url_part3) >= 0) {
             title = decodeURI(title.replace(ugly_url_part3, ""));
 
+          } else if (title.indexOf(ugly_url_part4) >= 0) {
+            title = title.replace(ugly_url_part4, "");
+            title = title.replace("&fulltext=Search&profile=default&redirs=0", "");
+            title = decodeURI();
           }
           return title;
         },
@@ -127,9 +132,23 @@ window.addEventListener('DOMContentLoaded', function () {
           return title;
         },
         displayFilter: function (title) {
+          /*
+           * The following string will not appears in the apps title
+           * in order to have the shorter title possible
+           * It's simply the namespace (as I understand it)
+           * */
           if (title.startsWith("Category:")) {
             title = title.replace("Category:", "");
+          } else if (title.startsWith("Help:")) {
+            title = title.replace("Help:", "");
+          } else if (title.startsWith("File:")) {
+            title = title.replace("File:", "");
+          } else if (title.startsWith("ArchWiki:")) {
+            title = title.replace("ArchWiki:", "");
           }
+
+
+
           return title;
         }
 
@@ -256,13 +275,13 @@ window.addEventListener('DOMContentLoaded', function () {
      * Settings
      * ------------------------------------------*/
     var settings = {
-      use_cache: "true", // use cache or not ? 
-      refresh_cache_period: "2629743830", // do not use the cache after such period, download a new version
+      use_cache: null, // use cache or not ? 
+      refresh_cache_period: null, // do not use the cache after such period, download a new version
       /*
        * set default setting
        * @returns {undefined}
        */
-      setDefault: function () {
+      resetDefault: function () {
         console.log("settings default value");
 
         settings.setUseCache("true");
@@ -418,7 +437,7 @@ window.addEventListener('DOMContentLoaded', function () {
           currentPage = new WikiArticle(new MyUrl(awv.URL, false));
           currentPage.setContent(document.getElementById("aw-article-body").innerHTML, false);
           currentPage.lastmodified = 0;
-          currentPage.toDb();
+          currentPage.save();
 
           myhistory = new MyHistory();
           myhistory.push(currentPage.url);
@@ -437,11 +456,21 @@ window.addEventListener('DOMContentLoaded', function () {
           console.log("creating new database");
 
           if (db.objectStoreNames[0] === "pages") {
-            // nothing there right now
-          } else {
+            // several change in this store, delete it for safety
+            // sorry for those who download all the site
+            db.deleteObjectStore("pages");
+
             var pageStore = db.createObjectStore("pages", {keyPath: "url"});
-            pageStore.createIndex("title", "title", {unique: false});
+            pageStore.createIndex("title", "title", {unique: false}); // probably true
             pageStore.createIndex("date", "date", {unique: false});
+            pageStore.createIndex("lastmodified", "lastmodified", {unique: false});
+
+          } else {
+
+            var pageStore = db.createObjectStore("pages", {keyPath: "url"});
+            pageStore.createIndex("title", "title", {unique: false}); // probably true
+            pageStore.createIndex("date", "date", {unique: false});
+            pageStore.createIndex("lastmodified", "lastmodified", {unique: false});
 
             // Use transaction oncomplete to make sure the pageStore creation is 
             // finished before adding data into it.
@@ -459,8 +488,8 @@ window.addEventListener('DOMContentLoaded', function () {
               console.log("creating  'settings' complete");
               /*we need a database to use settings.setDefault()*/
               database.db = db;
-              settings.setDefault();
-              database.db = "";
+              settings.resetDefault();
+              database.db = null;
             };
           }
         };
@@ -564,6 +593,7 @@ window.addEventListener('DOMContentLoaded', function () {
     /*
      * MyUrl constructor
      * @param {type} str
+     * @param {type} reformat
      * @returns {app_L35.MyUrl}
      * 
      * properties are : href, anchor and raw;
@@ -620,8 +650,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     /*
      * Title constructor
-     * @param {type} str
-     * @returns {app_L12.Title}
+     * @param {type} title
+     * @param {type} myUrl
+     * @returns {app_L35.Title}
      */
     function Title(title, myUrl) {
       //console.log("new Title instance");
@@ -651,7 +682,8 @@ window.addEventListener('DOMContentLoaded', function () {
     /*
      * Content constructor
      * @param {type} content
-     * @returns {app_L12.Content}
+     * @param {type} reformat
+     * @returns {app_L35.Content}
      */
     function Content(content, reformat) {
       //console.log("new Content instance");
@@ -660,24 +692,32 @@ window.addEventListener('DOMContentLoaded', function () {
         reformat = true;
       }
 
-      this.body = content;
+      //this.body = content;
+
+      this.topElement = document.createElement("div");
+      this.topElement.innerHTML = content; //this.body;
 
       if (reformat) {
         this.reformat();
       }
+
+
     }
 
     Content.prototype = {
+      getHtml: function () {
+        return this.topElement.innerHTML;
+      },
       reformat: function () {
         /* create a div node */
-        var mainDiv = document.createElement("div");
-        mainDiv.innerHTML = this.body;
+        //var mainDiv = document.createElement("div");
+        //mainDiv.innerHTML = this.body;
 
-        mainDiv = formatter.page.relatedArticle(mainDiv);
-        mainDiv = formatter.page.inset(mainDiv);
-        mainDiv = formatter.page.imageSrc(mainDiv);
+        this.topElement = formatter.page.relatedArticle(this.topElement);
+        this.topElement = formatter.page.inset(this.topElement);
+        this.topElement = formatter.page.imageSrc(this.topElement);
 
-        this.body = mainDiv.innerHTML;
+        //this.body = this.topElement.innerHTML;
       },
       /*
        * Display content in a new article in the document
@@ -695,14 +735,14 @@ window.addEventListener('DOMContentLoaded', function () {
 
         /* create new article element */
         var awart = document.createElement("article"),
-            awart_content = document.createElement("div");
+            awart_content = this.topElement;//document.createElement("div");
 
         awart.id = "aw-article";
         awart.className = "aw-article fade-out";
 
         awart_content.id = "aw-article-body";
         awart_content.className = "aw-article-body";
-        awart_content.innerHTML = this.body;
+        //awart_content.innerHTML = this.body;
 
         /* set article content*/
         awart.appendChild(awart_content);
@@ -731,8 +771,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     /*
      * Wikipage constructor : 
-     * @param {type} url (MyUrl object)
-     * @returns {app_L12.WikiArticle}
+     * @param {type} url
+     * @returns {app_L35.WikiArticle}
      */
     function WikiArticle(url) {
       //console.log("new WikiArticle instance");
@@ -827,20 +867,15 @@ window.addEventListener('DOMContentLoaded', function () {
             self.setContent(cache.body, false);
 
             if (self.date - cache.date < settings["refresh_cache_period"]) {
-              //if (false) { // <- test/debug purpose (comment the line above when uncomment this one)
               self.print();
               ui.progressbar.hide();
-
             } else {
-
               self.update();
             }
 
           } else {
-
             console.log("I do not know that url yet : \n\t" + self.url.href);
             self.loadUrl(true);
-
           }
         };
 
@@ -858,17 +893,15 @@ window.addEventListener('DOMContentLoaded', function () {
        */
       loadUrl: function (save2db) {
         /*get the page from the website*/
+        console.log("http request url : \n\t" + this.url.href);
+
         ui.progressbar.show();
-
-        var self = this;
-
-        console.log("http request url : \n\t" + self.url.href);
-
         if (typeof save2db === 'undefined') {
           save2db = true;
         }
 
-        var xhr = new XMLHttpRequest({mozSystem: true});
+        var self = this,
+            xhr = new XMLHttpRequest({mozSystem: true});
 
         //* Initialize Cross XMLHttprequest 
         //* and open a http request with "document" responseType.
@@ -917,11 +950,13 @@ window.addEventListener('DOMContentLoaded', function () {
             return;
           }
 
+          // FIX-ME: Requesting "document" to just using innerHtml is 
+          // probably a waste of ressources
           self.setContent(resp.innerHTML, true);
           self.print();
 
           if (save2db) {
-            self.toDb();
+            self.save();
           }
         };
 
@@ -936,6 +971,17 @@ window.addEventListener('DOMContentLoaded', function () {
         this.content = new Content(str, reformat);
       },
       /*
+       * return the innerHTML of the content 
+       * @returns {app_L35.WikiArticle.prototype@pro;content@call;getHtml}
+       */
+      getHtmlContent: function () {
+        if (this.content) {
+          return this.content.getHtml();
+        } else {
+          return null;
+        }
+      },
+      /*
        * set the title properties
        * @param {type} str
        * @param {type} url
@@ -943,6 +989,13 @@ window.addEventListener('DOMContentLoaded', function () {
        */
       setTitle: function (str, url) {
         this.title = new Title(str, url);
+      },
+      /*
+       * return the full title string 
+       * @returns {app_L35.WikiArticle.title.str}
+       */
+      getTitle: function () {
+        return this.title.str;
       },
       /*
        * Dipslay the different properties to the current document
@@ -959,11 +1012,11 @@ window.addEventListener('DOMContentLoaded', function () {
        * Save or update article in the indexedb
        * @returns {undefined}
        */
-      toDb: function () {
+      save: function () {
         var data = {
           url: this.url.href,
-          title: this.title.str,
-          body: this.content.body,
+          title: this.getTitle(),
+          body: this.getHtmlContent(),
           date: this.date,
           lastmodified: this.lastmodified
         };
@@ -1234,10 +1287,12 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btHome.addEventListener('click', function () {
             /* go home */
-            var page = new WikiArticle(new MyUrl(awv.URL, false));
-            page.loadCache();
-            myhistory.push(page.url);
-            currentPage = page;
+            if (currentPage.url.href !== awv.URL) {
+              var page = new WikiArticle(new MyUrl(awv.URL, false));
+              page.loadCache();
+              myhistory.push(page.url);
+              currentPage = page;
+            }
           }, false);
 
           /* 
@@ -1517,8 +1572,26 @@ window.addEventListener('DOMContentLoaded', function () {
         console.log('Searching !');
         e.preventDefault();
 
+        // XXX : use wikimedia api to avoid downlodaing the full page ?
+        // pro : 
+        // small response
+        // con :
+        // several request needs
+        // load impact on arch server (? completely unknown : don't they use
+        // the api for building search page results ? )
+        // 
+        // example :
+        //ex 1 :title match list
+        //https://wiki.archlinux.org/api.php?action=query&list=search&srprop=timestamp&srwhat=title&srsearch=zsh
+        //ex 2 : content match list
+        //https://wiki.archlinux.org/api.php?action=query&list=search&srprop=timestamp&srwhat=text&srsearch=zsh
+
         var input = document.getElementById("topSearchInput").value || "sorry",
-            url = new MyUrl(awv.WIKIROOT_URL + "/index.php?search=" + input, false),
+            strUrl = awv.WIKIROOT_URL
+            + "/index.php?title=Special:Search&search="
+            + encodeURIComponent(input)
+            + "&fulltext=Search&profile=default&redirs=0",
+            url = new MyUrl(strUrl, false),
             page = new WikiArticle(url);
 
         //console.log("input :" + input);
@@ -1599,17 +1672,19 @@ window.addEventListener('DOMContentLoaded', function () {
     /* ----------------------------------------
      * Helper function ()
      * ------------------------------------------*/
-    
+
     // nothing here right now
 
     /* ----------------------------------------
-     * First add event listener (Initialisation)
+     * Initialisation :
+     * add event listener to the ui
+     * open the database
      * ------------------------------------------*/
-    console.log("initialisation script start");
+    console.log("initialisation start");
 
     uiListeners.init();
     database.init();
 
-    console.log("initialisation script end (some steps may not have been completed yet)");
+    console.log("initialisation end (some steps may not have been completed yet)");
   })();
 });
