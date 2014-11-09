@@ -2028,8 +2028,9 @@ window.addEventListener('DOMContentLoaded', function () {
        * @returns {Boolean}
        */
       confirm_form: function () {
-        if (settings.use_cache === false) {
+        if (!settings.use_cache) {
           return false;
+          console.log("cache is disable. I will not download anything!");
         }
 
         console.log("downloader launch");
@@ -2041,6 +2042,8 @@ window.addEventListener('DOMContentLoaded', function () {
         downloader.data.length = 0;
         downloader.data.idx = 0;
         downloader.data.downloaderBody.innerHTML = "";
+
+        ui.downloader.show();
 
         for (var i = 0; i < myLinks.length; i++) {
           downloader.data.links.push(myLinks[i].href);
@@ -2069,6 +2072,8 @@ window.addEventListener('DOMContentLoaded', function () {
         downloader.data.links = [];
         downloader.data.length = 0;
         downloader.data.idx = 0;
+
+        ui.downloader.hide();
       },
       /*
        * Download button callback (confirm download dialog box)
@@ -2078,11 +2083,9 @@ window.addEventListener('DOMContentLoaded', function () {
       start: function (e) {
         e.preventDefault();
 
-        ui.downloader.show();
-
         document.getElementById("dlLinks_confirm").classList.add("hidden");
         uiListeners.remove.confirmDownloader();
-
+          
         if (downloader.data.length > 0) {
           /* add download/saved event (we do not want to overload arch server
            * by sending 50 request at the same time)
@@ -2096,7 +2099,6 @@ window.addEventListener('DOMContentLoaded', function () {
           p.textContent = downloader.data.length + ' pages to download :';
           ol.id = "downloadList";
 
-
           downloader.say(p);
           downloader.say(ol);
 
@@ -2106,6 +2108,8 @@ window.addEventListener('DOMContentLoaded', function () {
       },
       /*
        * callback function to the 'awvSaved' eventListener define in main() 
+       * If everythings is fine and save, the function will dispatch a new 
+       * 'awvSaved' event. 
        * @param {type} e
        * @returns {undefined}
        */
