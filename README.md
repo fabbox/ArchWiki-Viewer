@@ -5,7 +5,7 @@ Description
 -----------
 
 A simple viewer for the [wiki of Arch Linux](https://wiki.archlinux.org)
-adapted to mobile device runnning [Firefox OS](https://developer.mozilla.org/en-US/Firefox_OS).
+adapted to mobile device running [Firefox OS](https://developer.mozilla.org/en-US/Firefox_OS).
 
 (born as a clone of the excellent [ArchWiki Viewer](https://github.com/jtmcn/archwiki-viewer) for Android).
 
@@ -13,7 +13,7 @@ Features
 --------
 * Viewed content is cached (by default) to enable offline reading.
 * Index of cached pages to provide a faster access (star button).
-* Possibility of downloading all the cited articles (download button).
+* Possibility of caching all the linked articles (download button).
 * Periodical check of update version of the current article.
 * User can disable/clear the local article database (e.g. to save space on the device).
 
@@ -37,20 +37,20 @@ Change log
 
 ### 0.2.0 (or 1.0.0):
 
-* navigation bar is now at bottom to a better accessibility.
+* navigation bar is now at bottom for a better accessibility.
 * access to cache page index (star icon in navigation bar).
-* possibility to download all articles cited on the current page.
+* possibility to download all articles linked in the current page.
 * adding a settings menu to manage cache options.
 * possibility to enable/disable cache.
 * possibility to clear the cache.
 * check for update after a certain time (parameters are in settings).
 * fix multiple homepage in history.
 * adding html5 transition (thanks to [simpleRSS](http://simpleress.user1.be/)).
-* adding few default tango-icon file appearing in article comments in order to avoid to download them each time (new, stub, ...).
+* adding few default tango-icon file appearing in article comments in order to avoid downloading them each time (new, stub, ...).
 
 ### 0.1.0 :
 
-* add indexedDB to cache content (so offline surfing is possible if the page has been loaded).
+* add indexedDB to cache content (in order to make offline surfing possible).
 * you can refresh the cache by pushing the reload button in the navigation menu.
 * improve error handling.
 * improve "responsive designess" in css (thanks to [Building Blocks](http://buildingfirefoxos.com)).
@@ -67,7 +67,7 @@ Privacy Policy
 This application saves the pages you have requested thanks to this application
 on https://wiki.archlinux.org in an indexedDB.
 It also records the url, the download date and the "timestamp" of each page.
-This 4 data enables to provide you an offline accessibility
+This 4 data enable to provide you an offline accessibility
 and an up to date content. You can disable the use of this caching feature in
 the setting menu of the application and clear your cached data as well.
 You can see all the cached pages by pushing the "star" icon (if the cache is
@@ -112,7 +112,7 @@ Icons, with the exception of the logo and icons within article, are based on
 [gaia-icons](https://github.com/gaia-components/gaia-icons) (which is probably
 under Apache2 ?).
 
-The logo of this application use the ArchLinux logo with the permission of Arch
+The logo of this application uses the ArchLinux logo with the permission of the Arch
 Linux Project Lead.
 
 ### Archlinux

@@ -36,7 +36,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @XXX: In a perfect wolrd, all the content which is not seen in 
  *       "mw-content-tex" should be deleted (and eventually add to 
  *       hackedarchwikistyle with display none).
- * @XXX: each css entry should be prefix by ".aw-article". 
+ * @XXX: each css entry should be prefix by ".aw-article". -> NOOOOO ! 
+ *          
  */ 
 
 

@@ -117,162 +117,139 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <h2>Description</h2>
 
-                    <p>
-                        A simple viewer for the <a href="https://wiki.archlinux.org">
-                            wiki of Arch Linux</a> adapted to mobile device runnning 
-                        <a href="https://developer.mozilla.org/en-US/Firefox_OS">
-                            Firefox OS</a>
-                        clone of <a href="https://github.com/jtmcn/archwiki-viewer">ArchWiki Viewer</a>
-                        for Android).
-                    </p>
+                    <p>A simple viewer for the <a class="external" href="https://wiki.archlinux.org">wiki of Arch Linux</a>
+                        adapted to mobile device running <a class="external" href="https://developer.mozilla.org/en-US/Firefox_OS">Firefox OS</a>.</p>
 
-                    <p>
-                        Viewed content is cached (by default) to enable offline reading. Options are
-                        provide to see all the cached pages and to periodically check if an update version
-                        of the current article is available. User can disable these features.
-                    </p>
+                    <p>(born as a clone of the excellent <a class="external" href="https://github.com/jtmcn/archwiki-viewer">ArchWiki Viewer</a> for Android).</p>
+
+                    <h2>Features</h2>
+
+                    <ul>
+                        <li>Viewed content is cached (by default) to enable offline reading.</li>
+                        <li>Index of cached pages to provide a faster access (star button).</li>
+                        <li>Possibility of caching all the linked articles (download button).</li>
+                        <li>Periodical check of update version of the current article.</li>
+                        <li>User can disable/clear the local article database (e.g. to save space on the device).</li>
+                    </ul>
+
+                    <h2>Source code</h2>
+
+                    <p>Sources are available on <a class="external" href="https://github.com/fabbox/ArchWiki-Viewer">github/fabbox</a> under GNU GPL3.</p>
+
+                    <h2>Contact</h2>
+
+                    <p>Please report bugs and requests on <a class="external" href="https://github.com/fabbox/ArchWiki-Viewer">github/fabbox</a>
+                        or to <a class="external" href="&#109;&#x61;&#x69;&#x6C;&#116;&#x6F;:f&#98;&#x6F;&#x78;&#x2E;&#x64;&#101;&#x76;&#64;&#x67;&#x6D;&#97;&#x69;l&#x2E;&#99;o&#x6D;">f&#98;&#x6F;&#x78;&#x2E;&#x64;&#101;&#x76;&#64;&#x67;&#x6D;&#97;&#x69;l&#x2E;&#99;o&#x6D;</a>.</p>
 
                     <h2>Permissions</h2>
 
-                    <ul class="task-list">
-                        <li>systemXHR : Cross-domain requests needed to get html file from
-                            <a href="https://wiki.archlinux.org"> https://wiki.archlinux.org</a>
-                            to the app.
-                        </li>
+                    <ul>
+                        <li>systemXHR : Cross-domain requests needed to get wiki article from
+                            https://wiki.archlinux.org to the app.</li>
                     </ul>
 
                     <h2>Change log</h2>
 
-                    <h3>0.2.0 :</h3>
+                    <h3>0.2.0 (or 1.0.0):</h3>
 
-                    <ul class="task-list">
-                        <li>navigation bar is now at bottom to a better accessibility.</li>
-                        <li>adding a settings menu to manage cache options</li>
+                    <ul>
+                        <li>navigation bar is now at bottom for a better accessibility.</li>
                         <li>access to cache page index (star icon in navigation bar).</li>
+                        <li>possibility to download all articles linked in the current page.</li>
+                        <li>adding a settings menu to manage cache options.</li>
                         <li>possibility to enable/disable cache.</li>
                         <li>possibility to clear the cache.</li>
                         <li>check for update after a certain time (parameters are in settings).</li>
-                        <li>fix multiple homepage in history</li>
-                        <li>adding html5 transition (not always smooth)</li>
+                        <li>fix multiple homepage in history.</li>
+                        <li>adding html5 transition (thanks to <a class="external" href="http://simpleress.user1.be/">simpleRSS</a>).</li>
+                        <li>adding few default tango-icon file appearing in article comments in order to avoid downloading them each time (new, stub, ...).</li>
                     </ul>
 
                     <h3>0.1.0 :</h3>
 
-                    <ul class="task-list">
-                        <li> add indexedDB to cache content (so offline surfing is possible if the page has been loaded).</li>
+                    <ul>
+                        <li>add indexedDB to cache content (in order to make offline surfing possible).</li>
                         <li>you can refresh the cache by pushing the reload button in the navigation menu.</li>
                         <li>improve error handling.</li>
-                        <li>improve "responsive designess" in css (thanks to 
-                            <a href="http://buildingfirefoxos.com">Building Blocks</a>).
-                        </li>
+                        <li>improve "responsive designess" in css (thanks to <a class="external" href="http://buildingfirefoxos.com">Building Blocks</a>).</li>
                         <li>navigation history is no more reset by pushing the app home button.</li>
                     </ul>
 
                     <h3>0.0.2 :</h3>
 
-                    <ul class="task-list">
+                    <ul>
                         <li>fix missing stylesheet in zip archive.</li>
                     </ul>
 
                     <h2>Privacy Policy</h2>
 
-                    <p>
-                        This application saves the pages you have requested thanks to this application
-                        on <a href="https://wiki.archlinux.org"> https://wiki.archlinux.org</a>
-                        in an indexedDB.
+                    <p>This application saves the pages you have requested thanks to this application
+                        on https://wiki.archlinux.org in an indexedDB.
                         It also records the url, the download date and the "timestamp" of each page.
-                        This 4 data enables to provide you an offline accessibility
+                        This 4 data enable to provide you an offline accessibility
                         and an up to date content. You can disable the use of this caching feature in
                         the setting menu of the application and clear your cached data as well.
                         You can see all the cached pages by pushing the "star" icon (if the cache is
-                        clear, you will only see the homepage).
-                    </p>
+                        clear, you will only see the homepage).</p>
 
-                    <p>
-                        To provide you these options, the application also saves your settings in the
-                        database.
-                    </p>
+                    <p>To provide you these options, the application also saves your settings in the
+                        database.</p>
 
-                    <p>
-                        Obviously, no content of this database is transmitted (except the url during an
-                        update of a page).
-                    </p>
+                    <p>Obviously, no content of this database is transmitted (except the url during an
+                        update of a page).</p>
 
-                    <p>
-                        To prevent security issue, an effort was made to disable login possibility.
-                        Please report bug to 
-                        <a href="mailto:fbox.dev@gmail.com">fbox.dev@gmail.com</a>.
-                    </p>
+                    <p>To prevent security issue, an effort was made to disable login possibility.
+                        Please report bug to fbox.dev@gmail.com.</p>
 
                     <h2>Disclaimer</h2>
 
-                    <p>
-                        This project isn't approved, sponsored, or affiliated with Arch Linux(tm) or
-                        its related project.
-                    </p>
-
+                    <p>This project isn't approved, sponsored, or affiliated with Arch Linux(tm) or
+                        its related project.</p>
 
                     <h2>Licenses</h2>
 
                     <h3>ArchWiki Viewer for firefox OS</h3>
 
-                    <p>
-                        This program is free software: you can redistribute it and/or modify
+                    <p>This program is free software: you can redistribute it and/or modify
                         it under the terms of the GNU General Public License as published by
                         the Free Software Foundation, either version 3 of the License, or
-                        (at your option) any later version.
-                    </p>
+                        (at your option) any later version.</p>
 
-                    <p>
-                        This program is distributed in the hope that it will be useful,
+                    <p>This program is distributed in the hope that it will be useful,
                         but WITHOUT ANY WARRANTY; without even the implied warranty of
                         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-                        GNU General Public License for more details.
-                    </p>
+                        GNU General Public License for more details.</p>
 
-                    <p>
-                        You should have received a copy of the GNU General Public License
-                        along with this program.  If not, see 
-                        <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>
-                    </p>
+                    <p>You should have received a copy of the GNU General Public License
+                        along with this program.  If not, see <a class="external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
 
                     <h3>Icons</h3>
 
-                    <p>
-                        Icons, with the exception of the logo, are based on
-                        <a href="https://github.com/gaia-components/gaia-icons">gaia-icons</a>
-                        (which is probably under Apache2 ?).
-                    </p>
+                    <p>Icons, with the exception of the logo and icons within article, are based on
+                        <a class="external" href="https://github.com/gaia-components/gaia-icons">gaia-icons</a> (which is probably
+                        under Apache2 ?).</p>
 
-
-                    <p>
-                        The logo of this application use the ArchLinux logo with the permission of Arch
-                        Linux Project Lead.
-                    </p>
+                    <p>The logo of this application uses the ArchLinux logo with the permission of the Arch
+                        Linux Project Lead.</p>
 
                     <h3>Archlinux</h3>
 
-                    <p>
-                        The Arch Linux name and logo are recognized
-                        <a href="https://wiki.archlinux.org/index.php/DeveloperWiki:TrademarkPolicy%22">trademarks</a>
-                        owned by Aaron Griffin (hereinafter the "Arch Linux Project Lead") and Judd Vinet.
-                        Some rights reserved.
-                    </p>
+                    <p>The Arch Linux name and logo are recognized
+                        <a class="external" href="https://wiki.archlinux.org/index.php/DeveloperWiki:TrademarkPolicy" title=")
+                           owned by Aaron Griffin (hereinafter the &quot;Arch Linux Project Lead">trademarks</a> and Judd Vinet.
+                        Some rights reserved.</p>
 
                     <h3>wiki.archlinux.org</h3>
 
-                    <p>
-                        The <a href="https://wiki.archlinux.org/index.php/ArchWiki:Privacy_policy">wiki content</a>
-                        is available under GNU Free Documentation License 1.3.
-                    </p>
+                    <p>The <a class="external" href="https://wiki.archlinux.org/index.php/ArchWiki:Privacy_policy">wiki content</a> 
+                        is available under GNU Free Documentation License 1.3.</p>
 
-                    <p>
-                        The content is provided "as is" without warranty of any kind, either expressed or 
+                    <p>The content is provided "as is" without warranty of any kind, either expressed or 
                         implied, including, but not limited to, the implied warranties of correctness and 
                         relevance to a particular subject. The entire risk as to the quality and accuracy 
                         of the content is with you. Should the content prove substandard, you assume the
-                        cost of all necessary servicing, repair, or correction.
-                    </p>
+                        cost of all necessary servicing, repair, or correction.</p>
+
                 </div>
             </article>
 
