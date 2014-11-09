@@ -23,13 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* based on simpleRSS (settings.css)*/
 
 section[data-type="sidebar"]#cacheSettings,
-section[data-type="sidebar"]#awv-about  {
+section[data-type="sidebar"]#awv-about,
+section[data-type="sidebar"]#awv-downloader {
     width: 100%;
     z-index: 10;
 }
 
 section[data-type="sidebar"]#cacheSettings h1,
-section[data-type="sidebar"]#awv-about h1 {
+section[data-type="sidebar"]#awv-about h1,
+section[data-type="sidebar"]#awv-downloader h1 {
     text-indent: 0rem;
 }
 

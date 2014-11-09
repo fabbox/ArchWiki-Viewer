@@ -1401,6 +1401,30 @@ window.addEventListener('DOMContentLoaded', function () {
           about.classList.remove("move-left");
           about.classList.add("move-center");
         }
+      },
+      /*
+       * the downloader panel 
+       */
+      downloader: {
+        hide: function () {
+          var dl = document.getElementById("awv-downloader");
+          
+          // FIX-ME: NOT THERE ! 
+          //dl.addEventListener("transitionend",function(){
+          //  downloader.data.downloaderBody.innerHTML ="";  
+          //},false);
+          
+          dl.classList.remove("move-center");
+          dl.classList.add("move-down");
+
+          
+        },
+        show: function () {
+          var dl = document.getElementById("awv-downloader");
+
+          dl.classList.remove("move-down");
+          dl.classList.add("move-center");
+        }
       }
     };
 
@@ -1423,6 +1447,7 @@ window.addEventListener('DOMContentLoaded', function () {
         uiListeners.add.awArticle();
         uiListeners.add.sidebar();
         uiListeners.add.about();
+        uiListeners.add.downloader();
       },
       /*
        * enable stuff
@@ -1510,7 +1535,7 @@ window.addEventListener('DOMContentLoaded', function () {
          * @returns {undefined}
          */
         about: function () {
-          console.log("add about listener")
+          console.log("add about listener");
 
           document.getElementById("CloseAbout")
               .addEventListener('click', function (e) {
@@ -1530,6 +1555,20 @@ window.addEventListener('DOMContentLoaded', function () {
               a.addEventListener('click', callback.openInOSBrowser, false);
             }
           }
+        },
+        /*
+         * About panel listener 
+         * @returns {undefined}
+         */
+        downloader: function () {
+          console.log("add downloader listener");
+
+          document.getElementById("CloseDownloader")
+              .addEventListener('click', function (e) {
+                e.preventDefault();
+                document.removeEventListener("awvSaved", downloader.getNext, false);
+                ui.downloader.hide();
+              }, false);
         },
         /*
          * Links (<a href=... > listeners
@@ -1956,9 +1995,13 @@ window.addEventListener('DOMContentLoaded', function () {
      */
     var downloader = {
       data: {
+        downloaderBody: document.getElementById("downloader-body"),
         links: [], // array to stock inner wiki link
         length: 0, // number of links
         idx: 0     // current link
+      },
+      say: function (node){
+        downloader.data.downloaderBody.appendChild(node);
       },
       /*
        * execute downloader 
@@ -1977,6 +2020,7 @@ window.addEventListener('DOMContentLoaded', function () {
         downloader.data.links = [];
         downloader.data.length = 0;
         downloader.data.idx = 0;
+        downloader.data.downloaderBody.innerHTML ="";
 
         for (var i = 0; i < myLinks.length; i++) {
           downloader.data.links.push(myLinks[i].href);
@@ -2013,6 +2057,8 @@ window.addEventListener('DOMContentLoaded', function () {
        */
       start: function (e) {
         e.preventDefault();
+        
+        ui.downloader.show();
 
         document.getElementById("dlLinks_confirm").classList.add("hidden");
         uiListeners.remove.confirmDownload();
@@ -2023,17 +2069,6 @@ window.addEventListener('DOMContentLoaded', function () {
            */
           document.addEventListener("awvSaved", downloader.getNext, false);
 
-          /* new page to write stuff */
-
-          var downloaderPage = new WikiArticle(new MyUrl(awv.ROOT + "downloader", false));
-          downloaderPage.setTitle("Downloader");
-          downloaderPage.setContent("", false);
-          downloaderPage.print();
-
-          ui.navbar.disable.btReload();
-
-          currentPage = downloaderPage;
-
           /* prepare the document*/
           var p = document.createElement("p"),
               ol = document.createElement("ol");
@@ -2041,8 +2076,9 @@ window.addEventListener('DOMContentLoaded', function () {
           p.textContent = downloader.data.length + ' pages to download :';
           ol.id = "downloadList";
 
-          currentPage.content.append(p);
-          currentPage.content.append(ol);
+          
+          downloader.say(p);
+          downloader.say(ol);
 
           /* launch the loop */
           downloader.getNext();
@@ -2083,7 +2119,7 @@ window.addEventListener('DOMContentLoaded', function () {
         } else {
           console.log("finish to download link. removing 'awvSaved' event listener");
 
-          /* reset everything */
+          /* reset everything execpt the body of the downloader section */
           downloader.data.links = [];
           downloader.data.length = 0;
           downloader.data.idx = 0;
@@ -2093,7 +2129,7 @@ window.addEventListener('DOMContentLoaded', function () {
           /* add an end message */
           var p = document.createElement("p");
           p.textContent = 'It seems to be finished. Enjoy reading now!';
-          currentPage.content.append(p);
+          downloader.say(p);
         }
       }
     };
