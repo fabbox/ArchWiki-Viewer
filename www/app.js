@@ -41,6 +41,7 @@ window.addEventListener('DOMContentLoaded', function () {
     var awv = {
       ROOT: document.location.protocol + "//" + document.location.host,
       URL: document.location.protocol + "//" + document.location.host + "/index.html",
+      DOMAIN:document.location.host,
       RELATIVE_ROOT: "./index.html",
       WIKIROOT_URL: "https://wiki.archlinux.org"
     };
@@ -1604,7 +1605,10 @@ window.addEventListener('DOMContentLoaded', function () {
               //    }
               //, false);
 
-            } else if (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") {
+            } else if (
+                (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:")
+                ||(a.host.startsWith(awv.DOMAIN) && a.protocol === "app:") // <- need in search page results
+                ) {
               //console.log("wiki link event add : " + a.href);
               a.addEventListener('click', callback.load, false);
 
