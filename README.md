@@ -76,11 +76,11 @@ clear, you will only see the homepage).
 To provide you these options, the application also saves your settings in the
 database.
 
-Obviously, no content of this database is transmitted (except the url during an
-update of a page).
+Obviously, no content of this database is transmitted/share (except the url during an
+update of an article).
 
 To prevent security issue, an effort was made to disable login possibility.
-Please report bug to fbox.dev@gmail.com.
+Please report bug to <fbox.dev@gmail.com>.
 
 Disclaimer
 ----------
@@ -117,9 +117,8 @@ Linux Project Lead.
 
 ### Archlinux
 
-The Arch Linux name and logo are recognized
-[trademarks](https://wiki.archlinux.org/index.php/DeveloperWiki:TrademarkPolicy")
- owned by Aaron Griffin (hereinafter the "Arch Linux Project Lead") and Judd Vinet.
+The Arch Linux name and logo are recognized [trademarks](https://wiki.archlinux.org/index.php/DeveloperWiki:TrademarkPolicy) 
+owned by Aaron Griffin (hereinafter the "Arch Linux Project Lead") and Judd Vinet.
 Some rights reserved.
 
 
