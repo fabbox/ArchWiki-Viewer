@@ -41,9 +41,9 @@ progress.loadPage[value] {
     background-image: url(../icons/progress/activity.svg);
     background-repeat: repeat;
     background-size: 1rem 0.6;
-    animation: .5s move infinite ease; 
+    animation: .5s move infinite linear; 
     /*steps(15)*/
-
+    
     z-index:6
 }
 
