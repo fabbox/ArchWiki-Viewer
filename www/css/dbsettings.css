@@ -22,17 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* based on simpleRSS (settings.css)*/
 
-section[data-type="sidebar"]#cacheSettings  {
+section[data-type="sidebar"]#cacheSettings,
+section[data-type="sidebar"]#awv-about  {
     width: 100%;
     z-index: 10;
-    left: -100%;
 }
 
-section[data-type="sidebar"]#cacheSettings:target  {
-    transform: translateX(100%);
-}
-
-section[data-type="sidebar"]#cacheSettings h1 {
+section[data-type="sidebar"]#cacheSettings h1,
+section[data-type="sidebar"]#awv-about h1 {
     text-indent: 0rem;
 }
 
@@ -59,6 +56,7 @@ section[data-type="sidebar"]#cacheSettings > nav > ul > li > label#refresh_label
     position: absolute;
     left: 0;
     pointer-events: none;
+    vertical-align: middle;
 }
 
 #refresh_cache_period {
@@ -86,6 +84,7 @@ section[data-type="sidebar"]#cacheSettings > nav > ul > li > label#refresh_label
     margin-top: 1.4rem;
     text-align: right;
     width: 8rem;
+    vertical-align: middle;
 }
 
 
@@ -113,6 +112,10 @@ section[data-type="sidebar"]#cacheSettings > nav > ul > li #spanCache{
     line-height: 4rem;
     font-weight: bold;
 }
+
+section[data-type="sidebar"]#cacheSettings > nav > ul > li#licacheswitch{
+    border-bottom: 1px solid #596068
+} 
 
 label.switcher input {
     margin: 0;

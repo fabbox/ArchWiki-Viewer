@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         <link rel="stylesheet" href="css/archwiki.css">
         <link rel="stylesheet" href="css/archwiki_hacked.css">
-        
+
         <link rel="stylesheet" href="css/activities.css">
         <link rel="stylesheet" href="css/confirm.css">
         <link rel="stylesheet" href="css/dbsettings.css">
@@ -51,15 +51,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <!--
         Settings left panel 
         -->
-        <section data-type="sidebar">
+        <section data-type="sidebar" >
             <header  class="archmainbar">
                 <h1>Settings</h1>
             </header>
             <nav>
                 <ul>
-                    <li><a href="#cacheSettings" >database settings</a></li>
-                    <li class="inactive disable" hidden=""><a href="" >about</a></li>
-                    <li><a href="" id="sideQuit">quit</a></li>
+                    <li><a id="lnToCacheSettings" href="#cacheSettings" >Database settings</a></li>
+                    <li><a id="lnToAbout" href="#awv-about">About</a></li>
+                    <li><a id="sideQuit" href="">Quit</a></li>
                 </ul>
             </nav>
         </section>        
@@ -67,16 +67,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <!--
         database settings
         -->
-        <section id="cacheSettings" role="region" data-type="sidebar" >
+        <section id="cacheSettings" role="region" data-type="sidebar" class="move-left">
             <header class="archmainbar">
-                <a href="#main"><span class="icon icon-back">back</span></a>
+                <a id="CloseCacheSettings" href="#main"><span class="icon icon-close">close</span></a>
                 <h1> Database settings</h1>
             </header>
 
             <nav>
                 <ul>
                     <li id="licacheswitch" class="inactive"> 
-                        <span id="spanCache">use cache</span>
+                        <span id="spanCache">Use cache</span>
                         <label class="switcher" id="cacheswitch"> 
                             <input id="use_cache" type="checkbox" checked>
                             <span></span>
@@ -86,23 +86,198 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <li class="inactive">
                         <select id="refresh_cache_period" >
                             <option value="0">Always</option>
-                            <option value="86400000">After 1 Day</option>
-                            <option value="604800000">After 1 Week</option>
-                            <option value="2629743830">After 1 Month</option>
-                            <option value="7889231490">After 3 Months</option>
+                            <option value="86400000">Daily</option>
+                            <option value="604800000">Weekly</option>
+                            <option value="2629743830">Monthly</option>
                             <option value="Infinity">Manually</option>
                         </select>
                         <label class="settings_label" id="refresh_label">XXX</label>
                         <a>
-                            <span>Check for Articles Updates</span>
+                            <span>Articles Updates Check</span>
                         </a>
                     </li>
 
-                    <li> <a href="#cleardb_confirm" id="cleardb">clear</a> </li>
+                    <li> <a href="#cleardb_confirm" id="cleardb">Clear</a> </li>
                 </ul>
             </nav>
 
         </section>
+
+        <!--
+        About
+        -->
+        <section id="awv-about" role="region" data-type="sidebar" class="move-left">
+            <header class="archmainbar">
+                <a id="CloseAbout" href="#main"><span class="icon icon-close">close</span></a>
+                <h1> About </h1>
+            </header>
+            <article class="awv-sidebar-article">
+                <div class="awv-sidebar-body">
+                    <h1>ArchWiki Viewer for FirefoxOS</h1>
+
+                    <h2>Description</h2>
+
+                    <p>
+                        A simple viewer for the <a href="https://wiki.archlinux.org">
+                            wiki of Arch Linux</a> adapted to mobile device runnning 
+                        <a href="https://developer.mozilla.org/en-US/Firefox_OS">
+                            Firefox OS</a>
+                        clone of <a href="https://github.com/jtmcn/archwiki-viewer">ArchWiki Viewer</a>
+                        for Android).
+                    </p>
+
+                    <p>
+                        Viewed content is cached (by default) to enable offline reading. Options are
+                        provide to see all the cached pages and to periodically check if an update version
+                        of the current article is available. User can disable these features.
+                    </p>
+
+                    <h2>Permissions</h2>
+
+                    <ul class="task-list">
+                        <li>systemXHR : Cross-domain requests needed to get html file from
+                            <a href="https://wiki.archlinux.org"> https://wiki.archlinux.org</a>
+                            to the app.
+                        </li>
+                    </ul>
+
+                    <h2>Change log</h2>
+
+                    <h3>0.2.0 :</h3>
+
+                    <ul class="task-list">
+                        <li>navigation bar is now at bottom to a better accessibility.</li>
+                        <li>adding a settings menu to manage cache options</li>
+                        <li>access to cache page index (star icon in navigation bar).</li>
+                        <li>possibility to enable/disable cache.</li>
+                        <li>possibility to clear the cache.</li>
+                        <li>check for update after a certain time (parameters are in settings).</li>
+                        <li>fix multiple homepage in history</li>
+                        <li>adding html5 transition (not always smooth)</li>
+                    </ul>
+
+                    <h3>0.1.0 :</h3>
+
+                    <ul class="task-list">
+                        <li> add indexedDB to cache content (so offline surfing is possible if the page has been loaded).</li>
+                        <li>you can refresh the cache by pushing the reload button in the navigation menu.</li>
+                        <li>improve error handling.</li>
+                        <li>improve "responsive designess" in css (thanks to 
+                            <a href="http://buildingfirefoxos.com">Building Blocks</a>).
+                        </li>
+                        <li>navigation history is no more reset by pushing the app home button.</li>
+                    </ul>
+
+                    <h3>0.0.2 :</h3>
+
+                    <ul class="task-list">
+                        <li>fix missing stylesheet in zip archive.</li>
+                    </ul>
+
+                    <h2>Privacy Policy</h2>
+
+                    <p>
+                        This application saves the pages you have requested thanks to this application
+                        on <a href="https://wiki.archlinux.org"> https://wiki.archlinux.org</a>
+                        in an indexedDB.
+                        It also records the url, the download date and the "timestamp" of each page.
+                        This 4 data enables to provide you an offline accessibility
+                        and an up to date content. You can disable the use of this caching feature in
+                        the setting menu of the application and clear your cached data as well.
+                        You can see all the cached pages by pushing the "star" icon (if the cache is
+                        clear, you will only see the homepage).
+                    </p>
+
+                    <p>
+                        To provide you these options, the application also saves your settings in the
+                        database.
+                    </p>
+
+                    <p>
+                        Obviously, no content of this database is transmitted (except the url during an
+                        update of a page).
+                    </p>
+
+                    <p>
+                        To prevent security issue, an effort was made to disable login possibility.
+                        Please report bug to 
+                        <a href="mailto:fbox.dev@gmail.com">fbox.dev@gmail.com</a>.
+                    </p>
+
+                    <h2>Disclaimer</h2>
+
+                    <p>
+                        This project isn't approved, sponsored, or affiliated with Arch Linux(tm) or
+                        its related project.
+                    </p>
+
+
+                    <h2>Licenses</h2>
+
+                    <h3>ArchWiki Viewer for firefox OS</h3>
+
+                    <p>
+                        This program is free software: you can redistribute it and/or modify
+                        it under the terms of the GNU General Public License as published by
+                        the Free Software Foundation, either version 3 of the License, or
+                        (at your option) any later version.
+                    </p>
+
+                    <p>
+                        This program is distributed in the hope that it will be useful,
+                        but WITHOUT ANY WARRANTY; without even the implied warranty of
+                        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+                        GNU General Public License for more details.
+                    </p>
+
+                    <p>
+                        You should have received a copy of the GNU General Public License
+                        along with this program.  If not, see 
+                        <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>
+                    </p>
+
+                    <h3>Icons</h3>
+
+                    <p>
+                        Icons, with the exception of the logo, are based on
+                        <a href="https://github.com/gaia-components/gaia-icons">gaia-icons</a>
+                        (which is probably under Apache2 ?).
+                    </p>
+
+
+                    <p>
+                        The logo of this application use the ArchLinux logo with the permission of Arch
+                        Linux Project Lead.
+                    </p>
+
+                    <h3>Archlinux</h3>
+
+                    <p>
+                        The Arch Linux name and logo are recognized
+                        <a href="https://wiki.archlinux.org/index.php/DeveloperWiki:TrademarkPolicy%22">trademarks</a>
+                        owned by Aaron Griffin (hereinafter the "Arch Linux Project Lead") and Judd Vinet.
+                        Some rights reserved.
+                    </p>
+
+                    <h3>wiki.archlinux.org</h3>
+
+                    <p>
+                        The <a href="https://wiki.archlinux.org/index.php/ArchWiki:Privacy_policy">wiki content</a>
+                        is available under GNU Free Documentation License 1.3.
+                    </p>
+
+                    <p>
+                        The content is provided "as is" without warranty of any kind, either expressed or 
+                        implied, including, but not limited to, the implied warranties of correctness and 
+                        relevance to a particular subject. The entire risk as to the quality and accuracy 
+                        of the content is with you. Should the content prove substandard, you assume the
+                        cost of all necessary servicing, repair, or correction.
+                    </p>
+                </div>
+            </article>
+
+        </section>
+
 
         <!--
         Confirmation (to clear database) huge dialog Box
@@ -111,6 +286,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <form id="cleardb_confirm_form" role="dialog" data-type="confirm" >
                 <section>
                     <h1>Confirmation</h1>
+                    <p>This application will restart after clearing the database.</p>
                     <p>Are you sure you want to delete the cached pages ?</p>
                 </section>
                 <menu>
@@ -121,9 +297,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </section>      
 
         <!--
+        Confirmation (to download cited archwiki links in article) huge dialog Box
+        -->
+        <section id="dlLinks_confirm" role="dialog" data-type="confirm" class="hidden">
+            <form id="dlLinks_confirm_form" role="dialog" data-type="confirm" >
+                <section>
+                    <h1>Confirmation</h1>
+                    <p id="dlLinks_msg">Number of article to download : </p>
+                    <p>Each ArchWiki article cited in this page will be downloaded.
+                        It's better to have a good connection (as it can't be aborted).</p>
+                    <p>Start to download now ?</p>
+                </section>
+                <menu>
+                    <button id="dlLinks_cancel">Cancel</button>
+                    <button id="dlLinks_ok" class="danger">Download</button>
+                </menu>
+            </form>
+        </section>      
+
+        <!--
         Main section (called drawer in some apps)
         -->        
-        <section id="main" role="region">
+        <section id="main" role="region" class="move-center">
             <!-- 
             # Main Bar 
             -->
@@ -132,11 +327,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <button >    
                     <span class="icon icon-home" id="action_home"></span>
                 </button>    
-                <a class="btSettings hidden" href="#" id="a_settings_hide"> 
-                    <span class="icon icon-settings" id="action_settings_hide"></span>
-                </a>
-                <a class="btSettings hidden" href="#main" id="a_settings_show"> 
-                    <span class="icon icon-settings" id="action_settings_show"></span>
+                <a class="btSettings hidden" href="#main" id="a_settings"> 
+                    <span class="icon icon-settings" id="action_settings"></span>
                 </a>
 
                 <menu type="toolbar">
@@ -153,6 +345,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </header>
 
             <!-- 
+            # toolbar / navigation bar
+            -->
+            <div role="toolbar" id="navbar" class="navHidden">
+                <ul>
+                    <li><button class="icon icon-back" id="action_back">Back</button></li>
+                </ul>
+                <ul>
+                    <li><button class="icon icon-reload" id="action_reload">Reload</button></li>
+                    <li><button class="icon icon-star-full" id="action_star">Index</button></li>
+                    <li><button class="icon icon-download" id="action_download">Index</button></li>
+                    <li><button class="icon icon-close" id="action_close">Quit</button></li>
+                </ul>
+            </div>
+
+            <!-- 
             # Search form (bar)
             -->
             <form role="search" id="topSearchForm">
@@ -165,20 +372,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             # Progress bar
             -->
             <progress id="progressBar" class="loadPage" value="0" max="100" ></progress>
-
-            <!-- 
-            # toolbar / navigation bar
-            -->
-            <div role="toolbar" id="navbar" class="navHidden">
-                <ul>
-                    <li><button class="icon icon-back" id="action_back">Back</button></li>
-                </ul>
-                <ul>
-                    <li><button class="icon icon-reload" id="action_reload">Reload</button></li>
-                    <li><button class="icon icon-star-full" id="action_star">Index</button></li>
-                    <li><button class="icon icon-close" id="action_close">Quit</button></li>
-                </ul>
-            </div>
 
             <!-- 
             #aw-article : The part where wiki content is injected 
@@ -272,11 +465,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     <h2><span id="Help">Help</span></h2>
 
-                    <p>ArchWiki pages follow specific conventions, so if you have trouble reading ArchWiki or understanding some instructions, see <a href="https://wiki.archlinux.org/index.php/Help:Reading" title="Help:Reading">Help:Reading</a> for a clarification.
-                    </p><p>If looking for specific information, try using the search box to 
-                        the left. Alternatively, use your favorite web search engine which 
+                    <p>ArchWiki pages follow specific conventions, so if you have
+                        trouble reading ArchWiki or understanding some instructions, 
+                        see <a href="https://wiki.archlinux.org/index.php/Help:Reading" title="Help:Reading">Help:Reading</a> for a clarification.
+                    </p>
+                    <p>If looking for specific information, try using the search bar to 
+                        the top. Alternatively, use your favorite web search engine which 
                         likely provides a special syntax or interface for restricting results to
-                        a particular website (usually appending <code style="display:inline-block; padding: 0.1em 0.3em;">site:wiki.archlinux.org</code> to the search terms is enough). See <a href="https://wiki.archlinux.org/index.php/Help:Searching" title="Help:Searching">Help:Searching</a> for other tricks.
+                        a particular website (usually appending 
+                        <code style="display:inline-block; padding: 0.1em 0.3em;">site:wiki.archlinux.org</code> 
+                        to the search terms is enough). See <a href="https://wiki.archlinux.org/index.php/Help:Searching" title="Help:Searching">Help:Searching</a> for other tricks.
                     </p>
 
 

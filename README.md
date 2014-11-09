@@ -5,33 +5,48 @@ Description
 -----------
 
 A simple viewer for the [wiki of Arch Linux](https://wiki.archlinux.org)
-adapted to mobile device runnning [Firefox
-OS](https://developer.mozilla.org/en-US/Firefox_OS).  (clone of [ArchWiki
-Viewer](https://github.com/jtmcn/archwiki-viewer) for Android).
+adapted to mobile device runnning [Firefox OS](https://developer.mozilla.org/en-US/Firefox_OS).
 
-Viewed content is cached (by default) to enable offline reading. Options are
-provide to see all the cached pages and to periodically check if an update version
-of the current article is available. User can disable these features.
+(born as a clone of the excellent [ArchWiki Viewer](https://github.com/jtmcn/archwiki-viewer) for Android).
+
+Features
+--------
+* Viewed content is cached (by default) to enable offline reading.
+* Index of cached pages to provide a faster access (star button).
+* Possibility of downloading all the cited articles (download button).
+* Periodical check of update version of the current article.
+* User can disable/clear the local article database (e.g. to save space on the device).
+
+Source code
+-----------
+Sources are available on [github/fabbox](https://github.com/fabbox/ArchWiki-Viewer) under GNU GPL3.
+
+Contact
+--------
+Please report bugs and requests on [github/fabbox](https://github.com/fabbox/ArchWiki-Viewer)
+or to <fbox.dev@gmail.com>.
 
 Permissions
 -----------
 
-* systemXHR : Cross-domain requests needed to get html file from
+* systemXHR : Cross-domain requests needed to get wiki article from
   https://wiki.archlinux.org to the app.
 
 Change log
 ----------
 
-### 0.2.0 :
+### 0.2.0 (or 1.0.0):
 
 * navigation bar is now at bottom to a better accessibility.
-* adding a settings menu to manage cache options
 * access to cache page index (star icon in navigation bar).
+* possibility to download all articles cited on the current page.
+* adding a settings menu to manage cache options.
 * possibility to enable/disable cache.
 * possibility to clear the cache.
 * check for update after a certain time (parameters are in settings).
-* fix multiple homepage in history
-* adding html5 transition (not always smooth)
+* fix multiple homepage in history.
+* adding html5 transition (thanks to [simpleRSS](http://simpleress.user1.be/)).
+* adding few default tango-icon file appearing in article comments in order to avoid to download them each time (new, stub, ...).
 
 ### 0.1.0 :
 
@@ -93,7 +108,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
 
 ### Icons
-Icons, with the exception of the logo, are based on
+Icons, with the exception of the logo and icons within article, are based on
 [gaia-icons](https://github.com/gaia-components/gaia-icons) (which is probably
 under Apache2 ?).
 
@@ -117,4 +132,3 @@ implied, including, but not limited to, the implied warranties of correctness an
 relevance to a particular subject. The entire risk as to the quality and accuracy 
 of the content is with you. Should the content prove substandard, you assume the
 cost of all necessary servicing, repair, or correction.
-

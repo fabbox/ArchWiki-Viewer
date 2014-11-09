@@ -57,8 +57,14 @@ section[role="region"] > header:first-child .icon-settings {
 }
 
 section[role="region"] > header:first-child .icon-back {
- background-image: url("../icons/main/back.svg");
+    background-image: url("../icons/main/back.svg");
 }
+
+section[role="region"] > header:first-child .icon-close {
+    background-image: url("../icons/main/close.svg");
+}
+
+
 
 /* other properties from ffos building block*/
 section[role="region"] > header:first-child > a:last-of-type {
@@ -87,7 +93,6 @@ section[role="region"] > header:first-child button{
     background: none repeat scroll 0% 0% transparent;
     padding: 0px;
     margin: 0px;
-    /*transition: all 0.2s ease;*/
 }
 
 section[role="region"] > header:first-child .btSettings{
@@ -95,19 +100,6 @@ section[role="region"] > header:first-child .btSettings{
     top:0;
     left:0;
 }
-
-section[role="region"]#main:target {
-    transform: translateX(80%);
-}
-
-section[role="region"] #a_settings_show {
-    visibility: visible;
-}
-
-section[role="region"]:target #a_settings_show {
-    visibility: hidden;
-}
-
 
 section[role="region"] header button:active {
     background-color: #008aaa;
@@ -138,8 +130,20 @@ section[role="region"] > header:first-child menu {
     border-bottom-color: #0088CC;
 
     height:4rem;
+
     position:fixed;
+    /*position:absolute;*/
     top:0px;
+    left:0px;
+}
+
+section[role="region"] > header{
+/*    height:4rem;
+
+    position:fixed;
+    position:absolute;
+    top:0px;
+    left:0px;*/
 }
 
 #archmainbar h1,

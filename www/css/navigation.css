@@ -19,12 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Author     : fbox
 */
 
- /* based on https://developer.mozilla.org/en-US/Apps/Tools_and_frameworks/Building_Blocks/Toolbar/Coding*/
+/* based on https://developer.mozilla.org/en-US/Apps/Tools_and_frameworks/Building_Blocks/Toolbar/Coding*/
 
 [role="toolbar"] {
     display: block;
     height: 4rem;
     width: 100%;
+    /*position: absolute;*/
     position: fixed;
     bottom: 0px;
     left: 0px;
@@ -59,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 [role="toolbar"] button:active,
 div[role="toolbar"] > ul > li button:active {
-  background-color: #008aaa;
+    background-color: #008aaa;
 }
 
 div[role="toolbar"] > ul > li button {
@@ -94,6 +95,10 @@ div[role="toolbar"] > ul > li .icon-reload {
 
 div[role="toolbar"] > ul > li  .icon-star-full {
     background-image: url("../icons/navigation/star-full.svg");
+}
+
+div[role="toolbar"] > ul > li  .icon-download {
+    background-image: url("../icons/navigation/download.svg");
 }
 
 div[role="toolbar"] > ul > li  .icon-settings {

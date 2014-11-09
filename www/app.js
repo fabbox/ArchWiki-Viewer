@@ -45,6 +45,8 @@ window.addEventListener('DOMContentLoaded', function () {
       URL: document.location.protocol + "//" + document.location.host + "/index.html",
       RELATIVE_ROOT: "./index.html",
       WIKIROOT_URL: "https://wiki.archlinux.org"
+//      // create the event
+//      savedEvent: new CustomEvent("awvSaved", {"detail": {"results": true}})
     };
 
     /* ----------------------------------------
@@ -96,6 +98,7 @@ window.addEventListener('DOMContentLoaded', function () {
           // who told I did'nt read "how to loop on an array in JS"?!
           if (title.startsWith(awv.URL)) {
             title = "ArchWiki Viewer";
+
           } else if (title.indexOf(ugly_url_part) >= 0) {
             title = decodeURI(title.replace(ugly_url_part, ""));
 
@@ -108,7 +111,8 @@ window.addEventListener('DOMContentLoaded', function () {
           } else if (title.indexOf(ugly_url_part4) >= 0) {
             title = title.replace(ugly_url_part4, "");
             title = title.replace("&fulltext=Search&profile=default&redirs=0", "");
-            title = decodeURI();
+            title = decodeURI(title);
+
           }
           return title;
         },
@@ -139,15 +143,17 @@ window.addEventListener('DOMContentLoaded', function () {
            * */
           if (title.startsWith("Category:")) {
             title = title.replace("Category:", "");
+
           } else if (title.startsWith("Help:")) {
             title = title.replace("Help:", "");
+
           } else if (title.startsWith("File:")) {
             title = title.replace("File:", "");
+
           } else if (title.startsWith("ArchWiki:")) {
             title = title.replace("ArchWiki:", "");
+
           }
-
-
 
           return title;
         }
@@ -163,6 +169,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
           var fec = mainDiv.firstElementChild,
               relatedStyle = "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;";
+
+          if (!fec) {
+            return mainDiv;
+          }
 
           do {
             if (fec
@@ -249,19 +259,42 @@ window.addEventListener('DOMContentLoaded', function () {
            */
           var img = mainDiv.querySelectorAll("img");
           if (img) {
-            var imgRoot = awv.ROOT;
+            var imgRoot = awv.ROOT,
+                tdStyle = "background-color: {{{signalcolor}}}; width: 100px",
+                tableStyle = "background: {{{backgroundcolor}}}; border-color: {{{bordercolor}}}; width: 100%";
 
             for (var i = 0; i < img.length; i++) {
               if (img[i].src.startsWith(imgRoot + "/images/")) {
                 var src = img[i].src;
-                //console.log(src);
-                console.log("update image src");
+                //console.log("update image src :" + src);
                 if (src.indexOf("Tango-") >= 0) {
                   img[i].src = src.replace(/.*Tango-/g, imgRoot + "/images/tango/File:Tango-");
+
+                  var td = img[i].parentNode.parentNode;
+                  if (td.tagName === "TD"
+                      && td.hasAttributes()
+                      && td.hasAttribute("style")
+                      && td.getAttribute("style") === tdStyle) {
+
+                    td.classList.add("awv-tango");
+                    td.removeAttribute("style");
+                  }
+
+                  var table = td.parentNode.parentNode.parentNode;
+                  if (table.tagName === "TABLE"
+                      && table.hasAttributes()
+                      && table.hasAttribute("style")
+                      && table.getAttribute("style") === tableStyle) {
+
+                    table.classList.add("awv-tango");
+                    table.removeAttribute("style");
+                  }
+
                 } else {
                   img[i].src = img[i].src.replace(imgRoot, "https://wiki.archlinux.org");
+
+
                 }
-                //console.log(img[i].src);
               }
             }
           }
@@ -434,8 +467,11 @@ window.addEventListener('DOMContentLoaded', function () {
           };
 
           /* start by (updating) caching the home page*/
+
+          var homeArticle = document.getElementById("aw-article-body");
+
           currentPage = new WikiArticle(new MyUrl(awv.URL, false));
-          currentPage.setContent(document.getElementById("aw-article-body").innerHTML, false);
+          currentPage.setContent(homeArticle.innerHTML, false);
           currentPage.lastmodified = 0;
           currentPage.save();
 
@@ -535,7 +571,7 @@ window.addEventListener('DOMContentLoaded', function () {
       //console.log("new MyHistory instance");
 
       this._array = [];
-      this.length = this._array;
+      this.length = this._array.length;
 
       uiListeners.disable.navigation();
     }
@@ -549,10 +585,15 @@ window.addEventListener('DOMContentLoaded', function () {
       push: function (url) {
         if (!(url instanceof MyUrl)) {
           console.error("Who try to corrupt my history ?");
-          return false;
+          return;
+        } else if (this.length === 0) {
+          this._array.push(url);
+          this.length = this._array.length;
+        } else if (this.length > 0 && url.href !== this._array[this.length - 1].href) {
+          this._array.push(url);
+          this.length = this._array.length;
         }
-        this._array.push(url);
-        this.length = this._array.length;
+
         if (this.length > 1) {
           uiListeners.enable.navigation();
         }
@@ -568,7 +609,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
         if (this.length <= 1) {
           uiListeners.disable.navigation();
-          //document.getElementById("navbar").hidden = true;
           ui.navbar.hide();
         }
 
@@ -692,32 +732,33 @@ window.addEventListener('DOMContentLoaded', function () {
         reformat = true;
       }
 
-      //this.body = content;
-
       this.topElement = document.createElement("div");
-      this.topElement.innerHTML = content; //this.body;
+      this.topElement.innerHTML = content;
 
       if (reformat) {
         this.reformat();
       }
-
-
     }
 
     Content.prototype = {
+      /*
+       * return html string of the article 
+       * @returns {unresolved}
+       */
       getHtml: function () {
         return this.topElement.innerHTML;
       },
+      /*
+       * reformat article content
+       * @returns {undefined}
+       */
       reformat: function () {
-        /* create a div node */
-        //var mainDiv = document.createElement("div");
-        //mainDiv.innerHTML = this.body;
-
         this.topElement = formatter.page.relatedArticle(this.topElement);
         this.topElement = formatter.page.inset(this.topElement);
         this.topElement = formatter.page.imageSrc(this.topElement);
-
-        //this.body = this.topElement.innerHTML;
+      },
+      append: function (node) {
+        this.topElement.appendChild(node);
       },
       /*
        * Display content in a new article in the document
@@ -726,7 +767,8 @@ window.addEventListener('DOMContentLoaded', function () {
        */
       print: function () {
 
-        var awart_old = document.getElementById("aw-article"),
+        var self = this,
+            awart_old = document.getElementById("aw-article"),
             awart_content_old = document.getElementById("aw-article-body"),
             awsect = awart_old.parentNode;
 
@@ -734,23 +776,19 @@ window.addEventListener('DOMContentLoaded', function () {
         awart_content_old.id = "aw-article-body_old";
 
         /* create new article element */
-        var awart = document.createElement("article"),
-            awart_content = this.topElement;//document.createElement("div");
+        var awart = document.createElement("article");
+//        ,
+//            awart_content = this.topElement;
 
         awart.id = "aw-article";
         awart.className = "aw-article fade-out";
 
-        awart_content.id = "aw-article-body";
-        awart_content.className = "aw-article-body";
-        //awart_content.innerHTML = this.body;
+        self.topElement.id = "aw-article-body";
+        self.topElement.className = "aw-article-body";
 
-        /* set article content*/
-        awart.appendChild(awart_content);
+        awart.appendChild(self.topElement);
 
         /* replace current article by this article*/
-
-        /* Direct transition */
-        // awsect.replaceChild(awart,awart_old);
         /* fade out/in transition*/
         awsect.appendChild(awart);
 
@@ -758,6 +796,7 @@ window.addEventListener('DOMContentLoaded', function () {
           awart.classList.add('fade-in');
           awart_old.parentNode.removeChild(awart_old);
           uiListeners.add.awArticle();
+          uiListeners.add.links();
         }, true);
 
         awart_old.classList.remove('fade-in');
@@ -833,13 +872,9 @@ window.addEventListener('DOMContentLoaded', function () {
           } else {
             console.log("article is up to date !");
             self.print();
+            /* save it to update date field (not timestamp)*/
+            self.save();
             ui.progressbar.hide();
-            /*****************************/
-            /**      for test only      **/
-            //console.log("fake date include");
-            //self.lastmodified = 0; 
-            //self.toDb();
-            /*****************************/
           }
         };
 
@@ -868,7 +903,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
             if (self.date - cache.date < settings["refresh_cache_period"]) {
               self.print();
+              /* do not save there is no change and no check*/
               ui.progressbar.hide();
+              self.generateEventSave();
             } else {
               self.update();
             }
@@ -908,7 +945,7 @@ window.addEventListener('DOMContentLoaded', function () {
         //* It also define basic error handler 
         //* and mask the progress bar on request end
 
-        xhr.open('GET', self.url.href, true); // asynchrone
+        xhr.open('GET', self.url.href, true); // asynchrone      
         xhr.responseType = "document"; // need "GET"
 
         xhr.onerror = function () {
@@ -1002,24 +1039,26 @@ window.addEventListener('DOMContentLoaded', function () {
        * @returns {undefined}
        */
       print: function () {
-        this.title.print();
-        this.content.print();
-        this.scrollTo(this.anchor);
-
-        uiListeners.add.links();
+        if (this.needPrint) {
+          this.title.print();
+          this.content.print();
+          this.scrollTo(this.anchor);
+        }
+        //uiListeners.add.links();
       },
       /*
        * Save or update article in the indexedb
        * @returns {undefined}
        */
       save: function () {
-        var data = {
-          url: this.url.href,
-          title: this.getTitle(),
-          body: this.getHtmlContent(),
-          date: this.date,
-          lastmodified: this.lastmodified
-        };
+        var self = this,
+            data = {
+              url: this.url.href,
+              title: this.getTitle(),
+              body: this.getHtmlContent(),
+              date: this.date,
+              lastmodified: this.lastmodified
+            };
 
         /* fix index.html (home) date issue */
         if (this.url.href.startsWith(awv.ROOT)) {
@@ -1048,13 +1087,16 @@ window.addEventListener('DOMContentLoaded', function () {
 
             updateCacheRequest.onsuccess = function () {
               console.log("page cached update");
+              self.generateEventSave();
             };
+
           } else { // page does not exist
             /*write it to the database */
             var addCacheRequest = pagesStore.add(data);
 
             addCacheRequest.onsuccess = function () {
               console.log("new page cached");
+              self.generateEventSave();
             };
 
             addCacheRequest.onerror = function () {
@@ -1073,9 +1115,10 @@ window.addEventListener('DOMContentLoaded', function () {
        * default article title
        */
       title: new Title("ArchWiki Viewer"),
+      needPrint: true,
       /*
        * Scroll to an id : 
-       * XXX: This method do not depend on a wikiArticle properties...
+       * XXX: static method
        * @param {type} id
        * @returns {undefined}
        */
@@ -1088,6 +1131,17 @@ window.addEventListener('DOMContentLoaded', function () {
           console.log("scroll to id " + id);
           document.getElementById(id).scrollIntoView(true);
         }
+      },
+      generateEventSave: function () {
+
+        // var self = this;
+
+        // create the event
+        var savedEvent = new CustomEvent("awvSaved", {"detail": {"results": true}});
+        // dispatch the event
+
+        // document.dispatchEvent(awv.savedEvent);
+        document.dispatchEvent(savedEvent);
       }
 
     };
@@ -1114,11 +1168,8 @@ window.addEventListener('DOMContentLoaded', function () {
             console.log("hide navigation bar");
             document.getElementById("navbar").classList.remove('navShown');
 
-            document.getElementById("action_settings_show").parentNode.classList.add('hidden');
-            document.getElementById("action_settings_hide").parentNode.classList.add('hidden');
-
+            document.getElementById("action_settings").parentNode.classList.add('hidden');
             document.getElementById("action_home").parentNode.classList.remove('hidden');
-
           }
         },
         /*
@@ -1128,13 +1179,12 @@ window.addEventListener('DOMContentLoaded', function () {
         show: function () {
           if (document.getElementById("navbar").className.indexOf("navShown") < 0) {
             console.log("show navigation bar");
+            //var navbar = document.getElementById("navbar");
+
             document.getElementById("navbar").classList.add('navShown');
 
             document.getElementById("action_home").parentNode.classList.add('hidden');
-
-            document.getElementById("action_settings_show").parentNode.classList.remove('hidden');
-            document.getElementById("action_settings_hide").parentNode.classList.remove('hidden');
-
+            document.getElementById("action_settings").parentNode.classList.remove('hidden');
           }
         },
         /*
@@ -1203,7 +1253,87 @@ window.addEventListener('DOMContentLoaded', function () {
         show: function () {
           document.getElementById("progressBar").style.display = "block";
         }
+      },
+      settings: {
+        hide: function () {
+
+          console.log("enable hide navitation bar");
+          uiListeners.add.awArticle();
+
+          if (myhistory.length > 1) {
+            console.log("enable click on navitation bar");
+            ui.navbar.enable.btBack();
+          }
+
+          console.log("enable click link event");
+          uiListeners.remove.stoppedLinks();
+          uiListeners.add.links();
+
+          var mainSection = document.getElementById("main");
+          mainSection.classList.remove('move-left80');
+          mainSection.classList.add('move-center');
+        },
+        show: function () {
+          console.log("disable hide navitation bar");
+          uiListeners.remove.awArticle();
+
+          console.log("disable click on navitation bar");
+          //uiListeners.disable.navigation();
+          ui.navbar.disable.btBack();
+
+          console.log("prevent click link event");
+          uiListeners.remove.links();
+          uiListeners.add.stoppedLinks();
+
+          var mainSection = document.getElementById("main");
+
+          mainSection.classList.remove('move-center');
+          mainSection.classList.add('move-left80');
+        }
+      },
+      dbSettings: {
+        hide: function () {
+          var dbSettings = document.getElementById("cacheSettings");
+
+          dbSettings.classList.remove("move-center");
+          dbSettings.classList.add("move-left");
+
+        },
+        show: function () {
+          var dbSettings = document.getElementById("cacheSettings");
+
+          dbSettings.classList.remove("move-left");
+          dbSettings.classList.add("move-center");
+        }
+      },
+      about: {
+        hide: function () {
+          var about = document.getElementById("awv-about");
+
+          about.classList.remove("move-center");
+          about.classList.add("move-left");
+
+        },
+        show: function () {
+          var about = document.getElementById("awv-about");
+
+          about.classList.remove("move-left");
+          about.classList.add("move-center");
+        }
+      },
+      cleardbDialog: {
+        hide: function () {
+          var cleardbDialog = document.getElementById("cleardb_confirm");
+
+          cleardbDialog.classList.add("hidden");
+        },
+        show: function () {
+          var cleardbDialog = document.getElementById("cleardb_confirm");
+
+          cleardbDialog.classList.remove("hidden");
+        }
       }
+
     };
 
     /*
@@ -1224,6 +1354,7 @@ window.addEventListener('DOMContentLoaded', function () {
         uiListeners.add.links();
         uiListeners.add.awArticle();
         uiListeners.add.sidebar();
+        uiListeners.add.about();
       },
       /*
        * enable stuff
@@ -1264,7 +1395,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
           var btSearch = document.querySelector("#action_search").parentNode,
               btMenu = document.querySelector("#action_menu").parentNode,
-              btHome = document.querySelector("#action_home").parentNode;
+              btHome = document.querySelector("#action_home").parentNode,
+              btSettings = document.getElementById("action_settings").parentNode;
 
           btSearch.addEventListener('click', function () {
             /* show search form*/
@@ -1292,49 +1424,40 @@ window.addEventListener('DOMContentLoaded', function () {
               page.loadCache();
               myhistory.push(page.url);
               currentPage = page;
+              ui.navbar.disable.btReload();
             }
           }, false);
 
-          /* 
-           * Setting button :
-           * show/hide sidebar is driven by css.
-           * the two latter events are used to disable the default 
-           * behaviour of the main article (which stay 20% visible and 
-           * so clickable)
-           * */
-
-          /* action_settings : show sidebar -> disable article behaviour*/
-          document.getElementById("action_settings_show").parentNode.addEventListener('click', function () {
-
-            console.log("disable hide navitation bar");
-            uiListeners.remove.awArticle();
-
-            console.log("disable click on navitation bar");
-            //uiListeners.disable.navigation();
-            ui.navbar.disable.btBack();
-
-            console.log("prevent click link event");
-            uiListeners.remove.links();
-            uiListeners.add.stoppedLinks();
-          }, false);
-
-          /* action_settings : hide sidebar -> re-enable article behaviour*/
-          document.getElementById("action_settings_hide").parentNode.addEventListener('click', function () {
-
-            console.log("enable hide navitation bar");
-            uiListeners.add.awArticle();
-
-
-            if (myhistory.length > 1) {
-              console.log("enable click on navitation bar");
-              ui.navbar.enable.btBack();
+          btSettings.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (document.getElementById("main").className.indexOf("move-center") < 0) {
+              ui.settings.hide();
+            } else {
+              ui.settings.show();
             }
-
-            console.log("enable click link event");
-            uiListeners.remove.stoppedLinks();
-            uiListeners.add.links();
           }, false);
+        },
+        about: function () {
+          document.getElementById("CloseAbout")
+              .addEventListener('click', function (e) {
+                e.preventDefault();
+                ui.about.hide();
+              }, false);
 
+          console.log("add links listener");
+
+          var myLinks = document.querySelectorAll('#awv-about a');
+
+          for (var i = 0; i < myLinks.length; i++) {
+            var a = myLinks[i];
+            if (!a.href) {
+              a.addEventListener('click', callback.stopprop, false);
+            } else if (a.id === "CloseAbout") {
+              continue;
+            } else {
+              a.addEventListener('click', callback.openInOSBrowser, false);
+            }
+          }
         },
         /*
          * Links (<a href=... > listeners
@@ -1345,6 +1468,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
           var myLinks = document.querySelectorAll('.aw-article a');
           //console.log("links to add :" + myLinks.length);
+
+          var inner_link_nb = 0;
 
           for (var i = 0; i < myLinks.length; i++) {
 
@@ -1361,8 +1486,16 @@ window.addEventListener('DOMContentLoaded', function () {
               , false);
 
             } else if (a.href.startsWith(awv.URL + '#')) {
-              // let's local anchor manage by the html engine
+              // let local anchor be managed by the html engine.
               continue;
+              //var id = a.href.replace(awv.URL + '#',"");
+
+              //a.addEventListener('click',
+              //    function (e) {
+              //      e.preventDefault();
+              //      currentPage.scrollTo(id);
+              //    }
+              //, false);
 
             } else if (
                 (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") // <- common case 
@@ -1372,12 +1505,20 @@ window.addEventListener('DOMContentLoaded', function () {
               //console.log("wiki link event add : " + a.href);
               a.addEventListener('click', callback.load, false);
 
+              if (a.className.indexOf('awv-inner-link') < 0) {
+                a.classList.add('awv-inner-link');
+              }
+              ;
+
+              inner_link_nb++;
+
             } else {
               //console.log("external link event add : " + a.href);
               a.addEventListener('click', callback.openInOSBrowser, false);
 
             }
           }
+          //console.log("number of Arch wiki link in this article : " + inner_link_nb);
         },
         /*
          * Search form Listeners 
@@ -1411,7 +1552,8 @@ window.addEventListener('DOMContentLoaded', function () {
           var btClose = document.getElementById("action_close"),
               btReload = document.getElementById("action_reload"),
               btBack = document.getElementById("action_back"),
-              btStar = document.getElementById("action_star");
+              btStar = document.getElementById("action_star"),
+              btDownload = document.getElementById("action_download");
 
           btClose.addEventListener('click', function () {
             console.log("close");
@@ -1434,13 +1576,24 @@ window.addEventListener('DOMContentLoaded', function () {
 
           btReload.addEventListener('click', function () {
             console.log("reload");
-            currentPage.loadUrl(true);
+            if (currentPage.url.href !== awv.URL) {
+              currentPage.loadUrl(true);
+            }
           }, false);
 
           btStar.addEventListener('click', function () {
             console.log("star");
             callback.printCachedArticleList();
             ui.navbar.disable.btReload();
+          }, false);
+
+          btDownload.addEventListener('click', function (e) {
+            console.log("download");
+            e.preventDefault();
+            ui.settings.hide();
+            ui.navbar.hide();
+            downloader.confirm_form();
+
           }, false);
 
         },
@@ -1463,11 +1616,46 @@ window.addEventListener('DOMContentLoaded', function () {
           document.getElementById("aw-article")
               .addEventListener('click', ui.navbar.hide, false);
         },
+        confirmDownload: function () {
+          document.getElementById("dlLinks_cancel")
+              .addEventListener('click', downloader.cancel, false);
+
+          document.getElementById("dlLinks_ok")
+              .addEventListener('click', downloader.start, false);
+        },
         /*
          * 
          * @returns {undefined}
          */
         sidebar: function () {
+          document.getElementById("lnToCacheSettings")
+              .addEventListener('click', function (e) {
+                e.preventDefault();
+
+                ui.settings.hide();
+                ui.navbar.hide();
+                ui.dbSettings.show();
+
+              }, false);
+
+          document.getElementById("lnToAbout")
+              .addEventListener('click', function (e) {
+                e.preventDefault();
+
+                ui.settings.hide();
+                ui.navbar.hide();
+                ui.about.show();
+              }, false);
+
+//          document.getElementById("dlLinks")
+//              .addEventListener('click', function (e) {
+//                e.preventDefault();
+//                ui.settings.hide();
+//                ui.navbar.hide();
+//                downloader.confirm_form();
+//
+//              }, false);
+
           document.getElementById("sideQuit")
               .addEventListener('click', function (e) {
                 e.preventDefault();
@@ -1475,35 +1663,62 @@ window.addEventListener('DOMContentLoaded', function () {
                 window.close();
               }, false);
 
-          document.getElementById("use_cache").addEventListener('click', function (e) {
-            settings.setUseCache(e.target.checked);
+          /* 
+           * database Settings Section
+           */
 
-            settings.save("use_cache");
-          }, false);
+          document.getElementById("CloseCacheSettings")
+              .addEventListener('click', function (e) {
+                e.preventDefault();
+                ui.dbSettings.hide();
+              }, false);
 
-
-          /* confirm dialog*/
-          document.getElementById("cleardb_cancel").addEventListener('click', function (e) {
-            document.location.href = "#cacheSettings";
-          }, false);
-
-          document.getElementById("cleardb_ok").addEventListener('click', function (e) {
-            database.clearObjectStore("pages");
-          }, false);
-
+          /* toggle use cache*/
+          document.getElementById("use_cache")
+              .addEventListener('click', function (e) {
+                settings.setUseCache(e.target.checked);
+                settings.save("use_cache");
+              }, false);
 
           /* Change refresh cache */
-          document.getElementById("refresh_cache_period").addEventListener('change', function () {
-            settings.setRefreshCachePeriod(this.value);
-            settings.save("refresh_cache_period");
-            document.getElementById("refresh_label").textContent = this.options[this.selectedIndex].text;
-          });
+          document.getElementById("refresh_cache_period")
+              .addEventListener('change', function () {
+                settings.setRefreshCachePeriod(this.value);
+                settings.save("refresh_cache_period");
+                document.getElementById("refresh_label").textContent = this.options[this.selectedIndex].text;
+              });
+
+          /* Clear db confirm dialog*/
+          document.getElementById("cleardb")
+              .addEventListener('click', function (e) {
+                e.preventDefault();
+                ui.cleardbDialog.show();
+              }, false);
+
+          document.getElementById("cleardb_cancel")
+              .addEventListener('click', function (e) {
+                e.preventDefault();
+                ui.cleardbDialog.hide();
+              }, false);
+
+          document.getElementById("cleardb_ok")
+              .addEventListener('click', function (e) {
+                e.preventDefault();
+                database.clearObjectStore("pages");
+              }, false);
         }
       },
       /*
        * 
        */
       remove: {
+        confirmDownload: function () {
+          document.getElementById("dlLinks_cancel")
+              .removeEventListener('click', downloader.cancel, false);
+
+          document.getElementById("dlLinks_ok")
+              .removeEventListener('click', downloader.start, false);
+        },
         /*
          * 
          * @returns {undefined}
@@ -1633,10 +1848,12 @@ window.addEventListener('DOMContentLoaded', function () {
             var list = document.createElement("body");
             list.appendChild(ul);
 
-            var cachedArticleList = new WikiArticle(new MyUrl(awv.URL, false));
+            var cachedArticleList = new WikiArticle(new MyUrl(awv.ROOT + "star", false));
             cachedArticleList.setTitle("Cached articles");
             cachedArticleList.setContent(list.innerHTML, false);
             cachedArticleList.print();
+
+            currentPage = cachedArticleList;
 
             ui.navbar.hide();
           }
@@ -1673,7 +1890,146 @@ window.addEventListener('DOMContentLoaded', function () {
      * Helper function ()
      * ------------------------------------------*/
 
-    // nothing here right now
+
+    /*
+     * A namespace to download archwiki links contained in the current page
+     * Articles are downloaded one by one to respect Archwiki server thanks 
+     * to a custom event fired by a save article.
+     * @type type
+     */
+    var downloader = {
+      data: {
+        links: [], // array to stock inner wiki link
+        length: 0, // number of links
+        idx: 0     // current link
+      },
+      /*
+       * execute downloader 
+       * @returns {Boolean}
+       */
+      confirm_form: function () {
+        if (settings.use_cache === false) {
+          return false;
+        }
+
+        console.log("downloader launch");
+
+        var myLinks = document.querySelectorAll('.awv-inner-link');
+        console.log(myLinks.length + " links to download");
+
+        downloader.data.links = [];
+        downloader.data.length = 0;
+        downloader.data.idx = 0;
+
+        for (var i = 0; i < myLinks.length; i++) {
+          downloader.data.links.push(myLinks[i].href);
+        }
+
+        downloader.data.length = downloader.data.links.length;
+
+        uiListeners.add.confirmDownload();
+
+        document.getElementById("dlLinks_msg").textContent =
+            'Number of articles to download : ' + downloader.data.length;
+
+        document.getElementById("dlLinks_confirm").classList.remove("hidden");
+      },
+      cancel: function (e) {
+        e.preventDefault();
+        document.getElementById("dlLinks_confirm").classList.add("hidden");
+
+        uiListeners.remove.confirmDownload();
+
+        downloader.data.links = [];
+        downloader.data.length = 0;
+        downloader.data.idx = 0;
+      },
+      start: function (e) {
+        e.preventDefault();
+
+        document.getElementById("dlLinks_confirm").classList.add("hidden");
+        uiListeners.remove.confirmDownload(); 
+        
+        if (downloader.data.length > 0) {
+          /* add download/saved event (we do not want to overload arch server
+           * by sending 50 request at the same time)
+           */
+          document.addEventListener("awvSaved", downloader.getNext, false);
+
+          /* new page to write stuff */
+
+          var downloaderPage = new WikiArticle(new MyUrl(awv.ROOT + "downloader", false));
+          downloaderPage.setTitle("Downloader");
+          downloaderPage.setContent("", false);
+          downloaderPage.print();
+          
+          ui.navbar.disable.btReload();
+          
+          currentPage = downloaderPage;
+
+          /* prepare the document*/
+          var p = document.createElement("p"),
+              ol = document.createElement("ol");
+
+          p.textContent = downloader.data.length + ' pages to download :';
+          ol.id = "downloadList";
+
+          currentPage.content.append(p);
+          currentPage.content.append(ol);
+
+          /* launch the loop */
+          downloader.getNext();
+        }
+      },
+      /*
+       * callback function to the 'awvSaved' eventListener define in main() 
+       * @param {type} e
+       * @returns {undefined}
+       */
+      getNext: function () {
+        console.log("handle awvSaved event");
+
+        if (downloader.data.idx < downloader.data.length) {
+          var idx = downloader.data.idx,
+              href = downloader.data.links[idx];
+
+          console.log("Downloading links " + (idx + 1)
+              + '/' + downloader.data.length + ' : '
+              + downloader.data.links[idx]);
+
+          /* give some information */
+          var li = document.createElement("li"),
+              str = formatter.title.fromUrl(href);
+
+          li.textContent = formatter.title.commonFilter(str);
+          document.getElementById("downloadList").appendChild(li);
+          li.scrollIntoView(false);
+
+          /* load target link*/
+          var page = new WikiArticle(new MyUrl(href, true));
+
+          page.needPrint = false; // <- the secret property to avoid display
+          page.loadArticle(settings["use_cache"]);
+
+          downloader.data.idx += 1;
+
+        } else {
+          console.log("finish to download link. removing 'awvSaved' event listener");
+
+          /* reset everything */
+          downloader.data.links = [];
+          downloader.data.length = 0;
+          downloader.data.idx = 0;
+          document.removeEventListener("awvSaved", downloader.getNext, false);
+
+
+          /* add an end message */
+          var p = document.createElement("p");
+          p.textContent = 'It seems to be finished. Enjoy reading now!';
+          currentPage.content.append(p);
+        }
+      }
+    };
 
     /* ----------------------------------------
      * Initialisation :

@@ -27,6 +27,7 @@ div{
 
 .move-down {
     transform: translateY(100%);
+    /*top:100%;*/
 }
 
 .move-up {
@@ -58,7 +59,6 @@ div{
 .fade-left {
     opacity: 0.3;
     transform: translateX(-80%);
-    transition: all 0.3s ease;
 }
 
 /*
@@ -70,4 +70,8 @@ div{
 
 .navShown {
     transform: translateY(0);
+}
+
+.move-left80{
+    transform: translateX(80%);
 }
