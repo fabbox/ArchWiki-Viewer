@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ---------------------------------- */
 
 /* Progress bar (activities) */
-progress.loadPage {
+progress.loadPage[value] {
     position: fixed;
     top: 4rem;
 
@@ -33,13 +33,14 @@ progress.loadPage {
     background: #333;
     border: none;
     border-radius: .3rem;
-    height: .3rem;
+    height: .6rem;
+    
     /*display: block;*/  
     display: none;  
 
-    background-image: url(../icons/main/activity.png);
+    background-image: url(../icons/progress/activity.svg);
     background-repeat: repeat;
-    background-size: 1rem auto;
+    background-size: 1rem 0.6;
     animation: .5s move infinite ease; 
     /*steps(15)*/
 

@@ -19,13 +19,10 @@
  Author     : fbox
  */
 
-// Be strict, do not try to understand my mistake and make error !
+// Be strict, do not try to understand my mistake and make error for early debug!
 'use strict';
 
-//window.addEventListener("load", function () {
-//  console.log("Hello Wiki!");
-//});
-
+// from mortar skeleton
 // DOMContentLoaded is fired once the document has been loaded and parsed,
 // but without waiting for other external resources to load (css/images/etc)
 // That makes the app more responsive and perceived as faster.
@@ -40,20 +37,28 @@ window.addEventListener('DOMContentLoaded', function () {
     var currentPage = null, // "article" which is diplayed ()
         myhistory = null; // array of "MyUrl" used to manage history
 
+    /* string constant */
     var awv = {
       ROOT: document.location.protocol + "//" + document.location.host,
       URL: document.location.protocol + "//" + document.location.host + "/index.html",
       RELATIVE_ROOT: "./index.html",
       WIKIROOT_URL: "https://wiki.archlinux.org"
-//      // create the event
-//      savedEvent: new CustomEvent("awvSaved", {"detail": {"results": true}})
     };
 
     /* ----------------------------------------
      * Formatter (Ugly string manipulation function)
      * ------------------------------------------*/
     var formatter = {
+      /*
+       * related to href
+       */
       url: {
+        /*
+         * reformat href link to use media wiki "action=render"
+         * and remove anchor stuff
+         * @param {type} str
+         * @returns {unresolved} 
+         */
         toRender: function (str) {
           /* format str to minimized loaded content */
           var str2replace = awv.WIKIROOT_URL + "/index.php/",
@@ -61,10 +66,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
           if (str.indexOf(str2replace) === 0) {
             str = str.replace(str2replace, str2inject);
-          } else if (str.indexOf(str2inject) === 0) {
-            // nothing
-          } else { // search case
-            //str = encodeURI(str);
           }
 
           var anchor_idx = str.indexOf("#");
@@ -75,6 +76,11 @@ window.addEventListener('DOMContentLoaded', function () {
           //console.log(str);
           return str;
         },
+        /*
+         * Extract title string from href
+         * @param {type} str
+         * @returns {unresolved}
+         */
         extractTitle: function (str) {
           var base = awv.WIKIROOT_URL + "/index.php?action=render&title=";
 
@@ -83,11 +89,18 @@ window.addEventListener('DOMContentLoaded', function () {
           } else {
             return null;
           }
-
         }
 
       },
+      /*
+       * related to article title
+       */
       title: {
+        /*
+         * try to make a title string from an url
+         * @param {type} str
+         * @returns {String}
+         */
         fromUrl: function (str) {
           var title = decodeURI(str),
               ugly_url_part = awv.WIKIROOT_URL + "/index.php?action=render&title=",
@@ -116,6 +129,11 @@ window.addEventListener('DOMContentLoaded', function () {
           }
           return title;
         },
+        /*
+         * clean title string from usual additional data
+         * @param {type} title
+         * @returns {String}
+         */
         commonFilter: function (title) {
           if (title.startsWith('Search results')) {
             title = "Search results";
@@ -135,6 +153,12 @@ window.addEventListener('DOMContentLoaded', function () {
           }
           return title;
         },
+        /*
+         * remove extra information from title string to be easily displayed
+         * on mobile device
+         * @param {type} title
+         * @returns {unresolved}
+         */
         displayFilter: function (title) {
           /*
            * The following string will not appears in the apps title
@@ -159,6 +183,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
       },
+      /*
+       * related to article formatting
+       */
       page: {
         /* 
          * reformat "related articles" part (if any
@@ -307,11 +334,13 @@ window.addEventListener('DOMContentLoaded', function () {
     /* ----------------------------------------
      * Settings
      * ------------------------------------------*/
+    /* Note : you are responsible for having a database set */
     var settings = {
       use_cache: null, // use cache or not ? 
       refresh_cache_period: null, // do not use the cache after such period, download a new version
       /*
        * set default setting
+       
        * @returns {undefined}
        */
       resetDefault: function () {
@@ -385,11 +414,22 @@ window.addEventListener('DOMContentLoaded', function () {
           console.log("local setting error");
         };
       },
+      /*
+       * Save all the settings
+       * @returns {undefined}
+       */
       saveAll: function () {
         settings.save("use_cache");
         settings.save("refresh_cache_period");
       },
+      /*
+       * initialize environnement settings values from the database value
+       */
       init: {
+        /*
+         * 
+         * @returns {undefined}
+         */
         useCache: function () {
           /* Initialise Application Settings*/
           var settingsStore = database.getObjectStore(["settings"], "readonly");
@@ -410,6 +450,10 @@ window.addEventListener('DOMContentLoaded', function () {
             console.log("local setting cache init error");
           };
         },
+        /*
+         * 
+         * @returns {undefined}
+         */
         refreshCache: function () {
           /* Initialise Application Settings*/
           var settingsStore = database.getObjectStore(["settings"], "readonly");
@@ -757,6 +801,11 @@ window.addEventListener('DOMContentLoaded', function () {
         this.topElement = formatter.page.inset(this.topElement);
         this.topElement = formatter.page.imageSrc(this.topElement);
       },
+      /*
+       * append a DOM node to the content
+       * @param {type} node
+       * @returns {undefined}
+       */
       append: function (node) {
         this.topElement.appendChild(node);
       },
@@ -777,8 +826,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
         /* create new article element */
         var awart = document.createElement("article");
-//        ,
-//            awart_content = this.topElement;
 
         awart.id = "aw-article";
         awart.className = "aw-article fade-out";
@@ -841,7 +888,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
-       * 
+       * Check for update version of an article. 
+       * The article must be in the database and has been loaded.
+       * In case of error, the version in the database is printed.
        * @returns {undefined}
        */
       update: function () {
@@ -881,8 +930,8 @@ window.addEventListener('DOMContentLoaded', function () {
         updateReq.send(null);
       },
       /*
-       * load (and print article) : It try to load the cache page, if there is no such
-       * page it download it.
+       * load (and print article) : It try to load/update the cache page, 
+       * if the page doesn't exist, it download it.
        * @returns {undefined}
        */
       loadCache: function () {
@@ -945,6 +994,12 @@ window.addEventListener('DOMContentLoaded', function () {
         //* It also define basic error handler 
         //* and mask the progress bar on request end
 
+        /* ArchWiki server doesn't send "Content-Length" in the response header
+         * so we cannot use progress event and having a real
+         * progress bar. It may be due to nginx (found a rumor about
+         * that on the web) but I don't know
+         */
+
         xhr.open('GET', self.url.href, true); // asynchrone      
         xhr.responseType = "document"; // need "GET"
 
@@ -966,7 +1021,6 @@ window.addEventListener('DOMContentLoaded', function () {
           body.appendChild(p1);
           body.appendChild(p2);
 
-          //document.getElementById("navbar").hidden = false;
           ui.navbar.show();
         };
 
@@ -977,6 +1031,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
         xhr.onload = function () {
           console.log("load success");
+
+
           self.setTitle(xhr.responseXML.title, self.url);
           self.lastmodified = Date.parse(xhr.getResponseHeader("Last-Modified"));
 
@@ -1115,6 +1171,10 @@ window.addEventListener('DOMContentLoaded', function () {
        * default article title
        */
       title: new Title("ArchWiki Viewer"),
+      /*
+       * wether or not display the article when loading it
+       * default is to display it
+       */
       needPrint: true,
       /*
        * Scroll to an id : 
@@ -1132,18 +1192,15 @@ window.addEventListener('DOMContentLoaded', function () {
           document.getElementById(id).scrollIntoView(true);
         }
       },
+      /*
+       * create and dispatch an event when the article is saved 
+       * @returns {undefined}
+       */
       generateEventSave: function () {
-
-        // var self = this;
-
         // create the event
-        var savedEvent = new CustomEvent("awvSaved", {"detail": {"results": true}});
-        // dispatch the event
-
-        // document.dispatchEvent(awv.savedEvent);
+        var savedEvent = new CustomEvent("awvSaved", {});
         document.dispatchEvent(savedEvent);
       }
-
     };
 
     /* ----------------------------------------
@@ -1244,7 +1301,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
-       * 
+       * the progress (or activity) bar (when loading page)
        */
       progressbar: {
         hide: function () {
@@ -1254,6 +1311,9 @@ window.addEventListener('DOMContentLoaded', function () {
           document.getElementById("progressBar").style.display = "block";
         }
       },
+      /*
+       * general settings panel 
+       */
       settings: {
         hide: function () {
 
@@ -1291,6 +1351,9 @@ window.addEventListener('DOMContentLoaded', function () {
           mainSection.classList.add('move-left80');
         }
       },
+      /*
+       * the database settings panel
+       */
       dbSettings: {
         hide: function () {
           var dbSettings = document.getElementById("cacheSettings");
@@ -1306,6 +1369,24 @@ window.addEventListener('DOMContentLoaded', function () {
           dbSettings.classList.add("move-center");
         }
       },
+      /*
+       * the clear database confirmation dialog
+       */
+      cleardbDialog: {
+        hide: function () {
+          var cleardbDialog = document.getElementById("cleardb_confirm");
+
+          cleardbDialog.classList.add("hidden");
+        },
+        show: function () {
+          var cleardbDialog = document.getElementById("cleardb_confirm");
+
+          cleardbDialog.classList.remove("hidden");
+        }
+      },
+      /*
+       * the about panel 
+       */
       about: {
         hide: function () {
           var about = document.getElementById("awv-about");
@@ -1320,20 +1401,7 @@ window.addEventListener('DOMContentLoaded', function () {
           about.classList.remove("move-left");
           about.classList.add("move-center");
         }
-      },
-      cleardbDialog: {
-        hide: function () {
-          var cleardbDialog = document.getElementById("cleardb_confirm");
-
-          cleardbDialog.classList.add("hidden");
-        },
-        show: function () {
-          var cleardbDialog = document.getElementById("cleardb_confirm");
-
-          cleardbDialog.classList.remove("hidden");
-        }
       }
-
     };
 
     /*
@@ -1437,14 +1505,18 @@ window.addEventListener('DOMContentLoaded', function () {
             }
           }, false);
         },
+        /*
+         * About panel listener 
+         * @returns {undefined}
+         */
         about: function () {
+          console.log("add about listener")
+
           document.getElementById("CloseAbout")
               .addEventListener('click', function (e) {
                 e.preventDefault();
                 ui.about.hide();
               }, false);
-
-          console.log("add links listener");
 
           var myLinks = document.querySelectorAll('#awv-about a');
 
@@ -1467,14 +1539,10 @@ window.addEventListener('DOMContentLoaded', function () {
           console.log("add links listener");
 
           var myLinks = document.querySelectorAll('.aw-article a');
-          //console.log("links to add :" + myLinks.length);
-
-          var inner_link_nb = 0;
 
           for (var i = 0; i < myLinks.length; i++) {
 
             var a = myLinks[i];
-            //console.log("links :" + i + "\n" + a.href + "\n" + a.host + "\n" + a.protocol);
 
             if (!a.href) {
               //console.log("a with no ref found!");
@@ -1497,20 +1565,13 @@ window.addEventListener('DOMContentLoaded', function () {
               //    }
               //, false);
 
-            } else if (
-                (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") // <- common case 
-                || (a.host.startsWith(document.location.host) && a.protocol === document.location.protocol)
-                // <- happen when a research result redirect to a page (example of search: zsh)
-                ) {
+            } else if (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:") {
               //console.log("wiki link event add : " + a.href);
               a.addEventListener('click', callback.load, false);
 
               if (a.className.indexOf('awv-inner-link') < 0) {
                 a.classList.add('awv-inner-link');
               }
-              ;
-
-              inner_link_nb++;
 
             } else {
               //console.log("external link event add : " + a.href);
@@ -1518,7 +1579,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
             }
           }
-          //console.log("number of Arch wiki link in this article : " + inner_link_nb);
         },
         /*
          * Search form Listeners 
@@ -1565,10 +1625,8 @@ window.addEventListener('DOMContentLoaded', function () {
             console.log("back");
 
             if (myhistory.length > 1) {
-
               // console.log("history length : " + myhistory.length);
               var page = new WikiArticle(myhistory.popget());
-
               page.loadArticle(settings["use_cache"]);
               currentPage = page;
             }
@@ -1593,12 +1651,11 @@ window.addEventListener('DOMContentLoaded', function () {
             ui.settings.hide();
             ui.navbar.hide();
             downloader.confirm_form();
-
           }, false);
 
         },
         /*
-         * 
+         * add listener to prevent link to block link
          * @returns {undefined}
          */
         stoppedLinks: function () {
@@ -1616,6 +1673,10 @@ window.addEventListener('DOMContentLoaded', function () {
           document.getElementById("aw-article")
               .addEventListener('click', ui.navbar.hide, false);
         },
+        /*
+         * confirm download link dialog box listener
+         * @returns {undefined}
+         */
         confirmDownload: function () {
           document.getElementById("dlLinks_cancel")
               .addEventListener('click', downloader.cancel, false);
@@ -1624,7 +1685,7 @@ window.addEventListener('DOMContentLoaded', function () {
               .addEventListener('click', downloader.start, false);
         },
         /*
-         * 
+         * Settings and DatabseSetting Listener
          * @returns {undefined}
          */
         sidebar: function () {
@@ -1646,15 +1707,6 @@ window.addEventListener('DOMContentLoaded', function () {
                 ui.navbar.hide();
                 ui.about.show();
               }, false);
-
-//          document.getElementById("dlLinks")
-//              .addEventListener('click', function (e) {
-//                e.preventDefault();
-//                ui.settings.hide();
-//                ui.navbar.hide();
-//                downloader.confirm_form();
-//
-//              }, false);
 
           document.getElementById("sideQuit")
               .addEventListener('click', function (e) {
@@ -1709,9 +1761,13 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
-       * 
+       * remove listener
        */
       remove: {
+        /*
+         * confirm download link dialog box listener
+         * @returns {undefined}
+         */
         confirmDownload: function () {
           document.getElementById("dlLinks_cancel")
               .removeEventListener('click', downloader.cancel, false);
@@ -1729,7 +1785,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         },
         /*
-         * 
+         * article link listener
          * @returns {undefined}
          */
         links: function () {
@@ -1743,7 +1799,7 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         },
         /*
-         * 
+         * remove stopped link listener
          * @returns {undefined}
          */
         stoppedLinks: function () {
@@ -1790,6 +1846,7 @@ window.addEventListener('DOMContentLoaded', function () {
         // XXX : use wikimedia api to avoid downlodaing the full page ?
         // pro : 
         // small response
+        // I can provide a "local article response"
         // con :
         // several request needs
         // load impact on arch server (? completely unknown : don't they use
@@ -1934,6 +1991,11 @@ window.addEventListener('DOMContentLoaded', function () {
 
         document.getElementById("dlLinks_confirm").classList.remove("hidden");
       },
+      /*
+       * cancel button callback (confirm download dialog box)
+       * @param {type} e
+       * @returns {undefined}
+       */
       cancel: function (e) {
         e.preventDefault();
         document.getElementById("dlLinks_confirm").classList.add("hidden");
@@ -1944,12 +2006,17 @@ window.addEventListener('DOMContentLoaded', function () {
         downloader.data.length = 0;
         downloader.data.idx = 0;
       },
+      /*
+       * Download button callback (confirm download dialog box)
+       * @param {type} e
+       * @returns {undefined}
+       */
       start: function (e) {
         e.preventDefault();
 
         document.getElementById("dlLinks_confirm").classList.add("hidden");
-        uiListeners.remove.confirmDownload(); 
-        
+        uiListeners.remove.confirmDownload();
+
         if (downloader.data.length > 0) {
           /* add download/saved event (we do not want to overload arch server
            * by sending 50 request at the same time)
@@ -1962,9 +2029,9 @@ window.addEventListener('DOMContentLoaded', function () {
           downloaderPage.setTitle("Downloader");
           downloaderPage.setContent("", false);
           downloaderPage.print();
-          
+
           ui.navbar.disable.btReload();
-          
+
           currentPage = downloaderPage;
 
           /* prepare the document*/
