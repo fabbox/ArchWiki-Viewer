@@ -41,7 +41,8 @@ window.addEventListener('DOMContentLoaded', function () {
     var awv = {
       ROOT: document.location.protocol + "//" + document.location.host,
       URL: document.location.protocol + "//" + document.location.host + "/index.html",
-      DOMAIN:document.location.host,
+      DOMAIN: document.location.host,
+      STAR_URL: document.location.protocol + "//" + document.location.host + "/star.html", // <- fake url for dipslaying star (cached) url list
       RELATIVE_ROOT: "./index.html",
       WIKIROOT_URL: "https://wiki.archlinux.org"
     };
@@ -1667,11 +1668,19 @@ window.addEventListener('DOMContentLoaded', function () {
           btBack.addEventListener('click', function () {
             console.log("back");
 
-            if (myhistory.length > 1) {
+            if(currentPage.url.href === awv.STAR_URL){
+              var lasturl = myhistory.pop(),
+                  page = new WikiArticle(lasturl);
+              page.loadArticle(settings["use_cache"]);
+              myhistory.push(lasturl);
+              currentPage = page;
+              
+            } else if (myhistory.length > 1) {
               // console.log("history length : " + myhistory.length);
               var page = new WikiArticle(myhistory.popget());
               page.loadArticle(settings["use_cache"]);
               currentPage = page;
+              
             }
           }, false);
 
@@ -1728,7 +1737,7 @@ window.addEventListener('DOMContentLoaded', function () {
               .addEventListener('click', downloader.start, false);
         },
         /*
-         * Settings and DatabseSetting Listener
+         * Settings and DatabaseSetting Listener
          * @returns {undefined}
          */
         sidebar: function () {
@@ -1948,7 +1957,8 @@ window.addEventListener('DOMContentLoaded', function () {
             var list = document.createElement("body");
             list.appendChild(ul);
 
-            var cachedArticleList = new WikiArticle(new MyUrl(awv.ROOT + "star", false));
+            /* note that is a fake url */
+            var cachedArticleList = new WikiArticle(new MyUrl(awv.STAR_URL, false));
             cachedArticleList.setTitle("Cached articles");
             cachedArticleList.setContent(list.innerHTML, false);
             cachedArticleList.print();

@@ -41,7 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <link rel="stylesheet" href="css/sidebar.css">
         <link rel="stylesheet" href="css/transitions.css">
 
-        <script type="text/javascript" src="js/uiListeners.js" defer="defer"></script>
         <script type="text/javascript" src="app.js" defer="defer"></script>
 
     </head>
@@ -301,17 +300,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </header>
             <article class="awv-sidebar-article">
                 <div id="downloader-body" class="awv-sidebar-body">
-               
+
                 </div>
             </article>
         </section>
-        
+
         <!--
         Main section (called drawer in some apps)
         -->        
         <section id="main" role="region" class="move-center">
             <!-- 
-            # Main Bar 
+            # Main Bar/header 
             -->
             <header class="archmainbar">
 
@@ -350,7 +349,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             -->
             <progress id="progressBar" class="loadPage" value="0" max="100" ></progress>
 
-            
+
             <!-- 
             # toolbar / navigation bar
             -->
@@ -365,13 +364,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <li><button class="icon icon-close" id="action_close">Quit</button></li>
                 </ul>
             </div>
-            
+
             <!-- 
             #aw-article : The part where wiki content is injected 
             -->
             <article id="aw-article" class="aw-article fade-out fade-in">
                 <div id="aw-article-body" class="aw-article-body">
                     <!-- start content -->
+                    <!--This content reflects the main page content of the archlinux wiki in November 2014-->
 
                     <p><b>Welcome to the <a href="https://wiki.archlinux.org/index.php/ArchWiki:About" title="ArchWiki:About">ArchWiki</a>: your source for Arch Linux documentation on the web.</b>
                     </p><p>Visit the <a href="https://wiki.archlinux.org/index.php/Table_of_contents" title="Table of contents">Table of contents</a> for a listing of article categories.
@@ -495,10 +495,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                     </div>
                     <!-- end content -->
-
                 </div>
             </article>
-
         </section>
 
     </body>
