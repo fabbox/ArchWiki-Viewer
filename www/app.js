@@ -31,11 +31,11 @@ window.addEventListener('DOMContentLoaded', function () {
   console.log('dom content loaded');
   (function () { // avoid global var and function
 
-    /* ----------------------------------------
-     * Global variables
-     * ------------------------------------------*/
+    /* ----------------------------------------------------------------------
+     * Global variables (initialized when opening/inializing the database)
+     * ------------------------------------------------------------------------*/
     var currentPage = null, // "article" which is diplayed ()
-        myhistory = null; // array of "MyUrl" used to manage history
+        myhistory = null;   // array of "MyUrl" used to manage history
 
     /* string constant */
     var awv = {
@@ -1410,16 +1410,16 @@ window.addEventListener('DOMContentLoaded', function () {
       downloader: {
         hide: function () {
           var dl = document.getElementById("awv-downloader");
-          
+
           // FIX-ME: NOT THERE ! 
           //dl.addEventListener("transitionend",function(){
           //  downloader.data.downloaderBody.innerHTML ="";  
           //},false);
-          
+
           dl.classList.remove("move-center");
           dl.classList.add("move-down");
 
-          
+
         },
         show: function () {
           var dl = document.getElementById("awv-downloader");
@@ -1447,7 +1447,8 @@ window.addEventListener('DOMContentLoaded', function () {
         uiListeners.add.navBar();
         uiListeners.add.links();
         uiListeners.add.awArticle();
-        uiListeners.add.sidebar();
+        uiListeners.add.settings();
+        uiListeners.add.databaseSettings();
         uiListeners.add.about();
         uiListeners.add.downloader();
       },
@@ -1608,7 +1609,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             } else if (
                 (a.host.startsWith("wiki.archlinux.org") && a.protocol === "https:")
-                ||(a.host.startsWith(awv.DOMAIN) && a.protocol === "app:") // <- need in search page results
+                || (a.host.startsWith(awv.DOMAIN) && a.protocol === "app:") // <- need in search page results
                 ) {
               //console.log("wiki link event add : " + a.href);
               a.addEventListener('click', callback.load, false);
@@ -1668,19 +1669,19 @@ window.addEventListener('DOMContentLoaded', function () {
           btBack.addEventListener('click', function () {
             console.log("back");
 
-            if(currentPage.url.href === awv.STAR_URL){
+            if (currentPage.url.href === awv.STAR_URL) {
               var lasturl = myhistory.pop(),
                   page = new WikiArticle(lasturl);
               page.loadArticle(settings["use_cache"]);
               myhistory.push(lasturl);
               currentPage = page;
-              
+
             } else if (myhistory.length > 1) {
               // console.log("history length : " + myhistory.length);
               var page = new WikiArticle(myhistory.popget());
               page.loadArticle(settings["use_cache"]);
               currentPage = page;
-              
+
             }
           }, false);
 
@@ -1740,7 +1741,9 @@ window.addEventListener('DOMContentLoaded', function () {
          * Settings and DatabaseSetting Listener
          * @returns {undefined}
          */
-        sidebar: function () {
+        settings: function () {
+          console.log("add settings event");
+
           document.getElementById("lnToCacheSettings")
               .addEventListener('click', function (e) {
                 e.preventDefault();
@@ -1767,9 +1770,13 @@ window.addEventListener('DOMContentLoaded', function () {
                 window.close();
               }, false);
 
-          /* 
-           * database Settings Section
-           */
+        },
+        /*
+         * database Settings Section
+         * @returns {undefined}
+         */
+        databaseSettings: function () {
+          console.log("add database settings event");
 
           document.getElementById("CloseCacheSettings")
               .addEventListener('click', function (e) {
@@ -1792,13 +1799,16 @@ window.addEventListener('DOMContentLoaded', function () {
                 document.getElementById("refresh_label").textContent = this.options[this.selectedIndex].text;
               });
 
-          /* Clear db confirm dialog*/
+          /* clear database*/
           document.getElementById("cleardb")
               .addEventListener('click', function (e) {
                 e.preventDefault();
                 ui.cleardbDialog.show();
               }, false);
 
+          /*
+           *  Clear db confirm dialog
+           */
           document.getElementById("cleardb_cancel")
               .addEventListener('click', function (e) {
                 e.preventDefault();
@@ -1811,6 +1821,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 database.clearObjectStore("pages");
               }, false);
         }
+
       },
       /*
        * remove listener
@@ -1820,7 +1831,7 @@ window.addEventListener('DOMContentLoaded', function () {
          * confirm download link dialog box listener
          * @returns {undefined}
          */
-        confirmDownload: function () {
+        confirmDownloader: function () {
           document.getElementById("dlLinks_cancel")
               .removeEventListener('click', downloader.cancel, false);
 
@@ -1996,15 +2007,10 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     };
 
-    /* ----------------------------------------
-     * Helper function ()
-     * ------------------------------------------*/
-
-
     /*
      * A namespace to download archwiki links contained in the current page
      * Articles are downloaded one by one to respect Archwiki server thanks 
-     * to a custom event fired by a save article.
+     * to a custom event fired by a saved article.
      * @type type
      */
     var downloader = {
@@ -2014,7 +2020,7 @@ window.addEventListener('DOMContentLoaded', function () {
         length: 0, // number of links
         idx: 0     // current link
       },
-      say: function (node){
+      say: function (node) {
         downloader.data.downloaderBody.appendChild(node);
       },
       /*
@@ -2034,7 +2040,7 @@ window.addEventListener('DOMContentLoaded', function () {
         downloader.data.links = [];
         downloader.data.length = 0;
         downloader.data.idx = 0;
-        downloader.data.downloaderBody.innerHTML ="";
+        downloader.data.downloaderBody.innerHTML = "";
 
         for (var i = 0; i < myLinks.length; i++) {
           downloader.data.links.push(myLinks[i].href);
@@ -2058,7 +2064,7 @@ window.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         document.getElementById("dlLinks_confirm").classList.add("hidden");
 
-        uiListeners.remove.confirmDownload();
+        uiListeners.remove.confirmDownloader();
 
         downloader.data.links = [];
         downloader.data.length = 0;
@@ -2071,11 +2077,11 @@ window.addEventListener('DOMContentLoaded', function () {
        */
       start: function (e) {
         e.preventDefault();
-        
+
         ui.downloader.show();
 
         document.getElementById("dlLinks_confirm").classList.add("hidden");
-        uiListeners.remove.confirmDownload();
+        uiListeners.remove.confirmDownloader();
 
         if (downloader.data.length > 0) {
           /* add download/saved event (we do not want to overload arch server
@@ -2090,7 +2096,7 @@ window.addEventListener('DOMContentLoaded', function () {
           p.textContent = downloader.data.length + ' pages to download :';
           ol.id = "downloadList";
 
-          
+
           downloader.say(p);
           downloader.say(ol);
 
@@ -2149,9 +2155,15 @@ window.addEventListener('DOMContentLoaded', function () {
     };
 
     /* ----------------------------------------
+     * Helper function ()
+     * ------------------------------------------*/
+
+
+
+    /* ----------------------------------------
      * Initialisation :
-     * add event listener to the ui
-     * open the database
+     * - add event listener to the ui
+     * - open the database
      * ------------------------------------------*/
     console.log("initialisation start");
 
