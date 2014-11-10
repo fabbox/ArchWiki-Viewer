@@ -257,7 +257,7 @@ td.awv-tango {
 /*
  * Terms of uses (at the bottom of the index.html start page)
  */
-#divTerms_of_Uses {
+#Terms_of_Uses {
 
     border-top: 1px solid #AAA;
     color: #888;
@@ -265,13 +265,13 @@ td.awv-tango {
     margin: 0.5em 0px 0px 0.0em;
 }
 
-#divTerms_of_Uses ul{
+#Terms_of_Uses ul{
     text-align: center;
     list-style-image: none;
-    margin: 0.0em 0px 0px 0.6em ;
+    margin: 0.6em 0px 0px 0.6em ;
 }
 
-#divTerms_of_Uses li{
+#Terms_of_Uses li{
     display: inline;
     margin: 0px 0.3em;
 }
