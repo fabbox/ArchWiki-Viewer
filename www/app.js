@@ -1548,7 +1548,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           var links = document.querySelectorAll('#awv-about a');
 
-          for (var i = 0; i < links.length; i++) {
+          for (var i = links.length - 1; i >= 0 ; i--) {
             var a = links[i];
             if (!a.href) {
               a.addEventListener('click', callback.stopprop, false);
@@ -1582,7 +1582,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           var links = document.querySelectorAll('.aw-article a');
 
-          for (var i = 0; i < links.length; i++) {
+          for (var i = links.length - 1; i >= 0 ; i--) {
 
             var a = links[i];
 
@@ -1852,7 +1852,7 @@ window.addEventListener('DOMContentLoaded', function () {
         links: function () {
           var links = document.querySelectorAll('.aw-article a');
 
-          for (var i = links.length; i >= 0; i--) {
+          for (var i = links.length - 1; i >= 0; i--) {
             var a = links[i];
             a.removeEventListener('click', callback.load, false);
             a.removeEventListener('click', callback.openInOSBrowser, false);
@@ -1866,7 +1866,7 @@ window.addEventListener('DOMContentLoaded', function () {
         stoppedLinks: function () {
           var links = document.querySelectorAll('.aw-article a');
 
-          for (var i = links.length; i >= 0; i--) {
+          for (var i = links.length - 1; i >= 0; i--) {
             links[i].removeEventListener('click', callback.stopprop, false);
           }
         }
@@ -2043,7 +2043,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         ui.downloader.show();
 
-        for (var i = 0; i < links.length; i++) {
+        for (var i = links.length - 1; i >= 0 ; i--) {
           downloader.data.links.push(links[i].href);
         }
 
