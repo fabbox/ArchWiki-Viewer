@@ -295,7 +295,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 tdStyle = "background-color: {{{signalcolor}}}; width: 100px",
                 tableStyle = "background: {{{backgroundcolor}}}; border-color: {{{bordercolor}}}; width: 100%";
 
-            for (var i = 0; i < img.length; i++) {
+            for (var i = img.length - 1; i >= 0; i--) {
               if (img[i].src.startsWith(imgRoot + "/images/")) {
                 var src = img[i].src;
                 //console.log("update image src :" + src);
@@ -325,14 +325,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 } else {
                   img[i].src = img[i].src.replace(imgRoot, "https://wiki.archlinux.org");
 
-
                 }
               }
             }
           }
           return mainDiv;
         }
-
       }
     };
 
@@ -341,11 +339,15 @@ window.addEventListener('DOMContentLoaded', function () {
      * Settings
      * ------------------------------------------*/
     var settings = {
+      //FIX-ME : For futur, use settings.data.blabla 
+      //data: {
+      //  use_cache: null, // use cache or not ? 
+      //  refresh_cache_period: null // do not use the cache after such period, download a new version
+      //},
       use_cache: null, // use cache or not ? 
       refresh_cache_period: null, // do not use the cache after such period, download a new version
       /*
        * set default setting
-       
        * @returns {undefined}
        */
       resetDefault: function () {
@@ -1058,6 +1060,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
           if (save2db) {
             self.save();
+          } else {
+            ui.navbar.disable.btReload();
           }
         };
 
@@ -1548,7 +1552,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           var links = document.querySelectorAll('#awv-about a');
 
-          for (var i = links.length - 1; i >= 0 ; i--) {
+          for (var i = links.length - 1; i >= 0; i--) {
             var a = links[i];
             if (!a.href) {
               a.addEventListener('click', callback.stopprop, false);
@@ -1582,7 +1586,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
           var links = document.querySelectorAll('.aw-article a');
 
-          for (var i = links.length - 1; i >= 0 ; i--) {
+          for (var i = links.length - 1; i >= 0; i--) {
 
             var a = links[i];
 
@@ -2043,7 +2047,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         ui.downloader.show();
 
-        for (var i = links.length - 1; i >= 0 ; i--) {
+        for (var i = links.length - 1; i >= 0; i--) {
           downloader.data.links.push(links[i].href);
         }
 

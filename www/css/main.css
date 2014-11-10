@@ -138,15 +138,6 @@ section {
     background: #fff;
 }
 
-section[role="region"]{
-    /*    position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        padding-left: 0;*/
-}
-
 section#main {
     z-index: 5;
     position: fixed; /*without it, you are in trouble!*/
@@ -260,14 +251,12 @@ td.awv-tango {
 #Terms_of_Uses {
 
     border-top: 1px solid #AAA;
-    color: #888;
     font-size: 90%;
     margin: 0.5em 0px 0px 0.0em;
 }
 
 #Terms_of_Uses ul{
     text-align: center;
-    list-style-image: none;
     margin: 0.6em 0px 0px 0.6em ;
 }
 
@@ -276,20 +265,18 @@ td.awv-tango {
     margin: 0px 0.3em;
 }
 
-#Terms_of_Uses {
-    font-weight: bold;
-}
-
-.hidden {
-    display: none;
-}
+/*
+ * downloader section
+ */
 
 #downloadList {
     font-size: 95%;
     text-align: left;
 }
 
-/*about section*/
+/*
+ * about section
+ */
 
 .awv-sidebar-article{
     position: fixed;
@@ -312,4 +299,11 @@ td.awv-tango {
     position: relative;
     /*line-height: 1.5em;*/
     /*color: #222;*/
+}
+
+/*
+ * Special
+ */
+.hidden {
+    display: none;
 }
