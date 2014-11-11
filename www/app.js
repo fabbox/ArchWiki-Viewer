@@ -894,7 +894,9 @@ window.addEventListener('DOMContentLoaded', function () {
        */
       loadArticle: function (useCache) {
 
-        if (useCache) {
+        if (this.url.href.startsWith(awv.WIKIROOT_URL + "/index.php?title=Special:Search&search=")) {
+          this.loadUrl(false);
+        } else if (useCache) {
           this.loadCache();
         } else if (this.url.href === awv.URL) {
           this.loadCache();
