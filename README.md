@@ -35,7 +35,11 @@ Permissions
 Change log
 ----------
 
-### 0.2.0 (or 1.0.0):
+### 0.2.1 :
+
+* fix bug caching search result page on back action.
+
+### 0.2.0 :
 
 * navigation bar is now at bottom for a better accessibility.
 * access to cache page index (star icon in navigation bar).
