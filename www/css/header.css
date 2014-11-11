@@ -156,12 +156,13 @@ section[role="region"] > header{
     text-align: left;
     height: 4rem;
     text-overflow: ellipsis;
+    white-space: nowrap;
 
     line-height:4rem;
     overflow: hidden;
     display: block;
     border:0px ;
     padding: 0;
-
+    width: auto ;
     margin: 0;
 }
