@@ -447,6 +447,11 @@ window.addEventListener('DOMContentLoaded', function () {
             var use_cache = e.target.result;
             if (use_cache) {
               settings.setUseCache(use_cache.value);
+              if (use_cache.value) {
+                ui.navbar.enable.btDownload();
+              } else {
+                ui.navbar.disable.btDownload();
+              }
               document.getElementById("use_cache").checked = settings["use_cache"];
             } else {
               console.error("what is use_cache ?");
@@ -1285,6 +1290,9 @@ window.addEventListener('DOMContentLoaded', function () {
            */
           btBack: function () {
             document.getElementById("action_back").setAttribute("disabled", "true");
+          },
+          btDownload: function () {
+            document.getElementById("action_download").setAttribute("disabled", "true");
           }
         },
         /*
@@ -1299,6 +1307,12 @@ window.addEventListener('DOMContentLoaded', function () {
             var btBack = document.getElementById("action_back");
             if (btBack.hasAttributes("disabled")) {
               btBack.removeAttribute("disabled");
+            }
+          },
+          btDownload: function () {
+            var btDownload = document.getElementById("action_download");
+            if (btDownload.hasAttributes("disabled")) {
+              btDownload.removeAttribute("disabled");
             }
           },
           /*
@@ -1791,6 +1805,11 @@ window.addEventListener('DOMContentLoaded', function () {
           document.getElementById("use_cache")
               .addEventListener('click', function (e) {
                 settings.setUseCache(e.target.checked);
+                if (e.target.checked) {
+                  ui.navbar.enable.btDownload();
+                } else {
+                  ui.navbar.disable.btDownload();
+                }
                 settings.save("use_cache");
               }, false);
 
