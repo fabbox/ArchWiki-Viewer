@@ -34,7 +34,7 @@ window.addEventListener('DOMContentLoaded', function () {
   (function () { // avoid global variables and functions
 
     /* ----------------------------------------------------------------------
-     * Global variables (initialized when opening/inializing the database)
+     * Global variables (initialized when opening/initializing the database)
      * ------------------------------------------------------------------------*/
     var currentPage = null, // "article" which is diplayed ()
         awvhistory = null;   // array of "AwvUrl" used to manage history
@@ -51,7 +51,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
     /* ----------------------------------------
-     * Formatter (Ugly string manipulation function)
+     * Formatter (Ugly string manipulation functions)
      * ------------------------------------------*/
     var formatter = {
       /*
@@ -1932,7 +1932,7 @@ window.addEventListener('DOMContentLoaded', function () {
         // small response
         // I can provide a "local article response"
         // con :
-        // several request needs
+        // several request needs for page title and page content match
         // load impact on arch server (? completely unknown : don't they use
         // the api for building search page results ? )
         // 
@@ -1942,6 +1942,9 @@ window.addEventListener('DOMContentLoaded', function () {
         //ex 2 : content match list
         //https://wiki.archlinux.org/api.php?action=query&list=search&srprop=timestamp&srwhat=text&srsearch=zsh
 
+        //  Here, we use redirs=0 to not follow exact results match because if
+        // we follow this redir, we cannot cache the obtaine page correctly
+        // Note that that search results page are never cached
         var input = document.getElementById("topSearchInput").value || "sorry",
             strUrl = awv.WIKIROOT_URL
             + "/index.php?title=Special:Search&search="
