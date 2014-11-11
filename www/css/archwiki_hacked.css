@@ -74,7 +74,8 @@ li.toclevel-3 {
 }
 
 
-/* search results infos*/
+/* search results infos */
+/*It's hidden !'*/
 .mw-search-result-data {
     color: #008000;
     font-size: 90%;
