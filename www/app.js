@@ -1,26 +1,27 @@
 /*
  Copyright (C) 2014 fbox
- 
+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* 
+/*
  Created on : 21 oct. 2014, 23:55:52
  Author     : fbox
  */
 
-// Be strict, make error for early debug!
-'use strict';
+/*jslint browser: true, devel:true */
+
+
 
 // from mortar skeleton
 // DOMContentLoaded is fired once the document has been loaded and parsed,
@@ -29,12 +30,15 @@
 // https://developer.mozilla.org/en-US/Web/Reference/Events/DOMContentLoaded
 window.addEventListener('DOMContentLoaded', function () {
 
+  // Be strict, make error for early debug!
+  "use strict";
+
   console.log('dom content loaded');
 
   (function () { // avoid global variables and functions
 
     /* ----------------------------------------------------------------------
-     * Global variables (initialized when opening/initializing the database)
+     * quasi-Global variables (initialized when opening/initializing the database)
      * ------------------------------------------------------------------------*/
     var currentPage = null, // "article" which is diplayed ()
         awvhistory = null;   // array of "AwvUrl" used to manage history
@@ -62,18 +66,19 @@ window.addEventListener('DOMContentLoaded', function () {
          * reformat href link to use media wiki "action=render"
          * and remove anchor stuff
          * @param {type} str
-         * @returns {unresolved} 
+         * @returns {unresolved}
          */
         toRender: function (str) {
           /* format str to minimized loaded content */
           var str2replace = awv.WIKIROOT_URL + "/index.php/",
-              str2inject = awv.WIKIROOT_URL + "/index.php?action=render&title=";
+              str2inject = awv.WIKIROOT_URL + "/index.php?action=render&title=",
+              anchor_idx;
 
           if (str.indexOf(str2replace) === 0) {
             str = str.replace(str2replace, str2inject);
           }
 
-          var anchor_idx = str.indexOf("#");
+          anchor_idx = str.indexOf("#");
           if (anchor_idx > 1) {
             str = str.slice(0, anchor_idx);
           }
@@ -91,9 +96,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
           if (str.indexOf(base) >= 0) {
             return str.replace(base, "");
-          } else {
-            return null;
           }
+
+          return null;
         }
 
       },
@@ -192,7 +197,7 @@ window.addEventListener('DOMContentLoaded', function () {
        * related to article formatting
        */
       page: {
-        /* 
+        /*
          * reformat "related articles" part (if any
          * @param {type} mainDiv
          * @returns {unresolved}
@@ -200,7 +205,11 @@ window.addEventListener('DOMContentLoaded', function () {
         relatedArticle: function (mainDiv) {
 
           var fec = mainDiv.firstElementChild,
-              relatedStyle = "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;";
+              relatedStyle = "float:right; clear:right; width:25%; margin: 0 0 0.5em 0.5em;",
+              title,
+              ul,
+              li,
+              i;
 
           if (!fec) {
             return mainDiv;
@@ -218,13 +227,13 @@ window.addEventListener('DOMContentLoaded', function () {
               fec.removeAttribute("style");
 
               /*the <p> where "related articles" is written*/
-              var title = fec.firstElementChild;
+              title = fec.firstElementChild;
               title.className = "awv-related-title";
               title.removeAttribute("style");
 
               /* ul */
-              var ul = mainDiv.getElementsByTagName("ul");
-              for (var i = ul.length - 1; i >= 0; i--) {
+              ul = mainDiv.getElementsByTagName("ul");
+              for (i = ul.length - 1; i >= 0; i--) {
                 if (ul[i].hasAttributes() && ul[i].attributes[0].name === "style") {
                   //console.log("clean ul");
                   ul[i].removeAttribute("style");
@@ -232,8 +241,8 @@ window.addEventListener('DOMContentLoaded', function () {
               }
 
               /* li*/
-              var li = mainDiv.getElementsByTagName("li");
-              for (var i = li.length - 1; i >= 0; i--) {
+              li = mainDiv.getElementsByTagName("li");
+              for (i = li.length - 1; i >= 0; i--) {
                 if (li[i].hasAttributes() && li[i].attributes[0].name === "style") {
                   //console.log("clean li");
                   li[i].removeAttribute("style");
@@ -257,9 +266,10 @@ window.addEventListener('DOMContentLoaded', function () {
           var divs = mainDiv.getElementsByTagName("div"),
               note = "padding: 5px; margin: 0.50em 0; background-color: #DDDDFF; border: thin solid #BBBBDD; overflow: hidden;",
               tip = "padding: 5px; margin: 0.50em 0; background-color: #DDFFDD; border: thin solid #BBDDBB; overflow: hidden;",
-              warning = "padding: 5px; margin: 0.50em 0; background-color: #FFDDDD; border: thin solid #DDBBBB; overflow: hidden;";
+              warning = "padding: 5px; margin: 0.50em 0; background-color: #FFDDDD; border: thin solid #DDBBBB; overflow: hidden;",
+              i;
 
-          for (var i = divs.length - 1; i >= 0; i--) {
+          for (i = divs.length - 1; i >= 0; i--) {
             if (divs[i].hasAttributes() && divs[i].attributes[0].name === "style") {
               if (divs[i].attributes[0].value === note) {
                 //console.log("format 'note'");
@@ -278,57 +288,64 @@ window.addEventListener('DOMContentLoaded', function () {
           }
           return mainDiv;
         },
-        /* 
+        /*
          * find img  and update src point to archlinux when it's "necessary"
-         * 
+         *
          * @param {type} mainDiv
          * @returns {unresolved}
          */
         imageSrc: function (mainDiv) {
-          /* the collection of tango icon provide in the 
-           * arch-wiki-doc package is use locally to do not 
+          /* the collection of tango icon provide in the
+           * arch-wiki-doc package is use locally to do not
            * downloading common icon
            */
-          var img = mainDiv.querySelectorAll("img");
-          if (img) {
-            var imgRoot = awv.ROOT,
-                tdStyle = "background-color: {{{signalcolor}}}; width: 100px",
-                tableStyle = "background: {{{backgroundcolor}}}; border-color: {{{bordercolor}}}; width: 100%";
+          var img = mainDiv.querySelectorAll("img"),
+              src,
+              td,
+              table,
+              imgRoot = awv.ROOT,
+              tdStyle = "background-color: {{{signalcolor}}}; width: 100px",
+              tableStyle = "background: {{{backgroundcolor}}}; border-color: {{{bordercolor}}}; width: 100%",
+              i;
 
-            for (var i = img.length - 1; i >= 0; i--) {
-              if (img[i].src.startsWith(imgRoot + "/images/")) {
-                var src = img[i].src;
-                //console.log("update image src :" + src);
-                if (src.indexOf("Tango-") >= 0) {
-                  img[i].src = src.replace(/.*Tango-/g, imgRoot + "/images/tango/File:Tango-");
+          if (!img) {
+            return;
+          }
 
-                  var td = img[i].parentNode.parentNode;
-                  if (td.tagName === "TD"
-                      && td.hasAttributes()
-                      && td.hasAttribute("style")
-                      && td.getAttribute("style") === tdStyle) {
+          for (i = img.length - 1; i >= 0; i--) {
+            if (img[i].src.startsWith(imgRoot + "/images/")) {
+              src = img[i].src;
+              //console.log("update image src :" + src);
+              if (src.indexOf("Tango-") >= 0) {
+                img[i].src = src.replace(/.*Tango-/g, imgRoot + "/images/tango/File:Tango-");
 
-                    td.classList.add("awv-tango");
-                    td.removeAttribute("style");
-                  }
+                td = img[i].parentNode.parentNode;
+                if (td.tagName === "TD"
+                    && td.hasAttributes()
+                    && td.hasAttribute("style")
+                    && td.getAttribute("style") === tdStyle) {
 
-                  var table = td.parentNode.parentNode.parentNode;
-                  if (table.tagName === "TABLE"
-                      && table.hasAttributes()
-                      && table.hasAttribute("style")
-                      && table.getAttribute("style") === tableStyle) {
-
-                    table.classList.add("awv-tango");
-                    table.removeAttribute("style");
-                  }
-
-                } else {
-                  img[i].src = img[i].src.replace(imgRoot, "https://wiki.archlinux.org");
-
+                  td.classList.add("awv-tango");
+                  td.removeAttribute("style");
                 }
+
+                table = td.parentNode.parentNode.parentNode;
+                if (table.tagName === "TABLE"
+                    && table.hasAttributes()
+                    && table.hasAttribute("style")
+                    && table.getAttribute("style") === tableStyle) {
+
+                  table.classList.add("awv-tango");
+                  table.removeAttribute("style");
+                }
+
+              } else {
+                img[i].src = img[i].src.replace(imgRoot, "https://wiki.archlinux.org");
+
               }
             }
           }
+
           return mainDiv;
         }
       }
@@ -339,12 +356,12 @@ window.addEventListener('DOMContentLoaded', function () {
      * Settings
      * ------------------------------------------*/
     var settings = {
-      //FIX-ME : For futur, use settings.data.blabla 
+      //FIX-ME : For futur, use settings.data.blabla
       //data: {
-      //  use_cache: null, // use cache or not ? 
+      //  use_cache: null, // use cache or not ?
       //  refresh_cache_period: null // do not use the cache after such period, download a new version
       //},
-      use_cache: null, // use cache or not ? 
+      use_cache: null, // use cache or not ?
       refresh_cache_period: null, // do not use the cache after such period, download a new version
       /*
        * set default setting
@@ -365,8 +382,8 @@ window.addEventListener('DOMContentLoaded', function () {
        * @returns {undefined}
        */
       setUseCache: function (value) {
-        settings["use_cache"] = value;
-        console.log('use_cache : ' + settings["use_cache"]);
+        settings.use_cache = value;
+        console.log('use_cache : ' + settings.use_cache);
       },
       /*
        * Set the "refresh_cache_period" settings
@@ -374,8 +391,8 @@ window.addEventListener('DOMContentLoaded', function () {
        * @returns {undefined}
        */
       setRefreshCachePeriod: function (value) {
-        settings["refresh_cache_period"] = value;
-        console.log('refresh cache page period (ms): ' + settings["refresh_cache_period"]);
+        settings.refresh_cache_period = value;
+        console.log('refresh cache page period (ms): ' + settings.refresh_cache_period);
       },
       /*
        * update settings in the database
@@ -434,7 +451,7 @@ window.addEventListener('DOMContentLoaded', function () {
        */
       init: {
         /*
-         * 
+         *
          * @returns {undefined}
          */
         useCache: function () {
@@ -452,7 +469,7 @@ window.addEventListener('DOMContentLoaded', function () {
               } else {
                 ui.navbar.disable.btDownload();
               }
-              document.getElementById("use_cache").checked = settings["use_cache"];
+              document.getElementById("use_cache").checked = settings.use_cache;
             } else {
               console.error("what is use_cache ?");
             }
@@ -463,7 +480,7 @@ window.addEventListener('DOMContentLoaded', function () {
           };
         },
         /*
-         * 
+         *
          * @returns {undefined}
          */
         refreshCache: function () {
@@ -478,7 +495,7 @@ window.addEventListener('DOMContentLoaded', function () {
               settings.setRefreshCachePeriod(refresh.value);
 
               var selectElt = document.getElementById("refresh_cache_period");
-              selectElt.value = settings["refresh_cache_period"];
+              selectElt.value = settings.refresh_cache_period;
 
               document.getElementById("refresh_label").textContent =
                   selectElt.options[selectElt.selectedIndex].text;
@@ -541,7 +558,9 @@ window.addEventListener('DOMContentLoaded', function () {
         };
 
         request.onupgradeneeded = function (e) {
-          var db = e.currentTarget.result;
+          var db = e.currentTarget.result,
+              pageStore,
+              settingsStore;
 
           console.log("database update to version " + db.version);
           //console.log(db.objectStoreNames);
@@ -553,19 +572,19 @@ window.addEventListener('DOMContentLoaded', function () {
             // sorry for those who download all the site
             db.deleteObjectStore("pages");
 
-            var pageStore = db.createObjectStore("pages", {keyPath: "url"});
+            pageStore = db.createObjectStore("pages", {keyPath: "url"});
             pageStore.createIndex("title", "title", {unique: false}); // probably true
             pageStore.createIndex("date", "date", {unique: false});
             pageStore.createIndex("lastmodified", "lastmodified", {unique: false});
 
           } else {
 
-            var pageStore = db.createObjectStore("pages", {keyPath: "url"});
+            pageStore = db.createObjectStore("pages", {keyPath: "url"});
             pageStore.createIndex("title", "title", {unique: false}); // probably true
             pageStore.createIndex("date", "date", {unique: false});
             pageStore.createIndex("lastmodified", "lastmodified", {unique: false});
 
-            // Use transaction oncomplete to make sure the pageStore creation is 
+            // Use transaction oncomplete to make sure the pageStore creation is
             // finished before adding data into it.
             pageStore.transaction.oncomplete = function () {
               console.log("creating 'pages' complete");
@@ -573,9 +592,9 @@ window.addEventListener('DOMContentLoaded', function () {
           }
 
           if (db.objectStoreNames[1] === "settings") {
-            // nothing there right now
+            ;// nothing there right now
           } else {
-            var settingsStore = db.createObjectStore("settings", {keyPath: "name"});
+            settingsStore = db.createObjectStore("settings", {keyPath: "name"});
 
             settingsStore.transaction.oncomplete = function () {
               console.log("creating  'settings' complete");
@@ -588,7 +607,7 @@ window.addEventListener('DOMContentLoaded', function () {
         };
       },
       /*
-       * 
+       *
        * @param {type} store_name
        * @param {type} mode
        * @returns {unresolved}
@@ -598,7 +617,7 @@ window.addEventListener('DOMContentLoaded', function () {
         return tx.objectStore(store_name);
       },
       /*
-       * 
+       *
        * @param {type} store_name
        * @returns {undefined}
        */
@@ -672,7 +691,7 @@ window.addEventListener('DOMContentLoaded', function () {
         return popval;
       },
       /*
-       * delete the last element of awvHistory and 
+       * delete the last element of awvHistory and
        * return the value of the new last element.
        * @returns {Array}
        */
@@ -693,7 +712,7 @@ window.addEventListener('DOMContentLoaded', function () {
      * @param {type} str
      * @param {type} reformat
      * @returns {app_L35.AwvUrl}
-     * 
+     *
      * properties are : href, anchor and raw;
      */
     function AwvUrl(str, reformat) {
@@ -801,7 +820,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     Content.prototype = {
       /*
-       * return html string of the article 
+       * return html string of the article
        * @returns {unresolved}
        */
       getHtml: function () {
@@ -826,7 +845,7 @@ window.addEventListener('DOMContentLoaded', function () {
       },
       /*
        * Display content in a new article in the document
-       * it delete the old article. 
+       * it delete the old article.
        * @returns {undefined}
        */
       print: function () {
@@ -871,7 +890,7 @@ window.addEventListener('DOMContentLoaded', function () {
      * ------------------------------------------*/
 
     /*
-     * Wikipage constructor : 
+     * Wikipage constructor :
      * @param {type} url
      * @returns {app_L35.WikiArticle}
      */
@@ -905,7 +924,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
-       * Check for update version of an article. 
+       * Check for update version of an article.
        * The article must be in the database and has been loaded.
        * In case of error, the version in the database is printed.
        * @returns {undefined}
@@ -914,9 +933,8 @@ window.addEventListener('DOMContentLoaded', function () {
         console.log("check update cache");
 
         ui.progressbar.show();
-        var self = this;
-
-        var updateReq = new XMLHttpRequest({mozSystem: true});
+        var self = this,
+            updateReq = new XMLHttpRequest({mozSystem: true});
 
         updateReq.open("HEAD", self.url.href, true);
 
@@ -947,7 +965,7 @@ window.addEventListener('DOMContentLoaded', function () {
         updateReq.send(null);
       },
       /*
-       * load (and print article) : It try to load/update the cache page, 
+       * load (and print article) : It try to load/update the cache page,
        * if the page doesn't exist, it download it.
        * @returns {undefined}
        */
@@ -967,7 +985,7 @@ window.addEventListener('DOMContentLoaded', function () {
             self.setTitle(cache.title);
             self.setContent(cache.body, false);
 
-            if (self.date - cache.date < settings["refresh_cache_period"]) {
+            if (self.date - cache.date < settings.refresh_cache_period) {
               self.print();
               /* do not save there is no change and no check*/
               ui.progressbar.hide();
@@ -989,7 +1007,7 @@ window.addEventListener('DOMContentLoaded', function () {
       },
       /*
        * load (and print article) : It download the article from the archwiki website.
-       * Here, we use a privilige XMLHttpRequest to contact the archwiki because 
+       * Here, we use a privilige XMLHttpRequest to contact the archwiki because
        * we are not the archwiki !
        * @param {type} save2db : wether it must save the got page in the indexedDB
        * @returns {undefined}
@@ -1006,9 +1024,9 @@ window.addEventListener('DOMContentLoaded', function () {
         var self = this,
             xhr = new XMLHttpRequest({mozSystem: true});
 
-        //* Initialize Cross XMLHttprequest 
+        //* Initialize Cross XMLHttprequest
         //* and open a http request with "document" responseType.
-        //* It also define basic error handler 
+        //* It also define basic error handler
         //* and mask the progress bar on request end
 
         /* ArchWiki server doesn't send "Content-Length" in the response header
@@ -1017,7 +1035,7 @@ window.addEventListener('DOMContentLoaded', function () {
          * that on the web) but I don't know
          */
 
-        xhr.open('GET', self.url.href, true); // asynchrone      
+        xhr.open('GET', self.url.href, true); // asynchrone
         xhr.responseType = "document"; // need "GET"
 
         xhr.onerror = function () {
@@ -1060,7 +1078,7 @@ window.addEventListener('DOMContentLoaded', function () {
             return;
           }
 
-          // FIX-ME: Requesting "document" to just using innerHtml is 
+          // FIX-ME: Requesting "document" to just using innerHtml is
           // probably a waste of ressources
           self.setContent(resp.innerHTML, true);
           self.print();
@@ -1076,22 +1094,21 @@ window.addEventListener('DOMContentLoaded', function () {
       },
       /*
        * set the content properties
-       * @param {type} str 
+       * @param {type} str
        * @returns {undefined}
        */
       setContent: function (str, reformat) {
         this.content = new Content(str, reformat);
       },
       /*
-       * return the innerHTML of the content 
+       * return the innerHTML of the content
        * @returns {app_L35.WikiArticle.prototype@pro;content@call;getHtml}
        */
       getHtmlContent: function () {
-        if (this.content) {
-          return this.content.getHtml();
-        } else {
+        if (!this.content) {
           return null;
         }
+        return this.content.getHtml();
       },
       /*
        * set the title properties
@@ -1103,7 +1120,7 @@ window.addEventListener('DOMContentLoaded', function () {
         this.title = new Title(str, url);
       },
       /*
-       * return the full title string 
+       * return the full title string
        * @returns {app_L35.WikiArticle.title.str}
        */
       getTitle: function () {
@@ -1141,12 +1158,12 @@ window.addEventListener('DOMContentLoaded', function () {
         }
 
         /* check if page exist*/
-        var pagesStore = database.getObjectStore(["pages"], "readwrite");
-        var localCache = pagesStore.get(this.url.href);
+        var pagesStore = database.getObjectStore(["pages"], "readwrite"),
+            localCache = pagesStore.get(this.url.href);
 
         localCache.onsuccess = function (e) {
           var cachedPage = e.target.result;
-          if (cachedPage) { // page exists : 
+          if (cachedPage) { // page exists :
             /* update cached data */
             cachedPage.body = data.body; // dom cannot be clone so we stock innerhtml
             cachedPage.title = data.title;
@@ -1196,7 +1213,7 @@ window.addEventListener('DOMContentLoaded', function () {
        */
       needPrint: true,
       /*
-       * Scroll to an id : 
+       * Scroll to an id :
        * XXX: static method
        * @param {type} id
        * @returns {undefined}
@@ -1212,7 +1229,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
-       * create and dispatch an event when the article is saved 
+       * create and dispatch an event when the article is saved
        * @returns {undefined}
        */
       generateEventSave: function () {
@@ -1233,11 +1250,11 @@ window.addEventListener('DOMContentLoaded', function () {
      */
     var ui = {
       /*
-       * 
+       *
        */
       navbar: {
         /*
-         * 
+         *
          * @returns {undefined}
          */
         hide: function () {
@@ -1250,7 +1267,7 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         },
         /*
-         * 
+         *
          * @returns {undefined}
          */
         show: function () {
@@ -1265,7 +1282,7 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         },
         /*
-         * 
+         *
          * @returns {undefined}
          */
         toggle: function () {
@@ -1276,18 +1293,18 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         },
         /*
-         * 
+         *
          */
         disable: {
           /*
-           * 
+           *
            * @returns {undefined}
            */
           btReload: function () {
             document.getElementById("action_reload").setAttribute("disabled", "true");
           },
           /*
-           * 
+           *
            * @returns {undefined}
            */
           btBack: function () {
@@ -1298,11 +1315,11 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         },
         /*
-         * 
+         *
          */
         enable: {
           /*
-           * 
+           *
            * @returns {undefined}
            */
           btBack: function () {
@@ -1318,7 +1335,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
           },
           /*
-           * 
+           *
            * @returns {undefined}
            */
           btReload: function () {
@@ -1341,7 +1358,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
-       * general settings panel 
+       * general settings panel
        */
       settings: {
         hide: function () {
@@ -1414,7 +1431,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
-       * the about panel 
+       * the about panel
        */
       about: {
         hide: function () {
@@ -1432,7 +1449,7 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
-       * the downloader panel 
+       * the downloader panel
        */
       downloader: {
         hide: function () {
@@ -1451,7 +1468,7 @@ window.addEventListener('DOMContentLoaded', function () {
     };
 
     /*
-     * Namespace for UI Listeners 
+     * Namespace for UI Listeners
      * (disable or enable listener)
      * manage events listenner function from the UI
      * @type type
@@ -1554,7 +1571,7 @@ window.addEventListener('DOMContentLoaded', function () {
           }, false);
         },
         /*
-         * About panel listener 
+         * About panel listener
          * @returns {undefined}
          */
         about: function () {
@@ -1566,10 +1583,12 @@ window.addEventListener('DOMContentLoaded', function () {
                 ui.about.hide();
               }, false);
 
-          var links = document.querySelectorAll('#awv-about a');
+          var links = document.querySelectorAll('#awv-about a'),
+              a,
+              i;
 
-          for (var i = links.length - 1; i >= 0; i--) {
-            var a = links[i];
+          for (i = links.length - 1; i >= 0; i--) {
+            a = links[i];
             if (!a.href) {
               a.addEventListener('click', callback.stopprop, false);
             } else if (a.id === "CloseAbout") {
@@ -1580,7 +1599,7 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         },
         /*
-         * About panel listener 
+         * About panel listener
          * @returns {undefined}
          */
         downloader: function () {
@@ -1600,11 +1619,13 @@ window.addEventListener('DOMContentLoaded', function () {
         links: function () {
           console.log("add links listener");
 
-          var links = document.querySelectorAll('.aw-article a');
+          var links = document.querySelectorAll('.aw-article a'),
+              a,
+              i;
 
-          for (var i = links.length - 1; i >= 0; i--) {
+          for (i = links.length - 1; i >= 0; i--) {
 
-            var a = links[i];
+            a = links[i];
 
             if (!a.href) {
               //console.log("a with no ref found!");
@@ -1646,7 +1667,7 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         },
         /*
-         * Search form Listeners 
+         * Search form Listeners
          * @returns {undefined}
          */
         searchBar: function () {
@@ -1692,14 +1713,14 @@ window.addEventListener('DOMContentLoaded', function () {
             if (currentPage.url.href === awv.STAR_URL) {
               var lasturl = awvhistory.pop(),
                   page = new WikiArticle(lasturl);
-              page.loadArticle(settings["use_cache"]);
+              page.loadArticle(settings.use_cache);
               awvhistory.push(lasturl);
               currentPage = page;
 
             } else if (awvhistory.length > 1) {
               // console.log("history length : " + awvHistory.length);
               var page = new WikiArticle(awvhistory.popget());
-              page.loadArticle(settings["use_cache"]);
+              page.loadArticle(settings.use_cache);
               currentPage = page;
 
             }
@@ -1732,9 +1753,10 @@ window.addEventListener('DOMContentLoaded', function () {
          * @returns {undefined}
          */
         stoppedLinks: function () {
-          var links = document.querySelectorAll('.aw-article a');
+          var links = document.querySelectorAll('.aw-article a'),
+              i;
 
-          for (var i = links.length - 1; i >= 0; i--) {
+          for (i = links.length - 1; i >= 0; i--) {
             links[i].addEventListener('click', callback.stopprop, false);
           }
         },
@@ -1875,10 +1897,12 @@ window.addEventListener('DOMContentLoaded', function () {
          * @returns {undefined}
          */
         links: function () {
-          var links = document.querySelectorAll('.aw-article a');
+          var links = document.querySelectorAll('.aw-article a'),
+              a,
+              i;
 
-          for (var i = links.length - 1; i >= 0; i--) {
-            var a = links[i];
+          for (i = links.length - 1; i >= 0; i--) {
+            a = links[i];
             a.removeEventListener('click', callback.load, false);
             a.removeEventListener('click', callback.openInOSBrowser, false);
             a.addEventListener('click', callback.stopprop, false);
@@ -1889,9 +1913,10 @@ window.addEventListener('DOMContentLoaded', function () {
          * @returns {undefined}
          */
         stoppedLinks: function () {
-          var links = document.querySelectorAll('.aw-article a');
+          var links = document.querySelectorAll('.aw-article a'),
+              i;
 
-          for (var i = links.length - 1; i >= 0; i--) {
+          for (i = links.length - 1; i >= 0; i--) {
             links[i].removeEventListener('click', callback.stopprop, false);
           }
         }
@@ -1909,14 +1934,14 @@ window.addEventListener('DOMContentLoaded', function () {
        * @returns {undefined}
        */
       load: function (e) {
-        e.preventDefault(); // do not follow click ! 
+        e.preventDefault(); // do not follow click !
         /* load target link*/
         var href = e.currentTarget.getAttribute('href')
             || e.currentTarget.parentNode.getAttribute('href'),
             targetUrl = new AwvUrl(href, true),
             page = new WikiArticle(targetUrl);
 
-        page.loadArticle(settings["use_cache"]);
+        page.loadArticle(settings.use_cache);
         currentPage = page;
         awvhistory.push(targetUrl);
       },
@@ -1930,14 +1955,14 @@ window.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
 
         // XXX : use wikimedia api to avoid downlodaing the full page ?
-        // pro : 
+        // pro :
         // small response
         // I can provide a "local article response"
         // con :
         // several request needs for page title and page content match
         // load impact on arch server (? completely unknown : don't they use
         // the api for building search page results ? )
-        // 
+        //
         // example :
         //ex 1 :title match list
         //https://wiki.archlinux.org/api.php?action=query&list=search&srprop=timestamp&srwhat=title&srsearch=zsh
@@ -1979,6 +2004,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
             var li = document.createElement("li"),
                 a = document.createElement("a");
+
             a.href = cursor.key;
             a.textContent = cursor.value.title;
 
@@ -2035,7 +2061,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     /*
      * A namespace to download archwiki links contained in the current page
-     * Articles are downloaded one by one to respect Archwiki server thanks 
+     * Articles are downloaded one by one to respect Archwiki server thanks
      * to a custom event fired by a saved article.
      * @type type
      */
@@ -2050,7 +2076,7 @@ window.addEventListener('DOMContentLoaded', function () {
         downloader.data.downloaderBody.appendChild(node);
       },
       /*
-       * execute downloader 
+       * execute downloader
        * @returns {Boolean}
        */
       confirm_form: function () {
@@ -2061,7 +2087,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
         console.log("downloader launch");
 
-        var links = document.querySelectorAll('.awv-inner-link');
+        var links = document.querySelectorAll('.awv-inner-link'),
+            i;
+
         console.log(links.length + " links to download");
 
         downloader.data.links = [];
@@ -2071,7 +2099,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
         ui.downloader.show();
 
-        for (var i = links.length - 1; i >= 0; i--) {
+        for (i = links.length - 1; i >= 0; i--) {
           downloader.data.links.push(links[i].href);
         }
 
@@ -2111,7 +2139,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
         document.getElementById("dlLinks_confirm").classList.add("hidden");
         uiListeners.remove.confirmDownloader();
-        var nbToDl = downloader.data.length;
+        var nbToDl = downloader.data.length,
+            p,
+            ol;
+
         if (nbToDl > 0) {
           /* add download/saved event (we do not want to overload arch server
            * by sending 50 request at the same time)
@@ -2119,8 +2150,8 @@ window.addEventListener('DOMContentLoaded', function () {
           document.addEventListener("awvSaved", downloader.getNext, false);
 
           /* prepare the document*/
-          var p = document.createElement("p"),
-              ol = document.createElement("ol");
+          p = document.createElement("p");
+          ol = document.createElement("ol");
 
           if (nbToDl === 1) {
             p.textContent = 'One page to download/update :';
@@ -2140,9 +2171,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       },
       /*
-       * callback function to the 'awvSaved' eventListener define in main() 
-       * If everythings is fine and save, the function will dispatch a new 
-       * 'awvSaved' event. 
+       * callback function to the 'awvSaved' eventListener define in main()
+       * If everythings is fine and save, the function will dispatch a new
+       * 'awvSaved' event.
        * @param {type} e
        * @returns {undefined}
        */
@@ -2169,7 +2200,7 @@ window.addEventListener('DOMContentLoaded', function () {
           var page = new WikiArticle(new AwvUrl(href, true));
 
           page.needPrint = false; // <- the secret property to avoid display
-          page.loadArticle(settings["use_cache"]);
+          page.loadArticle(settings.use_cache);
 
           downloader.data.idx += 1;
 
