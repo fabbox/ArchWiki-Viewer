@@ -320,7 +320,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 img[i].src = src.replace(/.*Tango-/g, imgRoot + "/images/tango/File:Tango-");
 
                 td = img[i].parentNode.parentNode;
-                if (td.tagName === "TD"
+                if (td
+                    && td.tagName === "TD"
                     && td.hasAttributes()
                     && td.hasAttribute("style")
                     && td.getAttribute("style") === tdStyle) {
@@ -330,7 +331,8 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
 
                 table = td.parentNode.parentNode.parentNode;
-                if (table.tagName === "TABLE"
+                if (table
+                    && table.tagName === "TABLE"
                     && table.hasAttributes()
                     && table.hasAttribute("style")
                     && table.getAttribute("style") === tableStyle) {

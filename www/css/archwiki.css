@@ -747,3 +747,39 @@ pre {
     border: 1px solid #bcd;
     overflow: auto
 }
+
+/*Tempalte Message*/ 
+
+div.archwiki-template-message > p:nth-of-type(2) {
+
+    right: 0px;
+
+}
+div.archwiki-template-message > p {
+
+    position: absolute;
+    width: 100px;
+
+}
+div.archwiki-template-message > div {
+
+    margin: 0px 100px;
+
+}
+div.archwiki-template-message {
+
+    text-align: center;
+
+}
+
+div.archwiki-template-message {
+
+    position: relative;
+    overflow: hidden;
+    min-height: 4.6em;
+    margin-bottom: 1em;
+    background-color: #F9FAFF;
+    border: 1px solid #D7DFE3;
+    text-align: center;
+
+}
